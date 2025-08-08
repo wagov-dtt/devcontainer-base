@@ -40,14 +40,17 @@ jobs:
           type=sha
 
     - name: Build image
-      uses: docker/build-push-action@v6
+      uses: devcontainers/ci@v0.3
       with:
-        context: ./devcontainer-base
-        file: ./devcontainer-base/.devcontainer/Dockerfile
-        push: false
-        tags: ${{ steps.meta.outputs.tags }}
-        labels: ${{ steps.meta.outputs.labels }}
-        load: true
+        imageName: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+        imageTag: ${{ github.sha }}
+        subFolder: devcontainer-base
+        push: never
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+
+    - name: Test container
+      run: docker run --rm --user vscode ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} bash -l -c 'mise list'
 
     - name: Run Trivy vulnerability scanner
       uses: aquasecurity/trivy-action@master
@@ -61,17 +64,15 @@ jobs:
       with:
         sarif_file: 'trivy-results.sarif'
 
-    - name: Test container
-      run: docker run --rm --user vscode ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} bash -c "which mise && which aws && which kubectl"
-
     - name: Push image
-      uses: docker/build-push-action@v6
+      uses: devcontainers/ci@v0.3
       with:
-        context: ./devcontainer-base
-        file: ./devcontainer-base/.devcontainer/Dockerfile
-        push: true
-        tags: ${{ steps.meta.outputs.tags }}
-        labels: ${{ steps.meta.outputs.labels }}
+        imageName: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+        imageTag: ${{ github.sha }}
+        subFolder: devcontainer-base
+        push: always
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
 
     - name: Install Cosign
       uses: sigstore/cosign-installer@v3

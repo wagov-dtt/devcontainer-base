@@ -91,7 +91,7 @@ backend = "core:node"
 
 [tools."pipx:azure-cli"]
 version = "2.76.0"
-backend = "pipx:azure-cli"
+backend = "pipx:azure-cli[uvx_args=--prerelease=allow]"
 
 [tools."pipx:rumdl"]
 version = "0.0.108"

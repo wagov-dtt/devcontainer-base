@@ -2,7 +2,10 @@
 	"name": "wagov-dtt base devcontainer",
 	"build": {
 		"dockerfile": "Dockerfile",
-		"context": ".."
+		"context": "..",
+		"args": {
+			"GITHUB_TOKEN": "${localEnv:GITHUB_TOKEN}"
+		}
 	},
 	"features": {
 		"ghcr.io/devcontainers/features/docker-in-docker:2": {}

@@ -16,7 +16,8 @@ devcontainer build --workspace-folder devcontainer-base
 
 ## Local Development
 ```bash
-# Build locally
+# Build locally (with optional GitHub token to avoid rate limits)
+export GITHUB_TOKEN=your_token_here
 devcontainer build --workspace-folder devcontainer-base --image-name devcontainer-base:local
 
 # Security scan with Trivy
@@ -24,4 +25,7 @@ trivy image devcontainer-base:local
 
 # Test the container
 docker run -it --rm --user vscode devcontainer-base:local bash
+
+# Test tools are installed (copy/paste friendly)
+docker run --rm --user vscode devcontainer-base:local bash -l -c 'mise list'
 ```

@@ -18,7 +18,7 @@ kubectl = "latest"
 kustomize = "latest"
 lychee = "latest"
 node = "latest"
-"pipx:azure-cli" = "latest"
+"pipx:azure-cli" = { version = "latest", uvx_args = "--prerelease=allow" }
 "pipx:rumdl" = "latest"
 pnpm = "latest"
 python = "latest"
@@ -33,3 +33,4 @@ zellij = "latest"
 
 [settings]
 experimental = true
+pipx.uvx = true
