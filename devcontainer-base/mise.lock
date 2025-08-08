@@ -22,6 +22,24 @@ backend = "aqua:sigstore/cosign"
 version = "533.0.0"
 backend = "asdf:gcloud"
 
+[tools."github:ddev/ddev"]
+version = "1.24.7"
+backend = "github:ddev/ddev"
+
+[tools."github:ddev/ddev".platforms.linux-x64]
+checksum = "blake3:6d362f280b1ef2800eeeca4ec1961c2aa2f5b5fea24ae99595ff049b92581b92"
+size = 10706365
+url = "https://github.com/ddev/ddev/releases/download/v1.24.7/ddev_linux-amd64.v1.24.7.tar.gz"
+
+[tools."github:terrastruct/d2"]
+version = "0.7.0"
+backend = "github:terrastruct/d2"
+
+[tools."github:terrastruct/d2".platforms.linux-x64]
+checksum = "blake3:fbd86f8e52714daffde5b0eb746653c869ec5f3af34deda0c184ef1aaa76a251"
+size = 20550305
+url = "https://github.com/terrastruct/d2/releases/download/v0.7.0/d2-v0.7.0-linux-amd64.tar.gz"
+
 [tools.go]
 version = "1.24.6"
 backend = "core:go"
