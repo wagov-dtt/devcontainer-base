@@ -3,9 +3,9 @@
 	"build": {
 		"dockerfile": "Dockerfile",
 		"context": "..",
-		"args": {
-			"GITHUB_TOKEN": "${localEnv:GITHUB_TOKEN}"
-		}
+		"options": [
+			"--secret", "id=GITHUB_TOKEN"
+		]
 	},
 	"features": {
 		"ghcr.io/devcontainers/features/docker-in-docker:2": {}

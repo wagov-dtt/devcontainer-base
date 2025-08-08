@@ -13,8 +13,9 @@ SHELL ["/bin/bash", "-l", "-c"]
 # Install mise
 RUN curl https://mise.run/bash | sh
 COPY --chown=vscode:vscode mise.toml ./.config/mise/config.toml
-RUN for i in 1 2 3 4 5; do \
-      if mise install; then break; fi; \
+RUN --mount=type=secret,id=GITHUB_TOKEN,mode=0444 \
+    for i in 1 2 3 4 5; do \
+      if GITHUB_TOKEN=$(cat /run/secrets/GITHUB_TOKEN) mise install; then break; fi; \
       echo "mise install failed, retrying in $((4 ** i)) seconds..."; \
       sleep $((4 ** i)); \
     done
