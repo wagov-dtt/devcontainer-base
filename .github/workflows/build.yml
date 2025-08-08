@@ -5,10 +5,17 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  schedule:
+    - cron: '0 22 * * *'  # Daily at 6 AM Perth (GMT+8)
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: wagov-dtt/devcontainer-base
+  UNTESTED_IMAGE_NAME: wagov-dtt/devcontainer-base-untested
 
 jobs:
   build:
@@ -16,46 +23,69 @@ jobs:
     permissions:
       contents: read
       packages: write
-      security-events: write
-      id-token: write
+    outputs:
+      image-tag: ${{ steps.tag.outputs.value }}
+      untested-image: ${{ env.REGISTRY }}/${{ env.UNTESTED_IMAGE_NAME }}:${{ steps.tag.outputs.value }}
 
     steps:
     - uses: actions/checkout@v4
+    
+    - name: Set image tag
+      id: tag
+      run: |
+        if [ "${{ github.event_name }}" = "schedule" ]; then
+          echo "value=nightly" >> $GITHUB_OUTPUT
+        elif [ "${{ github.ref }}" = "refs/heads/main" ]; then
+          echo "value=latest" >> $GITHUB_OUTPUT
+        else
+          echo "value=${{ github.sha }}" >> $GITHUB_OUTPUT
+        fi
     
     - name: Log in to Container Registry
       uses: docker/login-action@v3
       with:
         registry: ${{ env.REGISTRY }}
         username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+        password: ${{ github.token }}
 
-    - name: Extract metadata
-      id: meta
-      uses: docker/metadata-action@v5
-      with:
-        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-        tags: |
-          type=ref,event=branch
-          type=ref,event=pr
-          type=sha
-
-    - name: Build image
+    - name: Build and push untested image
       uses: devcontainers/ci@v0.3
       with:
-        imageName: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-        imageTag: ${{ github.sha }}
+        imageName: ${{ env.REGISTRY }}/${{ env.UNTESTED_IMAGE_NAME }}
+        imageTag: ${{ steps.tag.outputs.value }}
         subFolder: devcontainer-base
-        push: never
+        push: always
       env:
         GITHUB_TOKEN: ${{ github.token }}
 
+  test-and-promote:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      security-events: write
+      id-token: write
+      attestations: write
+
+    steps:
+    - name: Log in to Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ github.token }}
+
+    - name: Pull untested image
+      run: docker pull ${{ needs.build.outputs.untested-image }}
+
     - name: Test container
-      run: docker run --rm --user vscode ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} bash -l -c 'mise list'
+      run: docker run --rm --user vscode ${{ needs.build.outputs.untested-image }} bash -l -c 'mise list'
 
     - name: Run Trivy vulnerability scanner
-      uses: aquasecurity/trivy-action@master
+      uses: aquasecurity/trivy-action@0.28.0
       with:
-        image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+        image-ref: ${{ needs.build.outputs.untested-image }}
         format: 'sarif'
         output: 'trivy-results.sarif'
 
@@ -64,18 +94,17 @@ jobs:
       with:
         sarif_file: 'trivy-results.sarif'
 
-    - name: Push image
-      uses: devcontainers/ci@v0.3
+    - name: Tag and push tested image
+      id: push
+      run: |
+        docker tag ${{ needs.build.outputs.untested-image }} ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.build.outputs.image-tag }}
+        docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.build.outputs.image-tag }}
+        IMAGE_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.build.outputs.image-tag }} | cut -d'@' -f2)
+        echo "digest=$IMAGE_DIGEST" >> $GITHUB_OUTPUT
+
+    - name: Generate build provenance attestation
+      uses: actions/attest-build-provenance@v1
       with:
-        imageName: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-        imageTag: ${{ github.sha }}
-        subFolder: devcontainer-base
-        push: always
-      env:
-        GITHUB_TOKEN: ${{ github.token }}
-
-    - name: Install Cosign
-      uses: sigstore/cosign-installer@v3
-
-    - name: Sign container image
-      run: cosign sign --yes ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+        subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+        subject-digest: ${{ steps.push.outputs.digest }}
+        push-to-registry: true
