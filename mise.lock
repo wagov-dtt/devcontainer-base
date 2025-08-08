@@ -1,0 +1,315 @@
+[tools.aws-cli]
+version = "2.28.5"
+backend = "aqua:aws/aws-cli"
+
+[tools.aws-cli.platforms.linux-x64]
+checksum = "blake3:7ad4ae8dfc1f30d03a92ac805c15806b39ff50dff04502045142768b19ec1a4b"
+size = 61954493
+url = "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-2.28.5.zip"
+
+[tools.aws-sam]
+version = "1.142.1"
+backend = "aqua:aws/aws-sam-cli"
+
+[tools.aws-sam.platforms.linux-x64]
+checksum = "blake3:332e006cb52290d8c8c2d7aaa16010714fd9dc03690e5bdf25e5bd6d2a0d7b03"
+size = 85984650
+url = "https://github.com/aws/aws-sam-cli/releases/download/v1.142.1/aws-sam-cli-linux-x86_64.zip"
+
+[tools.btop]
+version = "1.4.4"
+backend = "aqua:aristocratos/btop"
+
+[tools.btop.platforms.linux-x64]
+checksum = "blake3:faf7074ec4840f153738e2be0ea83e10f0d8a7f85d5b6d6ec650d74a64699935"
+size = 1071109
+url = "https://github.com/aristocratos/btop/releases/download/v1.4.4/btop-x86_64-linux-musl.tbz"
+
+[tools.cargo-binstall]
+version = "1.14.3"
+backend = "aqua:cargo-bins/cargo-binstall"
+
+[tools.cargo-binstall.platforms.linux-x64]
+checksum = "blake3:3c60429bd27f3437c5637e9417a750ae03edc865ed7c86d80b55ba8f8eea548d"
+size = 6762028
+url = "https://github.com/cargo-bins/cargo-binstall/releases/download/v1.14.3/cargo-binstall-x86_64-unknown-linux-musl.tgz"
+
+[tools."cargo:mdbook"]
+version = "0.4.52"
+backend = "cargo:mdbook"
+
+[tools.cosign]
+version = "2.5.3"
+backend = "aqua:sigstore/cosign"
+
+[tools.cosign.platforms.linux-x64]
+checksum = "sha256:783b5d6c74105401c63946c68d9b2a4e1aab3c8abce043e06b8510b02b623ec9"
+size = 154068646
+url = "https://github.com/sigstore/cosign/releases/download/v2.5.3/cosign-linux-amd64"
+
+[tools.fzf]
+version = "0.65.1"
+backend = "aqua:junegunn/fzf"
+
+[tools.fzf.platforms.linux-x64]
+checksum = "sha256:b1ee29f7dac89c6dc501300d930580fdee93f42317e16aae656cfaedbd09f2a4"
+size = 1638507
+url = "https://github.com/junegunn/fzf/releases/download/v0.65.1/fzf-0.65.1-linux_amd64.tar.gz"
+
+[tools.gcloud]
+version = "533.0.0"
+backend = "asdf:gcloud"
+
+[tools.gh]
+version = "2.76.2"
+backend = "aqua:cli/cli"
+
+[tools.gh.platforms.linux-x64]
+checksum = "sha256:62544b0f3759bbf1155c0ac3d75838b5fe23d66dfb75cf8368f84fff8f82b93e"
+size = 17878637
+url = "https://github.com/cli/cli/releases/download/v2.76.2/gh_2.76.2_linux_amd64.tar.gz"
+
+[tools."github:ddev/ddev"]
+version = "1.24.7"
+backend = "github:ddev/ddev"
+
+[tools."github:ddev/ddev".platforms.linux-x64]
+checksum = "blake3:6d362f280b1ef2800eeeca4ec1961c2aa2f5b5fea24ae99595ff049b92581b92"
+size = 10706365
+url = "https://github.com/ddev/ddev/releases/download/v1.24.7/ddev_linux-amd64.v1.24.7.tar.gz"
+
+[tools."github:terrastruct/d2"]
+version = "0.7.0"
+backend = "github:terrastruct/d2"
+
+[tools."github:terrastruct/d2".platforms.linux-x64]
+checksum = "blake3:fbd86f8e52714daffde5b0eb746653c869ec5f3af34deda0c184ef1aaa76a251"
+size = 20550305
+url = "https://github.com/terrastruct/d2/releases/download/v0.7.0/d2-v0.7.0-linux-amd64.tar.gz"
+
+[tools.go]
+version = "1.24.6"
+backend = "core:go"
+
+[tools.go.platforms.linux-x64]
+checksum = "sha256:bbca37cc395c974ffa4893ee35819ad23ebb27426df87af92e93a9ec66ef8712"
+size = 78583176
+url = "https://dl.google.com/go/go1.24.6.linux-amd64.tar.gz"
+
+[tools.helm]
+version = "3.17.4"
+backend = "aqua:helm/helm"
+
+[tools.helm.platforms.linux-x64]
+checksum = "sha256:c91e3d7293849eff3b4dc4ea7994c338bcc92f914864d38b5789bab18a1d775d"
+size = 17492957
+url = "https://get.helm.sh/helm-v3.17.4-linux-amd64.tar.gz"
+
+[tools."http:ugrep"]
+version = "7.5.0"
+backend = "http:ugrep"
+
+[tools."http:ugrep".platforms.linux-x64]
+checksum = "blake3:cfe844fe7d4029087b1f16700d9ee26325d40aadefdcefc76bfdd2bc44df9ed2"
+size = 5227094
+url = "https://nightly.link/Genivia/ugrep/workflows/autobuild-static/v7.5.0/ugrep_amd64_eada755_2506181906.zip"
+
+[tools.hurl]
+version = "7.0.0"
+backend = "aqua:Orange-OpenSource/hurl"
+
+[tools.hurl.platforms.linux-x64]
+checksum = "sha256:006a9032401b61004d9e104b06aa0973413f7b36dc5437063b0bf028188c0cf9"
+size = 3412516
+url = "https://github.com/Orange-OpenSource/hurl/releases/download/7.0.0/hurl-7.0.0-x86_64-unknown-linux-gnu.tar.gz"
+
+[tools.jq]
+version = "1.8.1"
+backend = "aqua:jqlang/jq"
+
+[tools.jq.platforms.linux-x64]
+checksum = "sha256:020468de7539ce70ef1bceaf7cde2e8c4f2ca6c3afb84642aabc5c97d9fc2a0d"
+size = 2255816
+url = "https://github.com/jqlang/jq/releases/download/jq-1.8.1/jq-linux-amd64"
+
+[tools.just]
+version = "1.42.4"
+backend = "aqua:casey/just"
+
+[tools.just.platforms.linux-x64]
+checksum = "blake3:c241a1800cb543183a8cdc483d74e17898ee9528f31eec9bff74b170f303968f"
+size = 2003117
+url = "https://github.com/casey/just/releases/download/1.42.4/just-1.42.4-x86_64-unknown-linux-musl.tar.gz"
+
+[tools.k3d]
+version = "5.8.3"
+backend = "aqua:k3d-io/k3d"
+
+[tools.k3d.platforms.linux-x64]
+checksum = "sha256:dbaa79a76ace7f4ca230a1ff41dc7d8a5036a8ad0309e9c54f9bf3836dbe853e"
+size = 24219800
+url = "https://github.com/k3d-io/k3d/releases/download/v5.8.3/k3d-linux-amd64"
+
+[tools.k9s]
+version = "0.50.9"
+backend = "aqua:derailed/k9s"
+
+[tools.k9s.platforms.linux-x64]
+checksum = "sha256:5e625efa26c3e14256cf29d242179b32129183b549937ec62d0ad9be1bfe2ca4"
+size = 38113817
+url = "https://github.com/derailed/k9s/releases/download/v0.50.9/k9s_Linux_amd64.tar.gz"
+
+[tools.kubectl]
+version = "1.33.3"
+backend = "aqua:kubernetes/kubectl"
+
+[tools.kubectl.platforms.linux-x64]
+checksum = "sha256:2fcf65c64f352742dc253a25a7c95617c2aba79843d1b74e585c69fe4884afb0"
+size = 60129464
+url = "https://dl.k8s.io/v1.33.3/bin/linux/amd64/kubectl"
+
+[tools.kustomize]
+version = "5.7.1"
+backend = "aqua:kubernetes-sigs/kustomize"
+
+[tools.kustomize.platforms.linux-x64]
+checksum = "blake3:6561c489d9e5cb816d82b4593836fafb43edba88ab2f7ed397046f53d1c6322a"
+size = 5805549
+url = "https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/v5.7.1/kustomize_v5.7.1_linux_amd64.tar.gz"
+
+[tools.lazygit]
+version = "0.54.1"
+backend = "aqua:jesseduffield/lazygit"
+
+[tools.lazygit.platforms.linux-x64]
+checksum = "sha256:ad89b26b479fb89b417e426690d9af1d3b73c4dc7952d32ab7bb55c0e25a86ca"
+size = 7905415
+url = "https://github.com/jesseduffield/lazygit/releases/download/v0.54.1/lazygit_0.54.1_linux_x86_64.tar.gz"
+
+[tools.lychee]
+version = "0.19.1"
+backend = "aqua:lycheeverse/lychee"
+
+[tools.lychee.platforms.linux-x64]
+checksum = "blake3:3a2a53e10be877bf110ce5df0fe1c7a9150b1c945e35ea80d5997ef5e52bc67a"
+size = 9811128
+url = "https://github.com/lycheeverse/lychee/releases/download/lychee-v0.19.1/lychee-x86_64-unknown-linux-musl.tar.gz"
+
+[tools.node]
+version = "24.5.0"
+backend = "core:node"
+
+[tools.node.platforms.linux-x64]
+checksum = "sha256:369f2a3668dde7e324697040fafdcf442fd198b8c102317145417b3c83a9794a"
+size = 58761227
+url = "https://nodejs.org/dist/v24.5.0/node-v24.5.0-linux-x64.tar.gz"
+
+[tools."npm:@devcontainers/cli"]
+version = "0.80.0"
+backend = "npm:@devcontainers/cli"
+
+[tools."pipx:azure-cli"]
+version = "2.76.0"
+backend = "pipx:azure-cli[uvx_args=--prerelease=allow]"
+
+[tools."pipx:httpie"]
+version = "3.2.4"
+backend = "pipx:httpie"
+
+[tools."pipx:rumdl"]
+version = "0.0.108"
+backend = "pipx:rumdl"
+
+[tools.pnpm]
+version = "10.14.0"
+backend = "aqua:pnpm/pnpm"
+
+[tools.pnpm.platforms.linux-x64]
+checksum = "blake3:13dfa46b7173d3cad3bad60a756a492ecf0bce48b23eb9f793e7ccec5a09b46d"
+size = 66231525
+url = "https://github.com/pnpm/pnpm/releases/download/v10.14.0/pnpm-linux-x64"
+
+[tools.python]
+version = "3.13.6"
+backend = "core:python"
+
+[tools.restic]
+version = "0.18.0"
+backend = "aqua:restic/restic"
+
+[tools.restic.platforms.linux-x64]
+checksum = "sha256:98f6dd8bf5b59058d04bfd8dab58e196cc2a680666ccee90275a3b722374438e"
+size = 9806593
+url = "https://github.com/restic/restic/releases/download/v0.18.0/restic_0.18.0_linux_amd64.bz2"
+
+[tools.rg]
+version = "14.1.1"
+backend = "aqua:BurntSushi/ripgrep"
+
+[tools.rg.platforms.linux-x64]
+checksum = "sha256:4cf9f2741e6c465ffdb7c26f38056a59e2a2544b51f7cc128ef28337eeae4d8e"
+size = 2566310
+url = "https://github.com/BurntSushi/ripgrep/releases/download/14.1.1/ripgrep-14.1.1-x86_64-unknown-linux-musl.tar.gz"
+
+[tools.rustic]
+version = "0.9.5"
+backend = "aqua:rustic-rs/rustic"
+
+[tools.rustic.platforms.linux-x64]
+checksum = "blake3:b14dbf679829aae67cf4c7b192e2bbdd975e0ae755cd03c0b2676df81328326d"
+size = 10361229
+url = "https://github.com/rustic-rs/rustic/releases/download/v0.9.5/rustic-v0.9.5-x86_64-unknown-linux-musl.tar.gz"
+
+[tools.terraform]
+version = "1.12.2"
+backend = "aqua:hashicorp/terraform"
+
+[tools.terraform.platforms.linux-x64]
+checksum = "sha256:1eaed12ca41fcfe094da3d76a7e9aa0639ad3409c43be0103ee9f5a1ff4b7437"
+size = 28695766
+url = "https://releases.hashicorp.com/terraform/1.12.2/terraform_1.12.2_linux_amd64.zip"
+
+[tools.trivy]
+version = "0.65.0"
+backend = "aqua:aquasecurity/trivy"
+
+[tools.trivy.platforms.linux-x64]
+checksum = "sha256:f0c5e3c912e7f5194a0efc85dfd34c94c63c4a4184b2d7b97ec7718661f5ead2"
+size = 45905890
+url = "https://github.com/aquasecurity/trivy/releases/download/v0.65.0/trivy_0.65.0_Linux-64bit.tar.gz"
+
+[tools.uv]
+version = "0.8.6"
+backend = "aqua:astral-sh/uv"
+
+[tools.uv.platforms.linux-x64]
+checksum = "sha256:0d89cffae3ad1c4ae2d4da06f71ad4539974185a31f7c196a6151b400bf84039"
+size = 19442768
+url = "https://github.com/astral-sh/uv/releases/download/0.8.6/uv-x86_64-unknown-linux-musl.tar.gz"
+
+[tools.vault]
+version = "1.20.2"
+backend = "aqua:hashicorp/vault"
+
+[tools.vault.platforms.linux-x64]
+checksum = "sha256:5846abf08deaf04cc9fdbb7c1eddda3348671590445f81bcdb0a2e0d32396c2e"
+size = 173636845
+url = "https://releases.hashicorp.com/vault/1.20.2/vault_1.20.2_linux_amd64.zip"
+
+[tools.yq]
+version = "4.47.1"
+backend = "aqua:mikefarah/yq"
+
+[tools.yq.platforms.linux-x64]
+checksum = "blake3:afa83f43baa909da08f999ecdeed0f799076b0b4aeb8eb464537a0fe38a21ab4"
+size = 11440312
+url = "https://github.com/mikefarah/yq/releases/download/v4.47.1/yq_linux_amd64"
+
+[tools.zellij]
+version = "0.43.0"
+backend = "aqua:zellij-org/zellij"
+
+[tools.zellij.platforms.linux-x64]
+checksum = "blake3:dd885cceede8f511b0ca875dbd0dcab0dc7522ad3d12d93e06c22abb8c614fcc"
+size = 19168843
+url = "https://github.com/zellij-org/zellij/releases/download/v0.43.0/zellij-x86_64-unknown-linux-musl.tar.gz"
