@@ -1,8 +1,10 @@
 {
 	"name": "wagov-dtt base devcontainer",
-	"image": "mcr.microsoft.com/devcontainers/base:bookworm",
+	"build": {
+		"dockerfile": "Dockerfile",
+		"context": ".."
+	},
 	"features": {
 		"ghcr.io/devcontainers/features/docker-in-docker:2": {}
-	},
-	"onCreateCommand": "onCreateCommand.sh"
+	}
 }

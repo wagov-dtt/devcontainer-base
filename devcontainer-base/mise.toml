@@ -30,3 +30,6 @@ trivy = "latest"
 uv = "latest"
 yq = "latest"
 zellij = "latest"
+
+[settings]
+experimental = true
