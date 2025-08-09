@@ -48,7 +48,7 @@ RUN --mount=type=secret,id=GITHUB_TOKEN,env=GITHUB_TOKEN,uid=1000,gid=1000 \
     done
 
 # Configure shell enhancements for vscode user
-RUN printf '\n# Shell enhancements\neval "$(mise activate bash)"\neval "$(starship init bash)"\n' >> /home/vscode/.bashrc 
+RUN printf '\n# Shell enhancements\neval "$(mise activate bash)"\neval "$(starship init bash)"\ndocker-init.sh\n' >> /home/vscode/.bashrc 
 
 ENV SHELL=/bin/bash \
     DOCKER_BUILDKIT=1

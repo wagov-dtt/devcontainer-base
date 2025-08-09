@@ -50,3 +50,4 @@ starship = "latest"
 [settings]
 experimental = true
 pipx.uvx = true
+trusted_config_paths = ["/workspaces"]
