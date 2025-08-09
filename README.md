@@ -4,7 +4,7 @@ A production-ready development container for cloud-native and infrastructure dev
 
 ## 🏗️ Architecture
 
-**Base**: [`ghcr.io/astral-sh/uv:bookworm`](https://github.com/astral-sh/uv) - Debian Bookworm with UV and build essentials  
+**Base**: [`buildpack-deps:trixie`](https://github.com/docker-library/buildpack-deps) - Debian Trixie with build tools and SCM  
 **Docker**: Official Docker CE with manual Docker-in-Docker setup  
 **Package Management**: Hybrid approach - official Debian packages + mise for specialized tools  
 **Build System**: Modern Docker BuildKit with optimized caching
@@ -41,11 +41,11 @@ just publish        # Build + publish + sign (requires GITHUB_TOKEN)
 
 ### System Packages (Debian)
 
-The container includes [Docker CE](https://docs.docker.com/) with BuildKit for container operations, plus official cloud CLIs: [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/), [Google Cloud CLI](https://cloud.google.com/sdk/gcloud), and [GitHub CLI](https://cli.github.com/). Development tools include [mise](https://mise.jdx.dev/) for tool management, [ddev](https://ddev.readthedocs.io/) for local environments, and utilities like [neovim](https://neovim.io/), [fzf](https://github.com/junegunn/fzf), [ripgrep](https://github.com/BurntSushi/ripgrep), and [btop](https://github.com/aristocratos/btop).
+The container includes [Docker CE](https://docs.docker.com/) with BuildKit for container operations, plus official cloud CLIs: [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/), [Google Cloud CLI](https://cloud.google.com/sdk/gcloud), and [GitHub CLI](https://cli.github.com/). Development tools include [mise](https://mise.jdx.dev/) for tool management, [ddev](https://ddev.readthedocs.io/) for local environments, [Terraform](https://www.terraform.io/) and [Helm](https://helm.sh/) from their official repositories, and utilities like [neovim](https://neovim.io/), [fzf](https://github.com/junegunn/fzf), [ripgrep](https://github.com/BurntSushi/ripgrep), and [btop](https://github.com/aristocratos/btop).
 
 ### Cloud & Infrastructure Tools
 
-Infrastructure as code tools include [Terraform](https://www.terraform.io/) for declarative provisioning across multiple clouds, [AWS SAM](https://aws.amazon.com/serverless/sam/) for serverless application modeling, and [AWS CLI](https://aws.amazon.com/cli/) for imperative AWS operations. Kubernetes tooling includes [kubectl](https://kubernetes.io/docs/tasks/tools/), [Helm](https://helm.sh/) for templated deployments, [k9s](https://k9scli.io/) for cluster navigation, [k3d](https://k3d.io/) for local development clusters, and [Kustomize](https://kustomize.io/) for overlay-based configuration.
+Infrastructure as code tools include [Terraform](https://www.terraform.io/) (via HashiCorp repository) for declarative provisioning across multiple clouds, [AWS SAM](https://aws.amazon.com/serverless/sam/) for serverless application modeling, and [AWS CLI](https://aws.amazon.com/cli/) for imperative AWS operations. Kubernetes tooling includes [kubectl](https://kubernetes.io/docs/tasks/tools/), [Helm](https://helm.sh/) (via official Helm repository) for templated deployments, [k9s](https://k9scli.io/) for cluster navigation, [k3d](https://k3d.io/) for local development clusters, and [Kustomize](https://kustomize.io/) for overlay-based configuration.
 
 ### Development Environment
 
@@ -53,7 +53,7 @@ Language runtimes include [Go](https://golang.org/), [Node.js](https://nodejs.or
 
 ### Productivity Tools
 
-Terminal productivity includes [Zellij](https://zellij.dev/) for workspace management, [LazyGit](https://github.com/jesseduffield/lazygit) for Git operations, and [starship](https://starship.rs/) for shell prompts. Documentation and testing tools include [mdbook](https://rust-lang.github.io/mdBook/) for docs, [D2](https://d2lang.com/) for diagrams, [Hurl](https://hurl.dev/) for HTTP testing, [HTTPie](https://httpie.io/) for API calls, and [Lychee](https://lychee.cli.rs/) for link checking. Backup tools include [Restic](https://restic.net/) and [Rustic](https://rustic.cli.rs/).
+Terminal productivity includes [Zellij](https://zellij.dev/) for workspace management, [LazyGit](https://github.com/jesseduffield/lazygit) for Git operations, and [starship](https://starship.rs/) for shell prompts. Documentation and testing tools include [mdbook](https://rust-lang.github.io/mdBook/) for docs, [D2](https://d2lang.com/) for diagrams, [Hurl](https://hurl.dev/) for HTTP testing, [HTTPie](https://httpie.io/) for API calls, and [Lychee](https://lychee.cli.rs/) for link checking. Backup and sync tools include [Restic](https://restic.net/) and [rclone](https://rclone.org/) (via Debian packages).
 
 ## 🔧 Configuration
 
@@ -127,7 +127,7 @@ your-tool = "latest"
 ### DevOps & SRE  
 - Container builds and testing
 - Security scanning (Trivy, Cosign)
-- Backup solutions (Restic, Rustic)
+- Backup solutions (Restic, rclone)
 - Monitoring and debugging tools
 
 ### Full-Stack Development
@@ -160,6 +160,6 @@ MIT License - see [LICENSE](LICENSE) for details.
 - [Debian](https://www.debian.org/) - Stable base operating system
 - [buildpack-deps](https://github.com/docker-library/buildpack-deps) - Build dependencies foundation
 - [mise](https://mise.jdx.dev/) - Polyglot tool version manager
-- [UV](https://github.com/astral-sh/uv) - Ultra-fast Python tooling  
+  
 - [just](https://just.systems/) - Command runner
 - [Devcontainers](https://containers.dev/) - Development container specification

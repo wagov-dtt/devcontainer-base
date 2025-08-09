@@ -1,11 +1,11 @@
 [tools.aws-cli]
-version = "2.28.5"
+version = "2.28.6"
 backend = "aqua:aws/aws-cli"
 
 [tools.aws-cli.platforms.linux-x64]
-checksum = "blake3:7ad4ae8dfc1f30d03a92ac805c15806b39ff50dff04502045142768b19ec1a4b"
-size = 61954493
-url = "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-2.28.5.zip"
+checksum = "blake3:8b54cfaa0d39b0b358923088d62203745ec5a33e64980775119f92c57ef419a8"
+size = 61960182
+url = "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-2.28.6.zip"
 
 [tools.aws-sam]
 version = "1.142.1"
@@ -150,12 +150,16 @@ url = "https://nodejs.org/dist/v24.5.0/node-v24.5.0-linux-x64.tar.gz"
 version = "0.80.0"
 backend = "npm:@devcontainers/cli"
 
+[tools.pipx]
+version = "1.7.1"
+backend = "asdf:pipx"
+
 [tools."pipx:httpie"]
 version = "3.2.4"
 backend = "pipx:httpie"
 
 [tools."pipx:rumdl"]
-version = "0.0.112"
+version = "0.0.113"
 backend = "pipx:rumdl"
 
 [tools.pnpm]
@@ -171,24 +175,6 @@ url = "https://github.com/pnpm/pnpm/releases/download/v10.14.0/pnpm-linux-x64"
 version = "3.13.6"
 backend = "core:python"
 
-[tools.restic]
-version = "0.18.0"
-backend = "aqua:restic/restic"
-
-[tools.restic.platforms.linux-x64]
-checksum = "sha256:98f6dd8bf5b59058d04bfd8dab58e196cc2a680666ccee90275a3b722374438e"
-size = 9806593
-url = "https://github.com/restic/restic/releases/download/v0.18.0/restic_0.18.0_linux_amd64.bz2"
-
-[tools.rustic]
-version = "0.9.5"
-backend = "aqua:rustic-rs/rustic"
-
-[tools.rustic.platforms.linux-x64]
-checksum = "blake3:b14dbf679829aae67cf4c7b192e2bbdd975e0ae755cd03c0b2676df81328326d"
-size = 10361229
-url = "https://github.com/rustic-rs/rustic/releases/download/v0.9.5/rustic-v0.9.5-x86_64-unknown-linux-musl.tar.gz"
-
 [tools.starship]
 version = "1.23.0"
 backend = "aqua:starship/starship"
@@ -198,15 +184,6 @@ checksum = "sha256:8d06d2cc67aedd6316ff58ab679fb80cded0d85de1dcd5727df0633d35356
 size = 4864203
 url = "https://github.com/starship/starship/releases/download/v1.23.0/starship-x86_64-unknown-linux-musl.tar.gz"
 
-[tools.terraform]
-version = "1.12.2"
-backend = "aqua:hashicorp/terraform"
-
-[tools.terraform.platforms.linux-x64]
-checksum = "sha256:1eaed12ca41fcfe094da3d76a7e9aa0639ad3409c43be0103ee9f5a1ff4b7437"
-size = 28695766
-url = "https://releases.hashicorp.com/terraform/1.12.2/terraform_1.12.2_linux_amd64.zip"
-
 [tools.trivy]
 version = "0.65.0"
 backend = "aqua:aquasecurity/trivy"
@@ -215,6 +192,15 @@ backend = "aqua:aquasecurity/trivy"
 checksum = "sha256:f0c5e3c912e7f5194a0efc85dfd34c94c63c4a4184b2d7b97ec7718661f5ead2"
 size = 45905890
 url = "https://github.com/aquasecurity/trivy/releases/download/v0.65.0/trivy_0.65.0_Linux-64bit.tar.gz"
+
+[tools.uv]
+version = "0.8.8"
+backend = "aqua:astral-sh/uv"
+
+[tools.uv.platforms.linux-x64]
+checksum = "sha256:80ee2bde42e1cc39c59ae8a3a20f5b73127b90ece009ef7bdd13ab189ff0c353"
+size = 19375921
+url = "https://github.com/astral-sh/uv/releases/download/0.8.8/uv-x86_64-unknown-linux-musl.tar.gz"
 
 [tools.vault]
 version = "1.20.2"

@@ -62,7 +62,7 @@ shell:
 # Security scan with Trivy
 scan: build
     @echo "🔍 Security scanning..."
-    trivy image {{test_tag}}
+    trivy image --config trivy.yaml {{test_tag}}
 
 # Clean up images and volumes
 clean:

@@ -17,7 +17,7 @@
 - `mise upgrade` - Upgrade all tools
 
 ## Architecture & Structure
-- **Base Image**: `ghcr.io/astral-sh/uv:debian` (Debian Bookworm + UV + build tools)
+- **Base Image**: `buildpack-deps:trixie` (Debian Trixie + build tools + SCM)
 - **Package Management**: Hybrid approach - Debian packages for official tools, mise for specialized tools
 - **Docker**: Official Docker CE with manual Docker-in-Docker setup (not Microsoft feature)
 - **Build System**: Modern Docker BuildKit with optimized caching
@@ -30,14 +30,14 @@
 ## Modern Improvements Made
 - **Simplified devcontainer.json**: Minimal config matching Microsoft defaults
 - **Official packages**: Azure CLI, Google Cloud CLI, GitHub CLI via Debian repos
-- **Better base**: UV image provides modern Python tooling + build essentials  
+- **Better base**: buildpack-deps provides comprehensive build tools + SCM  
 - **Task automation**: `just` commands for all development workflows
 - **Performance**: BuildKit caching, volume mounts, concurrent installs
 - **Security**: Official packages where available, GPG verification
 
 ## Tool Installation Sources
-- **Debian packages**: Docker CE, Azure CLI, Google Cloud CLI, GitHub CLI, mise, ddev, bash-completion, vim, neovim, fzf, ripgrep, ugrep, btop, tree, htop
-- **mise tools**: AWS CLI, AWS SAM, Go, Node.js, Python, pnpm, Terraform, Trivy, Cosign, Vault, just, yq, Hurl, Lychee, kubectl, Helm, k9s, k3d, Kustomize, mdbook, D2, Restic, Rustic, Zellij, LazyGit, cargo-binstall, @devcontainers/cli, HTTPie, rumdl, starship
+- **Debian packages**: Docker CE, Azure CLI, Google Cloud CLI, GitHub CLI, mise, ddev, Terraform, Helm, bash-completion, vim, neovim, fzf, ripgrep, ugrep, btop, tree, htop, restic, rclone
+- **mise tools**: AWS CLI, AWS SAM, Go, Node.js, Python, pnpm, Trivy, Cosign, Vault, just, yq, Hurl, Lychee, kubectl, k9s, k3d, Kustomize, mdbook, D2, Zellij, LazyGit, cargo-binstall, @devcontainers/cli, HTTPie, rumdl, starship
 
 ## Code Style & Conventions
 - **Modern Docker**: BuildKit features, cache mounts, multi-stage optimization

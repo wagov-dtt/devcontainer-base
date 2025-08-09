@@ -4,7 +4,6 @@ aws-cli = "latest"
 aws-sam = "latest"
 
 # Container orchestration  
-helm = "latest"
 k3d = "latest"
 k9s = "latest"
 kubectl = "latest"
@@ -15,9 +14,6 @@ go = "latest"
 node = "latest"
 python = "latest"
 pnpm = "latest"
-
-# Infrastructure & security
-terraform = "latest"
 trivy = "latest"
 cosign = "latest"
 vault = "latest"
@@ -32,10 +28,6 @@ lychee = "latest"
 "cargo:mdbook" = "latest"
 "github:terrastruct/d2" = "latest"
 
-# Backup & recovery
-restic = "latest"
-rustic = "latest"
-
 # Terminal & productivity  
 zellij = "latest"
 lazygit = "latest"
@@ -46,6 +38,8 @@ cargo-binstall = "latest"
 "pipx:httpie" = "latest"
 "pipx:rumdl" = "latest"
 starship = "latest"
+uv = "latest"
+pipx = "latest"
 
 [settings]
 experimental = true
