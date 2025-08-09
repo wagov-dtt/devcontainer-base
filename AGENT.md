@@ -1,31 +1,48 @@
-# AGENT.md - Development Container Base
+# AGENT.md - Cloud Native Devcontainer
 
-## Build/Test/Lint Commands
-- `devcontainer build --workspace-folder devcontainer-base` - Build the devcontainer image
-- `devcontainer build --workspace-folder devcontainer-base --image-name devcontainer-base:local` - Build locally
-- `trivy image devcontainer-base:local` - Security scan with Trivy
-- `mise install` - Install all tools defined in mise.toml
-- `mise use just` - Install just task runner
-- CI/CD: GitHub Actions builds, scans with Trivy, signs with Cosign, pushes to ghcr.io/wagov-dtt/devcontainer-base
+## Build/Test Commands
+- `just build` - Build test image locally
+- `just test` - Test Docker-in-Docker functionality
+- `just dev` - Interactive development shell (build + test + shell)
+- `just scan` - Security scan with Trivy
+- `just clean` - Clean up images and volumes
+
+## Publishing Commands (Maintainers)
+- `just publish` - Build + push + sign with cosign (full pipeline) 
+- `just shell` - Run published image interactively
+
+## Tool Management
+- `mise install` - Install tools from mise.toml
+- `mise outdated` - Check for tool updates
+- `mise upgrade` - Upgrade all tools
 
 ## Architecture & Structure
-- **Root**: Repository contains README.md, LICENSE, and main devcontainer-base/ folder
-- **devcontainer-base/**: Contains the actual devcontainer configuration
-  - `.devcontainer/`: Docker configuration (Dockerfile, devcontainer.json)
-  - `mise.toml`: Tool definitions and versions using mise package manager
+- **Base Image**: `ghcr.io/astral-sh/uv:debian` (Debian Bookworm + UV + build tools)
+- **Package Management**: Hybrid approach - Debian packages for official tools, mise for specialized tools
+- **Docker**: Official Docker CE with manual Docker-in-Docker setup (not Microsoft feature)
+- **Build System**: Modern Docker BuildKit with optimized caching
+- **Files**:
+  - `.devcontainer/`: Minimal Docker configuration (Dockerfile, devcontainer.json)
+  - `mise.toml`: Tool definitions organized by category
+  - `justfile`: Modern task runner with elegant commands
   - `mise.lock`: Lock file for reproducible tool installations
 
-## Project Purpose
-This is a base devcontainer template for cloud-native and infrastructure development. It pre-installs essential tools including:
-- Cloud CLIs: AWS, Azure (pipx), GCP
-- Kubernetes: kubectl, helm, k9s, k3d, kustomize
-- Languages: Go, Node.js, Python
-- Infrastructure: Terraform, Trivy security scanner
-- Utilities: jq, yq, just, zellij terminal multiplexer, ripgrep
+## Modern Improvements Made
+- **Simplified devcontainer.json**: Minimal config matching Microsoft defaults
+- **Official packages**: Azure CLI, Google Cloud CLI, GitHub CLI via Debian repos
+- **Better base**: UV image provides modern Python tooling + build essentials  
+- **Task automation**: `just` commands for all development workflows
+- **Performance**: BuildKit caching, volume mounts, concurrent installs
+- **Security**: Official packages where available, GPG verification
+
+## Tool Installation Sources
+- **Debian packages**: Docker CE, Azure CLI, Google Cloud CLI, GitHub CLI, mise, ddev, bash-completion, vim, neovim, fzf, ripgrep, ugrep, btop, tree, htop
+- **mise tools**: AWS CLI, AWS SAM, Go, Node.js, Python, pnpm, Terraform, Trivy, Cosign, Vault, just, yq, Hurl, Lychee, kubectl, Helm, k9s, k3d, Kustomize, mdbook, D2, Restic, Rustic, Zellij, LazyGit, cargo-binstall, @devcontainers/cli, HTTPie, rumdl, starship
 
 ## Code Style & Conventions
-- Infrastructure-as-code focused repository
-- Use mise for tool version management
-- All tools pinned to "latest" version
-- Docker best practices: non-root user (vscode), proper COPY ownership
-- No application code - purely configuration and tooling setup
+- **Modern Docker**: BuildKit features, cache mounts, multi-stage optimization
+- **Hybrid package management**: Official repos where available, mise for rest
+- **Task automation**: Use `just` commands instead of raw docker/devcontainer commands
+- **Security-first**: Official packages, signed repos, minimal attack surface
+- **Performance-oriented**: Optimized caching, persistent volumes, parallel installs
+- **Developer experience**: Simple commands, clear documentation, fast builds

@@ -1,43 +1,51 @@
 [tools]
+# Cloud CLIs (AWS only - others installed via Debian packages)
 aws-cli = "latest"
 aws-sam = "latest"
-btop = "latest"
-cargo-binstall = "latest"
-"cargo:mdbook" = "latest"
-cosign = "latest"
-fzf = "latest"
-gcloud = "latest"
-gh = "latest"
-"github:ddev/ddev" = "latest"
-"github:terrastruct/d2" = "latest"
-go = "latest"
+
+# Container orchestration  
 helm = "latest"
-"http:ugrep" = { version = "7.5.0", url = "https://nightly.link/Genivia/ugrep/workflows/autobuild-static/v7.5.0/ugrep_amd64_eada755_2506181906.zip" }
-hurl = "latest"
-jq = "latest"
-just = "latest"
 k3d = "latest"
 k9s = "latest"
 kubectl = "latest"
 kustomize = "latest"
-lazygit = "latest"
-lychee = "latest"
+
+# Languages & runtimes
+go = "latest"
 node = "latest"
-"npm:@devcontainers/cli" = "latest"
-"pipx:azure-cli" = { version = "latest", uvx_args = "--prerelease=allow" }
-"pipx:httpie" = "latest"
-"pipx:rumdl" = "latest"
-pnpm = "latest"
 python = "latest"
-restic = "latest"
-rg = "latest"
-rustic = "latest"
+pnpm = "latest"
+
+# Infrastructure & security
 terraform = "latest"
 trivy = "latest"
-uv = "latest"
+cosign = "latest"
 vault = "latest"
+
+# Development tools
+just = "latest"
 yq = "latest"
+hurl = "latest"
+lychee = "latest"
+
+# Documentation & diagrams
+"cargo:mdbook" = "latest"
+"github:terrastruct/d2" = "latest"
+
+# Backup & recovery
+restic = "latest"
+rustic = "latest"
+
+# Terminal & productivity  
 zellij = "latest"
+lazygit = "latest"
+
+# Package managers
+cargo-binstall = "latest"
+"npm:@devcontainers/cli" = "latest"
+"pipx:httpie" = "latest"
+"pipx:rumdl" = "latest"
+starship = "latest"
 
 [settings]
 experimental = true
