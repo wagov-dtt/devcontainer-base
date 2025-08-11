@@ -34,7 +34,7 @@ variable "GITHUB_EVENT_NAME" {
 
 function "tags" {
   params = [tags_string]
-  result = split("\n", tags_string)
+  result = [for tag in split("\n", tags_string) : trim(tag, " \t") if trim(tag, " \t") != ""]
 }
 
 function "release_tags" {
