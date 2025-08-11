@@ -198,10 +198,6 @@ just scan         # Security scan with Trivy
 - **Tool conflicts**: Run `mise install` to refresh tool installations
 - **Build cache**: Use `just clean` to reset Docker build cache if needed
 
-## 📜 License
-
-MIT License - see [LICENSE](LICENSE) for details.
-
 ## 🙏 Acknowledgments
 
 - [Debian](https://www.debian.org/) - Stable base operating system
