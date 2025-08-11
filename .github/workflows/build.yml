@@ -55,7 +55,7 @@ jobs:
           type=schedule,pattern=latest
           type=ref,event=branch
           type=ref,event=tag
-          type=sha,prefix={{branch}}-
+          type=sha,prefix={{branch}}-,enable={{is_default_branch}}
         flavor: |
           suffix=-${{ matrix.arch }}
     
