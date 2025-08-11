@@ -1,11 +1,11 @@
 [tools.aws-cli]
-version = "2.28.5"
+version = "2.28.6"
 backend = "aqua:aws/aws-cli"
 
 [tools.aws-cli.platforms.linux-x64]
-checksum = "blake3:7ad4ae8dfc1f30d03a92ac805c15806b39ff50dff04502045142768b19ec1a4b"
-size = 61954493
-url = "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-2.28.5.zip"
+checksum = "blake3:8b54cfaa0d39b0b358923088d62203745ec5a33e64980775119f92c57ef419a8"
+size = 61960182
+url = "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-2.28.6.zip"
 
 [tools.aws-sam]
 version = "1.142.1"
@@ -17,35 +17,35 @@ size = 85984650
 url = "https://github.com/aws/aws-sam-cli/releases/download/v1.142.1/aws-sam-cli-linux-x86_64.zip"
 
 [tools.cargo-binstall]
-version = "1.14.3"
+version = "1.14.4"
 backend = "aqua:cargo-bins/cargo-binstall"
 
 [tools.cargo-binstall.platforms.linux-x64]
-checksum = "blake3:3c60429bd27f3437c5637e9417a750ae03edc865ed7c86d80b55ba8f8eea548d"
-size = 6762028
-url = "https://github.com/cargo-bins/cargo-binstall/releases/download/v1.14.3/cargo-binstall-x86_64-unknown-linux-musl.tgz"
+checksum = "blake3:b2a4a55c83830ef20d2024c5d7394df9571fecd06c24e5f99568899dc507ace0"
+size = 6715267
+url = "https://github.com/cargo-bins/cargo-binstall/releases/download/v1.14.4/cargo-binstall-x86_64-unknown-linux-musl.tgz"
 
 [tools."cargo:mdbook"]
 version = "0.4.52"
 backend = "cargo:mdbook"
 
-[tools.cosign]
-version = "2.5.3"
-backend = "aqua:sigstore/cosign"
+[tools.direnv]
+version = "2.37.1"
+backend = "aqua:direnv/direnv"
 
-[tools.cosign.platforms.linux-x64]
-checksum = "sha256:783b5d6c74105401c63946c68d9b2a4e1aab3c8abce043e06b8510b02b623ec9"
-size = 154068646
-url = "https://github.com/sigstore/cosign/releases/download/v2.5.3/cosign-linux-amd64"
+[tools.direnv.platforms.linux-x64]
+checksum = "blake3:291b71c5ae8d47e7ff5ff3a7276275a1dff25d753069912bed593c78f5434519"
+size = 8151224
+url = "https://github.com/direnv/direnv/releases/download/v2.37.1/direnv.linux-amd64"
 
-[tools."github:terrastruct/d2"]
-version = "0.7.0"
-backend = "github:terrastruct/d2"
+[tools.eza]
+version = "0.23.0"
+backend = "aqua:eza-community/eza"
 
-[tools."github:terrastruct/d2".platforms.linux-x64]
-checksum = "blake3:fbd86f8e52714daffde5b0eb746653c869ec5f3af34deda0c184ef1aaa76a251"
-size = 20550305
-url = "https://github.com/terrastruct/d2/releases/download/v0.7.0/d2-v0.7.0-linux-amd64.tar.gz"
+[tools.eza.platforms.linux-x64]
+checksum = "blake3:5eefc6d5b5d3f36fa7d09abb6ee38b9287e938d142184bf8b7737adc12794018"
+size = 1220770
+url = "https://github.com/eza-community/eza/releases/download/v0.23.0/eza_x86_64-unknown-linux-musl.tar.gz"
 
 [tools.go]
 version = "1.24.6"
@@ -55,15 +55,6 @@ backend = "core:go"
 checksum = "sha256:bbca37cc395c974ffa4893ee35819ad23ebb27426df87af92e93a9ec66ef8712"
 size = 78583176
 url = "https://dl.google.com/go/go1.24.6.linux-amd64.tar.gz"
-
-[tools.helm]
-version = "3.17.4"
-backend = "aqua:helm/helm"
-
-[tools.helm.platforms.linux-x64]
-checksum = "sha256:c91e3d7293849eff3b4dc4ea7994c338bcc92f914864d38b5789bab18a1d775d"
-size = 17492957
-url = "https://get.helm.sh/helm-v3.17.4-linux-amd64.tar.gz"
 
 [tools.hurl]
 version = "7.0.0"
@@ -150,13 +141,21 @@ url = "https://nodejs.org/dist/v24.5.0/node-v24.5.0-linux-x64.tar.gz"
 version = "0.80.0"
 backend = "npm:@devcontainers/cli"
 
+[tools.pipx]
+version = "1.7.1"
+backend = "asdf:pipx"
+
 [tools."pipx:httpie"]
 version = "3.2.4"
 backend = "pipx:httpie"
 
 [tools."pipx:rumdl"]
-version = "0.0.112"
+version = "0.0.113"
 backend = "pipx:rumdl"
+
+[tools."pipx:tldr"]
+version = "3.4.1"
+backend = "pipx:tldr"
 
 [tools.pnpm]
 version = "10.14.0"
@@ -171,24 +170,6 @@ url = "https://github.com/pnpm/pnpm/releases/download/v10.14.0/pnpm-linux-x64"
 version = "3.13.6"
 backend = "core:python"
 
-[tools.restic]
-version = "0.18.0"
-backend = "aqua:restic/restic"
-
-[tools.restic.platforms.linux-x64]
-checksum = "sha256:98f6dd8bf5b59058d04bfd8dab58e196cc2a680666ccee90275a3b722374438e"
-size = 9806593
-url = "https://github.com/restic/restic/releases/download/v0.18.0/restic_0.18.0_linux_amd64.bz2"
-
-[tools.rustic]
-version = "0.9.5"
-backend = "aqua:rustic-rs/rustic"
-
-[tools.rustic.platforms.linux-x64]
-checksum = "blake3:b14dbf679829aae67cf4c7b192e2bbdd975e0ae755cd03c0b2676df81328326d"
-size = 10361229
-url = "https://github.com/rustic-rs/rustic/releases/download/v0.9.5/rustic-v0.9.5-x86_64-unknown-linux-musl.tar.gz"
-
 [tools.starship]
 version = "1.23.0"
 backend = "aqua:starship/starship"
@@ -198,14 +179,23 @@ checksum = "sha256:8d06d2cc67aedd6316ff58ab679fb80cded0d85de1dcd5727df0633d35356
 size = 4864203
 url = "https://github.com/starship/starship/releases/download/v1.23.0/starship-x86_64-unknown-linux-musl.tar.gz"
 
-[tools.terraform]
-version = "1.12.2"
-backend = "aqua:hashicorp/terraform"
+[tools.terraform-docs]
+version = "0.20.0"
+backend = "aqua:terraform-docs/terraform-docs"
 
-[tools.terraform.platforms.linux-x64]
-checksum = "sha256:1eaed12ca41fcfe094da3d76a7e9aa0639ad3409c43be0103ee9f5a1ff4b7437"
-size = 28695766
-url = "https://releases.hashicorp.com/terraform/1.12.2/terraform_1.12.2_linux_amd64.zip"
+[tools.terraform-docs.platforms.linux-x64]
+checksum = "sha256:34ae01772412bb11474e6718ea62113e38ff5964ee570a98c69fafe3a6dff286"
+size = 6721406
+url = "https://github.com/terraform-docs/terraform-docs/releases/download/v0.20.0/terraform-docs-v0.20.0-linux-amd64.tar.gz"
+
+[tools.tflint]
+version = "0.58.1"
+backend = "aqua:terraform-linters/tflint"
+
+[tools.tflint.platforms.linux-x64]
+checksum = "sha256:2fea1af8e8602d4d9e4253a588ac66f17bf36152cafb51f4d929b8bc6335e740"
+size = 15932713
+url = "https://github.com/terraform-linters/tflint/releases/download/v0.58.1/tflint_linux_amd64.zip"
 
 [tools.trivy]
 version = "0.65.0"
@@ -215,6 +205,15 @@ backend = "aqua:aquasecurity/trivy"
 checksum = "sha256:f0c5e3c912e7f5194a0efc85dfd34c94c63c4a4184b2d7b97ec7718661f5ead2"
 size = 45905890
 url = "https://github.com/aquasecurity/trivy/releases/download/v0.65.0/trivy_0.65.0_Linux-64bit.tar.gz"
+
+[tools.uv]
+version = "0.8.8"
+backend = "aqua:astral-sh/uv"
+
+[tools.uv.platforms.linux-x64]
+checksum = "sha256:80ee2bde42e1cc39c59ae8a3a20f5b73127b90ece009ef7bdd13ab189ff0c353"
+size = 19375921
+url = "https://github.com/astral-sh/uv/releases/download/0.8.8/uv-x86_64-unknown-linux-musl.tar.gz"
 
 [tools.vault]
 version = "1.20.2"
@@ -242,3 +241,12 @@ backend = "aqua:zellij-org/zellij"
 checksum = "blake3:da3323afe8279fbf033f1584ecb599b965db10cc383f0ac3fca8297d168973d5"
 size = 19108370
 url = "https://github.com/zellij-org/zellij/releases/download/v0.43.1/zellij-x86_64-unknown-linux-musl.tar.gz"
+
+[tools.zoxide]
+version = "0.9.8"
+backend = "aqua:ajeetdsouza/zoxide"
+
+[tools.zoxide.platforms.linux-x64]
+checksum = "blake3:4be202bd835503893ba42ee3cfc813af09cde93d28acf2f5a12ec06aa8bfade0"
+size = 586553
+url = "https://github.com/ajeetdsouza/zoxide/releases/download/v0.9.8/zoxide-0.9.8-x86_64-unknown-linux-musl.tar.gz"

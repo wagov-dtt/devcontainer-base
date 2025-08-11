@@ -1,52 +1,64 @@
 [tools]
-# Cloud CLIs (AWS only - others installed via Debian packages)
+# Language Runtimes & Development
+## Languages
+go = "latest"
+node = "latest" 
+python = "latest"
+
+## Package Managers
+pnpm = "latest"
+uv = "latest"
+pipx = "latest"
+
+## Build Tools
+just = "latest"
+yq = "latest"
+
+# Cloud & Kubernetes
+## AWS
 aws-cli = "latest"
 aws-sam = "latest"
 
-# Container orchestration  
-helm = "latest"
-k3d = "latest"
-k9s = "latest"
+## Kubernetes
 kubectl = "latest"
+k9s = "latest"
+k3d = "latest"
 kustomize = "latest"
 
-# Languages & runtimes
-go = "latest"
-node = "latest"
-python = "latest"
-pnpm = "latest"
+## Infrastructure
+tflint = "latest"
+terraform-docs = "latest"
 
-# Infrastructure & security
-terraform = "latest"
+## Security
 trivy = "latest"
-cosign = "latest"
 vault = "latest"
 
-# Development tools
-just = "latest"
-yq = "latest"
-hurl = "latest"
-lychee = "latest"
-
-# Documentation & diagrams
-"cargo:mdbook" = "latest"
-"github:terrastruct/d2" = "latest"
-
-# Backup & recovery
-restic = "latest"
-rustic = "latest"
-
-# Terminal & productivity  
+# Productivity & Terminal
+## Terminal
 zellij = "latest"
+starship = "latest"
+zoxide = "latest"
+eza = "latest"
+direnv = "latest"
+"pipx:tldr" = "latest"
+
+## Git
 lazygit = "latest"
 
-# Package managers
-cargo-binstall = "latest"
-"npm:@devcontainers/cli" = "latest"
-"pipx:httpie" = "latest"
+## Documentation
+"cargo:mdbook" = "latest"
+lychee = "latest"
 "pipx:rumdl" = "latest"
-starship = "latest"
+
+## Testing
+hurl = "latest"
+"pipx:httpie" = "latest"
+
+## Package Managers
+"npm:@devcontainers/cli" = "latest"
+cargo-binstall = "latest"
 
 [settings]
 experimental = true
 pipx.uvx = true
+trusted_config_paths = ["/workspaces"]

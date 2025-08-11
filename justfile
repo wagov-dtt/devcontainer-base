@@ -16,22 +16,18 @@ docker_args := "--privileged -it --rm" + \
 default:
     @just --list
 
-# Build test image locally
+# Build test image locally  
 build:
     @echo "🔨 Building test image..."
-    cd .devcontainer && DOCKER_BUILDKIT=1 docker build \
-        --secret id=GITHUB_TOKEN \
-        --progress=plain \
-        -t {{test_tag}} \
-        -f Dockerfile ..
+    docker buildx bake test --progress=plain
 
 # Test Docker-in-Docker functionality
 test: build
-    @echo "🐳 Testing Docker-in-Docker..."
+    @echo "🐳 Testing mise & Docker-in-Docker..."
     docker run --privileged --rm \
         --mount source={{docker_volume}},target=/var/lib/docker,type=volume \
         {{test_tag}} \
-        bash -c "sleep 10 && docker --version && docker info && docker run hello-world"
+        -c "mise doctor && docker run --rm ghcr.io/curl/curl-container/curl-multi:master -s ipinfo.io && https ipinfo.io"
 
 # Interactive development shell (build + test + shell)
 dev: test
@@ -40,16 +36,12 @@ dev: test
 
 # Publish to registry (build + push + sign)
 publish:
-    @echo "🚀 Building release image..."
-    cd .devcontainer && DOCKER_BUILDKIT=1 docker build \
-        --secret id=GITHUB_TOKEN \
-        --progress=plain \
-        -t {{tag}} \
-        -f Dockerfile ..
+    @echo "🚀 Building and publishing release image..."
     @echo "🔐 Authenticating with GHCR..."
     echo $GITHUB_TOKEN | docker login ghcr.io -u $(gh api user --jq .login) --password-stdin
-    @echo "📤 Publishing..."
-    docker push {{tag}}
+    docker buildx bake release \
+        --progress=plain \
+        --set="release.tags={{tag}}"
     @echo "🔏 Signing with cosign..."
     cosign sign --yes {{tag}}
 
@@ -62,7 +54,7 @@ shell:
 # Security scan with Trivy
 scan: build
     @echo "🔍 Security scanning..."
-    trivy image {{test_tag}}
+    trivy image --config trivy.yaml {{test_tag}}
 
 # Clean up images and volumes
 clean:

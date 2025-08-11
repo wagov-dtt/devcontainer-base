@@ -1,21 +1,7 @@
 {
-	"name": "Cloud Native Development",
-	"image": "ghcr.io/wagov-dtt/devcontainer-base:latest",
+	"name": "wagov-dtt devcontainer-base",
+	"image": "ghcr.io/wagov-dtt/devcontainer-base",
 	"privileged": true,
 	"mounts": ["source=dind-var-lib-docker,target=/var/lib/docker,type=volume"],
-	"remoteUser": "vscode",
-	"customizations": {
-		"codespaces": {
-			"repositories": {
-				"wagov-dtt/devcontainer-base": {
-					"permissions": {
-						"contents": "write",
-						"packages": "write",
-						"attestations": "write",
-						"id-token": "write"
-					}
-				}
-			}
-		}
-	}
+	"remoteUser": "vscode"
 }

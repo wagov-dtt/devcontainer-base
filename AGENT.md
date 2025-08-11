@@ -1,14 +1,14 @@
 # AGENT.md - Cloud Native Devcontainer
 
 ## Build/Test Commands
-- `just build` - Build test image locally
+- `just build` - Build test image locally with docker bake
 - `just test` - Test Docker-in-Docker functionality
 - `just dev` - Interactive development shell (build + test + shell)
 - `just scan` - Security scan with Trivy
 - `just clean` - Clean up images and volumes
 
 ## Publishing Commands (Maintainers)
-- `just publish` - Build + push + sign with cosign (full pipeline) 
+- `just publish` - Multi-platform build + push + sign with cosign (full pipeline) 
 - `just shell` - Run published image interactively
 
 ## Tool Management
@@ -17,32 +17,37 @@
 - `mise upgrade` - Upgrade all tools
 
 ## Architecture & Structure
-- **Base Image**: `ghcr.io/astral-sh/uv:debian` (Debian Bookworm + UV + build tools)
+- **Base Image**: `debian:stable-backports` (Debian 13 Trixie stable + backports)
 - **Package Management**: Hybrid approach - Debian packages for official tools, mise for specialized tools
 - **Docker**: Official Docker CE with manual Docker-in-Docker setup (not Microsoft feature)
-- **Build System**: Modern Docker BuildKit with optimized caching
+- **Build System**: Modern Docker BuildKit with docker bake and optimised caching
 - **Files**:
-  - `.devcontainer/`: Minimal Docker configuration (Dockerfile, devcontainer.json)
-  - `mise.toml`: Tool definitions organized by category
+  - `Dockerfile`: Container build definition with multi-stage optimisation
+  - `.devcontainer/`: Minimal devcontainer configuration (devcontainer.json)
+  - `docker-bake.hcl`: Declarative build configuration with HCL functions, SBOM & provenance
+  - `mise.toml`: Tool definitions organised by category (matches README structure)
   - `justfile`: Modern task runner with elegant commands
   - `mise.lock`: Lock file for reproducible tool installations
 
 ## Modern Improvements Made
 - **Simplified devcontainer.json**: Minimal config matching Microsoft defaults
 - **Official packages**: Azure CLI, Google Cloud CLI, GitHub CLI via Debian repos
-- **Better base**: UV image provides modern Python tooling + build essentials  
+- **Clean base**: debian:stable-backports with only needed core packages
 - **Task automation**: `just` commands for all development workflows
 - **Performance**: BuildKit caching, volume mounts, concurrent installs
 - **Security**: Official packages where available, GPG verification
 
 ## Tool Installation Sources
-- **Debian packages**: Docker CE, Azure CLI, Google Cloud CLI, GitHub CLI, mise, ddev, bash-completion, vim, neovim, fzf, ripgrep, ugrep, btop, tree, htop
-- **mise tools**: AWS CLI, AWS SAM, Go, Node.js, Python, pnpm, Terraform, Trivy, Cosign, Vault, just, yq, Hurl, Lychee, kubectl, Helm, k9s, k3d, Kustomize, mdbook, D2, Restic, Rustic, Zellij, LazyGit, cargo-binstall, @devcontainers/cli, HTTPie, rumdl, starship
+- **Debian packages**: System dependencies, Docker CE, cloud CLIs, development tools (see `Dockerfile`)
+- **mise tools**: Language runtimes, specialized CLIs, productivity tools (see `mise.toml`)
 
 ## Code Style & Conventions
-- **Modern Docker**: BuildKit features, cache mounts, multi-stage optimization
+- **Modern Docker**: Docker bake with HCL functions, BuildKit features, cache mounts, multi-stage optimisation
+- **Supply chain security**: SBOM and enhanced provenance (`mode=max`) for all builds
+- **Variable handling**: Use environment variables for bake variables, `--set` for target overrides
+- **Language**: Use Australian English spelling (organise vs organize, colour vs color, etc.)
 - **Hybrid package management**: Official repos where available, mise for rest
 - **Task automation**: Use `just` commands instead of raw docker/devcontainer commands
 - **Security-first**: Official packages, signed repos, minimal attack surface
-- **Performance-oriented**: Optimized caching, persistent volumes, parallel installs
+- **Performance-oriented**: Optimised caching, persistent volumes, parallel installs
 - **Developer experience**: Simple commands, clear documentation, fast builds
