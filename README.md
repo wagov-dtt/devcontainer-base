@@ -85,7 +85,7 @@ This container uses a hybrid approach: essential tools via Debian packages, spec
 
 > **Current tools**: See [`mise.toml`](mise.toml) and [`Dockerfile`](Dockerfile) for complete, up-to-date lists.
 > 
-> **Learning CLI tools**: Use `tldr <command>` to get practical examples for any CLI tool—much faster than reading full man pages.
+> **Learning CLI tools**: Use `tldr <command>` to get practical examples for any CLI tool - much faster than reading full man pages.
 
 ## 🔧 Configuration
 
