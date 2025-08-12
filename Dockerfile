@@ -24,7 +24,7 @@ RUN --mount=type=cache,target=/var/cache/apt --mount=type=cache,target=/var/lib/
         docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin \
         mise azure-cli google-cloud-cli gh ddev terraform helm neovim fzf ripgrep ugrep btop htop restic rclone \
         git wget bash-completion sudo python3-dev tini build-essential openssh-client less jq unzip zip file rsync \
-        iputils-ping dnsutils net-tools procps lsof locales >/dev/null && \
+        iputils-ping dnsutils net-tools procps lsof locales librsvg2-bin >/dev/null && \
     sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen && locale-gen
 
 # Create vscode user and install mise tools
