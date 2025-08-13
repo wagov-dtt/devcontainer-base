@@ -1,11 +1,11 @@
 [tools.aws-cli]
-version = "2.28.6"
+version = "2.28.8"
 backend = "aqua:aws/aws-cli"
 
 [tools.aws-cli.platforms.linux-x64]
-checksum = "blake3:8b54cfaa0d39b0b358923088d62203745ec5a33e64980775119f92c57ef419a8"
-size = 61960182
-url = "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-2.28.6.zip"
+checksum = "blake3:5e689b7ed2b9472ef84424b737fb13e04e7aaea40722a6f2fa4ce30d8c4a059f"
+size = 61964581
+url = "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-2.28.8.zip"
 
 [tools.aws-sam]
 version = "1.142.1"
@@ -48,13 +48,13 @@ size = 1220770
 url = "https://github.com/eza-community/eza/releases/download/v0.23.0/eza_x86_64-unknown-linux-musl.tar.gz"
 
 [tools.go]
-version = "1.24.6"
+version = "1.25.0"
 backend = "core:go"
 
 [tools.go.platforms.linux-x64]
-checksum = "sha256:bbca37cc395c974ffa4893ee35819ad23ebb27426df87af92e93a9ec66ef8712"
-size = 78583176
-url = "https://dl.google.com/go/go1.24.6.linux-amd64.tar.gz"
+checksum = "sha256:2852af0cb20a13139b3448992e69b868e50ed0f8a1e5940ee1de9e19a123b613"
+size = 59659213
+url = "https://dl.google.com/go/go1.25.0.linux-amd64.tar.gz"
 
 [tools.hurl]
 version = "7.0.0"
@@ -111,13 +111,20 @@ size = 5805549
 url = "https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/v5.7.1/kustomize_v5.7.1_linux_amd64.tar.gz"
 
 [tools.lazygit]
-version = "0.54.1"
+version = "0.54.2"
 backend = "aqua:jesseduffield/lazygit"
 
 [tools.lazygit.platforms.linux-x64]
-checksum = "sha256:ad89b26b479fb89b417e426690d9af1d3b73c4dc7952d32ab7bb55c0e25a86ca"
-size = 7905415
-url = "https://github.com/jesseduffield/lazygit/releases/download/v0.54.1/lazygit_0.54.1_linux_x86_64.tar.gz"
+checksum = "sha256:cf98decf3c29f9f47e78967cb56cafc06021f616107be0200e6aefbe6fe50cd0"
+size = 7906869
+url = "https://github.com/jesseduffield/lazygit/releases/download/v0.54.2/lazygit_0.54.2_linux_x86_64.tar.gz"
+
+[tools.localstack]
+version = "4.7.0"
+backend = "ubi:localstack/localstack-cli[exe=localstack]"
+
+[tools.localstack.platforms.linux-x64-localstack-localstack]
+checksum = "blake3:075972919e62ad1032646e4b9b7185377e415c1f787bcce5f2bea20bf45b7c9d"
 
 [tools.lychee]
 version = "0.19.1"
@@ -149,10 +156,6 @@ backend = "asdf:pipx"
 version = "3.2.4"
 backend = "pipx:httpie"
 
-[tools."pipx:rumdl"]
-version = "0.0.113"
-backend = "pipx:rumdl"
-
 [tools."pipx:tldr"]
 version = "3.4.1"
 backend = "pipx:tldr"
@@ -169,6 +172,10 @@ url = "https://github.com/pnpm/pnpm/releases/download/v10.14.0/pnpm-linux-x64"
 [tools.python]
 version = "3.13.6"
 backend = "core:python"
+
+[tools.semgrep]
+version = "1.131.0"
+backend = "pipx:semgrep"
 
 [tools.starship]
 version = "1.23.0"
@@ -205,6 +212,20 @@ backend = "aqua:aquasecurity/trivy"
 checksum = "sha256:f0c5e3c912e7f5194a0efc85dfd34c94c63c4a4184b2d7b97ec7718661f5ead2"
 size = 45905890
 url = "https://github.com/aquasecurity/trivy/releases/download/v0.65.0/trivy_0.65.0_Linux-64bit.tar.gz"
+
+[tools."ubi:boyter/scc"]
+version = "3.5.0"
+backend = "ubi:boyter/scc"
+
+[tools."ubi:boyter/scc".platforms.linux-x64-scc]
+checksum = "blake3:b04cb0b4717b0fac0e088962dccfbcfc49fe3990ea3cae11df419e21d82d054b"
+
+[tools."ubi:rvben/rumdl"]
+version = "0.0.114"
+backend = "ubi:rvben/rumdl"
+
+[tools."ubi:rvben/rumdl".platforms.linux-x64-rumdl]
+checksum = "blake3:977de28af25823983f21e0cbadc9c17349995207aacd3c8dfae0afee4ad3df61"
 
 [tools.uv]
 version = "0.8.8"

@@ -38,8 +38,8 @@
 - **Security**: Official packages where available, GPG verification
 
 ## Tool Installation Sources
-- **Debian packages**: System dependencies, Docker CE, cloud CLIs, development tools (see `Dockerfile`)
-- **mise tools**: Language runtimes, specialized CLIs, productivity tools (see `mise.toml`)
+- **Debian packages**: See `Dockerfile` for complete package list and repository setup
+- **mise tools**: See `mise.toml` for tool definitions organised by category
 
 ## Code Style & Conventions
 - **Modern Docker**: Docker bake with HCL functions, BuildKit features, cache mounts, multi-stage optimisation

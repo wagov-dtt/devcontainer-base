@@ -32,10 +32,19 @@ Then open in VS Code: Cmd/Ctrl+Shift+P → "Dev Containers: Reopen in Container"
 
 ### Use directly with Docker
 ```bash
+# Basic usage
 docker run -it --privileged \
   --mount source=dind-var-lib-docker,target=/var/lib/docker,type=volume \
   ghcr.io/wagov-dtt/devcontainer-base:latest
+
+# Mount local development folder
+docker run -it --privileged \
+  --mount source=dind-var-lib-docker,target=/var/lib/docker,type=volume \
+  --mount type=bind,source=/path/to/your/projects,target=/workspaces \
+  ghcr.io/wagov-dtt/devcontainer-base:latest
 ```
+
+**Project switching**: Mount your local dev folder to `/workspaces` - mise automatically switches tool versions based on each project's `mise.toml` configuration.
 
 ### For Image Development
 ```bash
@@ -50,6 +59,10 @@ just publish        # Multi-platform build + publish + sign with provenance (req
 1. **GitHub**: Click "Use this template" to create your own repository
 2. **Codespaces**: Works immediately - click "Code" → "Create codespace"
 3. **Local**: Clone and customize [`devcontainer.json`](.devcontainer/devcontainer.json) as needed
+
+### Use in CI/CD
+- **Simple CI**: Use [mise GitHub Action](https://github.com/jdx/mise-action) with `mise.toml` for tool management
+- **Advanced CI**: Use full container image for complex workflows requiring Docker-in-Docker
 
 ## 📦 Included Tools
 
@@ -80,8 +93,10 @@ This container uses a hybrid approach: essential tools via Debian packages, spec
 - **Terminal**: [Zellij](https://zellij.dev/), [starship](https://starship.rs/), [zoxide](https://github.com/ajeetdsouza/zoxide), [eza](https://eza.rocks/), [direnv](https://direnv.net/), [tldr](https://tldr.sh/)
 - **Git**: [LazyGit](https://github.com/jesseduffield/lazygit)
 - **Documentation**: [mdbook](https://rust-lang.github.io/mdBook/), [Lychee](https://lychee.cli.rs/), [rumdl](https://github.com/rvben/rumdl)
-- **Testing**: [Hurl](https://hurl.dev/), [HTTPie](https://httpie.io/)
+- **Testing**: [k6](https://k6.io/), [Hurl](https://hurl.dev/), [HTTPie](https://httpie.io/), [Semgrep](https://semgrep.dev/)
 - **Package Managers**: [@devcontainers/cli](https://github.com/devcontainers/cli), [cargo-binstall](https://github.com/cargo-bins/cargo-binstall)
+- **Code Analysis**: [scc](https://github.com/boyter/scc)
+- **Local Development**: [LocalStack](https://localstack.cloud/)
 
 > **Current tools**: See [`mise.toml`](mise.toml) and [`Dockerfile`](Dockerfile) for complete, up-to-date lists.
 > 

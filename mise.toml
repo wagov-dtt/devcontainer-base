@@ -48,15 +48,22 @@ lazygit = "latest"
 ## Documentation
 "cargo:mdbook" = "latest"
 lychee = "latest"
-"pipx:rumdl" = "latest"
+"ubi:rvben/rumdl" = "latest"
 
 ## Testing
 hurl = "latest"
 "pipx:httpie" = "latest"
+semgrep = "latest"
 
 ## Package Managers
 "npm:@devcontainers/cli" = "latest"
 cargo-binstall = "latest"
+
+## Code Analysis
+"ubi:boyter/scc" = "latest"
+
+## Local Development
+localstack = "latest"
 
 [settings]
 experimental = true
