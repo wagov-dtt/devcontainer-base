@@ -93,7 +93,7 @@ This container uses a hybrid approach: essential tools via Debian packages, spec
 - **Terminal**: [Zellij](https://zellij.dev/), [starship](https://starship.rs/), [zoxide](https://github.com/ajeetdsouza/zoxide), [eza](https://eza.rocks/), [direnv](https://direnv.net/), [tldr](https://tldr.sh/)
 - **Git**: [LazyGit](https://github.com/jesseduffield/lazygit)
 - **Documentation**: [mdbook](https://rust-lang.github.io/mdBook/), [Lychee](https://lychee.cli.rs/), [rumdl](https://github.com/rvben/rumdl)
-- **Testing**: [k6](https://k6.io/), [Hurl](https://hurl.dev/), [HTTPie](https://httpie.io/), [Semgrep](https://semgrep.dev/)
+- **Testing**: [Hurl](https://hurl.dev/), [HTTPie](https://httpie.io/), [Semgrep](https://semgrep.dev/)
 - **Package Managers**: [@devcontainers/cli](https://github.com/devcontainers/cli), [cargo-binstall](https://github.com/cargo-bins/cargo-binstall)
 - **Code Analysis**: [scc](https://github.com/boyter/scc)
 - **Local Development**: [LocalStack](https://localstack.cloud/)
