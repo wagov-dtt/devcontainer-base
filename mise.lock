@@ -1,11 +1,11 @@
 [tools.aws-cli]
-version = "2.28.8"
+version = "2.28.10"
 backend = "aqua:aws/aws-cli"
 
 [tools.aws-cli.platforms.linux-x64]
-checksum = "blake3:5e689b7ed2b9472ef84424b737fb13e04e7aaea40722a6f2fa4ce30d8c4a059f"
-size = 61964581
-url = "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-2.28.8.zip"
+checksum = "blake3:77933bb0e5cea7860b6b5d133002f581e508468ea25b12e09aae660b796d9204"
+size = 61994022
+url = "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-2.28.10.zip"
 
 [tools.aws-sam]
 version = "1.142.1"
@@ -93,13 +93,13 @@ size = 38113817
 url = "https://github.com/derailed/k9s/releases/download/v0.50.9/k9s_Linux_amd64.tar.gz"
 
 [tools.kubectl]
-version = "1.33.3"
+version = "1.33.4"
 backend = "aqua:kubernetes/kubectl"
 
 [tools.kubectl.platforms.linux-x64]
-checksum = "sha256:2fcf65c64f352742dc253a25a7c95617c2aba79843d1b74e585c69fe4884afb0"
+checksum = "sha256:c2ba72c115d524b72aaee9aab8df8b876e1596889d2f3f27d68405262ce86ca1"
 size = 60129464
-url = "https://dl.k8s.io/v1.33.3/bin/linux/amd64/kubectl"
+url = "https://dl.k8s.io/v1.33.4/bin/linux/amd64/kubectl"
 
 [tools.kustomize]
 version = "5.7.1"
@@ -136,13 +136,13 @@ size = 9811128
 url = "https://github.com/lycheeverse/lychee/releases/download/lychee-v0.19.1/lychee-x86_64-unknown-linux-musl.tar.gz"
 
 [tools.node]
-version = "24.5.0"
+version = "24.6.0"
 backend = "core:node"
 
 [tools.node.platforms.linux-x64]
-checksum = "sha256:369f2a3668dde7e324697040fafdcf442fd198b8c102317145417b3c83a9794a"
-size = 58761227
-url = "https://nodejs.org/dist/v24.5.0/node-v24.5.0-linux-x64.tar.gz"
+checksum = "sha256:352ddbc48b586c11f018ec9b886225117909ea93e05b4a04a6db32f3e63d0281"
+size = 58781067
+url = "https://nodejs.org/dist/v24.6.0/node-v24.6.0-linux-x64.tar.gz"
 
 [tools."npm:@devcontainers/cli"]
 version = "0.80.0"
@@ -174,7 +174,7 @@ version = "3.13.6"
 backend = "core:python"
 
 [tools.semgrep]
-version = "1.131.0"
+version = "1.132.1"
 backend = "pipx:semgrep"
 
 [tools.starship]
@@ -221,20 +221,20 @@ backend = "ubi:boyter/scc"
 checksum = "blake3:b04cb0b4717b0fac0e088962dccfbcfc49fe3990ea3cae11df419e21d82d054b"
 
 [tools."ubi:rvben/rumdl"]
-version = "0.0.114"
+version = "0.0.118"
 backend = "ubi:rvben/rumdl"
 
 [tools."ubi:rvben/rumdl".platforms.linux-x64-rumdl]
-checksum = "blake3:977de28af25823983f21e0cbadc9c17349995207aacd3c8dfae0afee4ad3df61"
+checksum = "blake3:4600dbbfcf37d92445ac4b26a5e0a9e46a9f35ac958dfa76fb6063be8aa15229"
 
 [tools.uv]
-version = "0.8.8"
+version = "0.8.11"
 backend = "aqua:astral-sh/uv"
 
 [tools.uv.platforms.linux-x64]
-checksum = "sha256:80ee2bde42e1cc39c59ae8a3a20f5b73127b90ece009ef7bdd13ab189ff0c353"
-size = 19375921
-url = "https://github.com/astral-sh/uv/releases/download/0.8.8/uv-x86_64-unknown-linux-musl.tar.gz"
+checksum = "sha256:0c66f4d06a4f933bddf75d4ad64e0e2d717f015ba1876c51e32ff293c84f57d5"
+size = 19429796
+url = "https://github.com/astral-sh/uv/releases/download/0.8.11/uv-x86_64-unknown-linux-musl.tar.gz"
 
 [tools.vault]
 version = "1.20.2"
