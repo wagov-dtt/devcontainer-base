@@ -73,7 +73,7 @@ target "test" {
 target "build-test" {
   inherits   = ["base"]
   platforms  = [platform(ARCH)]
-  tags       = tags(TAGS)
+  tags       = notequal(TAGS, "devcontainer-base:latest") && notequal(TAGS, "") ? tags(TAGS) : ["devcontainer-base:test"]
   cache-from = ["type=gha,scope=${ARCH}"]
   cache-to   = ["type=gha,mode=max,scope=${ARCH}"]
 }
