@@ -85,7 +85,12 @@ jobs:
 
     - name: Set image tag for testing
       id: test-tag
-      run: echo "value=$(echo '${{ steps.meta.outputs.tags }}' | head -n1)" >> $GITHUB_OUTPUT
+      run: |
+        TAG=$(echo '${{ steps.meta.outputs.tags }}' | head -n1)
+        if [ -z "$TAG" ]; then
+          TAG="devcontainer-base:test"
+        fi
+        echo "value=$TAG" >> $GITHUB_OUTPUT
 
     - name: Test devcontainer functionality
       run: |
