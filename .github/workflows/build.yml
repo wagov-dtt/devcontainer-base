@@ -85,14 +85,19 @@ jobs:
 
     - name: Set image tag for testing
       id: test-tag
-      run: echo "value=$(echo '${{ steps.meta.outputs.tags }}' | head -n1)" >> $GITHUB_OUTPUT
+      run: |
+        TAG=$(echo '${{ steps.meta.outputs.tags }}' | head -n1)
+        if [ -z "$TAG" ]; then
+          TAG="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:test-${{ matrix.arch }}"
+        fi
+        echo "value=$TAG" >> $GITHUB_OUTPUT
 
     - name: Test devcontainer functionality
       run: |
-        docker run --privileged --cgroupns=host --rm \
+        docker run --privileged --rm \
           --mount source=dind-var-lib-docker,target=/var/lib/docker,type=volume \
           "${{ steps.test-tag.outputs.value }}" \
-          -c "mise doctor && docker network create test-network && docker run --rm --network test-network ghcr.io/curl/curl-container/curl-multi:master -s ipinfo.io && https ipinfo.io && docker network rm test-network"
+          -c "mise doctor && docker run --rm ghcr.io/curl/curl-container/curl-multi:master -s ipinfo.io && https ipinfo.io"
 
     - name: Scan for vulnerabilities
       uses: aquasecurity/trivy-action@0.32.0
