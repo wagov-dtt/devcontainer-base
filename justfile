@@ -7,7 +7,7 @@ docker_volume := "dind-var-lib-docker"
 workspace := "/workspaces/devcontainer-base"
 
 # Docker run args for interactive use
-docker_args := "--privileged -it --rm" + \
+docker_args := "--privileged --cgroupns=host -it --rm" + \
     " --mount source=" + docker_volume + ",target=/var/lib/docker,type=volume" + \
     " --mount type=bind,source=" + justfile_directory() + ",target=" + workspace + \
     " --workdir " + workspace
@@ -24,10 +24,10 @@ build:
 # Test Docker-in-Docker functionality
 test: build
     @echo "🐳 Testing mise & Docker-in-Docker..."
-    docker run --privileged --rm \
+    docker run --privileged --cgroupns=host --rm \
         --mount source={{docker_volume}},target=/var/lib/docker,type=volume \
         {{test_tag}} \
-        -c "mise doctor && docker run --rm ghcr.io/curl/curl-container/curl-multi:master -s ipinfo.io && https ipinfo.io"
+        -c "mise doctor && docker network create test-network && docker run --rm --network test-network ghcr.io/curl/curl-container/curl-multi:master -s ipinfo.io && https ipinfo.io && docker network rm test-network"
 
 # Interactive development shell (build + test + shell)
 dev: test

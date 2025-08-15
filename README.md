@@ -29,7 +29,8 @@ Create a `.devcontainer/devcontainer.json` with the following configuration:
 ```
 
 **Required settings explained:**
-- `"privileged": true` and `--cgroupns=host` - Enables Docker-in-Docker functionality and namespaces for k3d/minikube clusters
+- `"privileged": true` - Enables Docker-in-Docker functionality
+- `"--cgroupns=host"` - **Required** for proper container networking and k3d/minikube cluster functionality
 - `"mounts": [...]` - Persists Docker data across container rebuilds
 - `"remoteUser": "vscode"` - Sets proper user permissions for VS Code integration
 
@@ -38,12 +39,12 @@ Then open in VS Code: Cmd/Ctrl+Shift+P → "Dev Containers: Reopen in Container"
 ### Use directly with Docker
 ```bash
 # Basic usage
-docker run -it --privileged \
+docker run -it --privileged --cgroupns=host \
   --mount source=dind-var-lib-docker,target=/var/lib/docker,type=volume \
   ghcr.io/wagov-dtt/devcontainer-base:latest
 
 # Mount local development folder
-docker run -it --privileged \
+docker run -it --privileged --cgroupns=host \
   --mount source=dind-var-lib-docker,target=/var/lib/docker,type=volume \
   --mount type=bind,source=/path/to/your/projects,target=/workspaces \
   ghcr.io/wagov-dtt/devcontainer-base:latest
