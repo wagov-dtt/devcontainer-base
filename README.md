@@ -15,16 +15,21 @@ A production-ready development container for cloud-native and infrastructure dev
 Create a `.devcontainer/devcontainer.json` with the following configuration:
 ```json
 {
-  "name": "your-project-name",
-  "image": "ghcr.io/wagov-dtt/devcontainer-base",
-  "privileged": true,
-  "mounts": ["source=dind-var-lib-docker,target=/var/lib/docker,type=volume"],
-  "remoteUser": "vscode"
+	"name": "wagov-dtt devcontainer-base",
+	"image": "ghcr.io/wagov-dtt/devcontainer-base",
+	"privileged": true,
+	"runArgs": [
+		"--cgroupns=host"
+	],
+	"mounts": [
+		"source=dind-var-lib-docker,target=/var/lib/docker,type=volume"
+	],
+	"remoteUser": "vscode"
 }
 ```
 
 **Required settings explained:**
-- `"privileged": true` - Enables Docker-in-Docker functionality
+- `"privileged": true` and `--cgroupns=host` - Enables Docker-in-Docker functionality and namespaces for k3d/minikube clusters
 - `"mounts": [...]` - Persists Docker data across container rebuilds
 - `"remoteUser": "vscode"` - Sets proper user permissions for VS Code integration
 
