@@ -78,7 +78,7 @@ This container uses a hybrid approach: essential tools via Debian packages, spec
 - **Docker**: [Docker CE](https://docs.docker.com/) with BuildKit, compose, and buildx plugins
 - **Cloud CLIs**: [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/), [Google Cloud CLI](https://cloud.google.com/sdk/gcloud), [GitHub CLI](https://cli.github.com/)
 - **Infrastructure**: [Terraform](https://www.terraform.io/) with [TFLint](https://github.com/terraform-linters/tflint) & [terraform-docs](https://terraform-docs.io/), [Helm](https://helm.sh/), [ddev](https://ddev.readthedocs.io/)
-- **Development**: [neovim](https://neovim.io/), [fzf](https://github.com/junegunn/fzf), [ripgrep](https://github.com/BurntSushi/ripgrep), [btop](https://github.com/aristocratos/btop), [htop](https://htop.dev/)
+- **Development**: [neovim](https://neovim.io/), [fzf](https://github.com/junegunn/fzf), [ripgrep](https://github.com/BurntSushi/ripgrep), [btop](https://github.com/aristocratos/btop), [htop](https://htop.dev/), [crush](https://github.com/charmbracelet/crush)
 - **Build tools**: build-essential, ca-certificates, openssh-client
 - **System utilities**: less, [jq](https://jqlang.github.io/jq/), unzip, zip, file, [rsync](https://rsync.samba.org/), bash-completion
 - **Network tools**: iputils-ping, dnsutils, net-tools, procps, lsof  
