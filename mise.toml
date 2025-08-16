@@ -66,6 +66,6 @@ cargo-binstall = "latest"
 localstack = "latest"
 
 [settings]
-experimental = true
+python.compile = false
 pipx.uvx = true
 trusted_config_paths = ["/workspaces"]
