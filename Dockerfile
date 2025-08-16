@@ -15,6 +15,7 @@ RUN --mount=type=cache,target=/var/cache/apt --mount=type=cache,target=/var/lib/
     add_repo "docker" "https://download.docker.com/linux/debian/gpg" "https://download.docker.com/linux/debian trixie stable" && \
     add_repo "microsoft" "https://packages.microsoft.com/keys/microsoft.asc" "https://packages.microsoft.com/repos/azure-cli/ bookworm main" && \
     add_repo "hashicorp" "https://apt.releases.hashicorp.com/gpg" "https://apt.releases.hashicorp.com bookworm main" && \
+    add_repo "charm" "https://repo.charm.sh/apt/gpg.key" "https://repo.charm.sh/apt/ * *" && \
     chmod a+r /etc/apt/keyrings/*.gpg
 
 ARG DATE TARGETARCH
@@ -22,7 +23,7 @@ RUN --mount=type=cache,target=/var/cache/apt --mount=type=cache,target=/var/lib/
     echo "Build date: ${DATE:-$(date +%F)}, Architecture: ${TARGETARCH:-amd64}" && \
     apt-get update -qq && apt-get dist-upgrade -yqq >/dev/null && apt-get install -yqq \
         docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin \
-        mise azure-cli google-cloud-cli gh ddev terraform helm neovim fzf ripgrep ugrep btop htop restic rclone \
+        mise azure-cli google-cloud-cli gh ddev terraform helm neovim fzf ripgrep ugrep btop htop restic rclone crush \
         git wget bash-completion sudo python3-dev tini build-essential openssh-client less jq unzip zip file rsync \
         iputils-ping dnsutils net-tools procps lsof locales librsvg2-bin iptables >/dev/null && \
     sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen && locale-gen && \
@@ -60,6 +61,7 @@ start_docker() {
     if ! mountpoint -q /var/lib/docker 2>/dev/null; then return 0; fi
     if ! test -r /proc/1/cgroup 2>/dev/null; then return 0; fi
     if pgrep -x dockerd >/dev/null 2>&1; then return 0; fi
+    find /var/run -name 'docker*.pid' -delete 2>/dev/null || true
     sudo dockerd >/tmp/dockerd.log 2>&1 &
     local timeout=30
     while ((timeout-- > 0)); do
