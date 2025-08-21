@@ -7,7 +7,8 @@ A production-ready development container for cloud-native and infrastructure dev
 **Base**: [`debian:stable-backports`](https://github.com/debuerreotype/docker-debian-artifacts) - Debian 13 Trixie stable + backports  
 **Docker**: Official Docker CE with manual Docker-in-Docker setup  
 **Package Management**: Hybrid approach - official Debian packages + mise for specialized tools  
-**Build System**: Modern Docker BuildKit with docker bake and optimised caching
+**Build System**: Modern Docker BuildKit with docker bake and optimised caching  
+**Automation**: Pyinfra handles repository setup and package installation during container build
 
 ## 🚀 Quick Start
 
@@ -206,7 +207,7 @@ your-tool = "latest"
 
 ### Development Workflow
 ```bash
-# Make changes to Dockerfile, mise.toml, or docker-bake.hcl
+# Make changes to Dockerfile, mise.toml, docker-bake.hcl, or build.py
 just build        # Build test image locally with docker bake
 just test         # Test Docker-in-Docker functionality
 just dev          # Interactive development shell
