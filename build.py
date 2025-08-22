@@ -2,13 +2,14 @@
 # /// script
 # requires-python = ">=3.9"
 # dependencies = [
-#   "pyinfra",
+#   "pyinfra>=3",
 # ]
 # ///
 """
-Devcontainer build using pyinfra local connector.
-Run with:
-- SCRIPT_URL=<url> pipx run $SCRIPT_URL
+Devcontainer build using pyinfra @local connector.
+Run with `pipx` or `uv`:
+- pipx run <url>/build.py
+- uv run <url>/build.py
 - pipx run build.py
 - pipx run pyinfra @local -y build.py
 
@@ -18,20 +19,24 @@ Environment variables:
 
 if __name__ == "__main__":
     import sys
-    import os
-    
-    # Import pyinfra cli function directly
+    import tempfile
+
     from pyinfra_cli.main import cli
-    
-    module = sys.modules['__main__']
-    if hasattr(module, "__file__"):
-        build_py = module.__file__
-    
-    # Set sys.argv to simulate command line arguments
-    sys.argv = ["pyinfra", "@local", "-y", build_py, "-vvv"]
-    
-    # Call cli function directly
-    cli()
+
+    with tempfile.NamedTemporaryFile(delete_on_close=False, mode="w", suffix=".py") as tmpfile:
+        # If being directly executed, save file to a deploy file pyinfra can use
+        if sys.orig_argv[1] == "-c":
+            tmpfile.write(sys.orig_argv[2])
+            tmpfile.close()
+            build_py = tmpfile.name
+        else:
+            build_py = sys.orig_argv[1]
+
+        # Set sys.argv to simulate command line arguments
+        sys.argv = ["pyinfra", "@local", "-y", build_py]
+
+        # Call cli function directly
+        cli()
 
 import getpass
 import os
