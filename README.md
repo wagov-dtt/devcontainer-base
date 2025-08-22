@@ -37,6 +37,16 @@ Create a `.devcontainer/devcontainer.json` with the following configuration:
 
 Then open in VS Code: Cmd/Ctrl+Shift+P → "Dev Containers: Reopen in Container"
 
+### Install on existing Debian system
+```bash
+# Install devcontainer base tools on existing Debian system
+curl -sSL https://raw.githubusercontent.com/wagov-dtt/devcontainer-base/main/install.sh | sh
+
+# Or run the pyinfra script directly if pipx or uv already installed
+pipx run https://raw.githubusercontent.com/wagov-dtt/devcontainer-base/main/build.py
+uv run https://raw.githubusercontent.com/wagov-dtt/devcontainer-base/main/build.py
+```
+
 ### Use directly with Docker
 ```bash
 # Basic usage

@@ -1,5 +1,12 @@
-#!/bin/bash
-set -euo pipefail
+#!/bin/sh
+set -eu
+
+# Install devcontainer base tools on existing Debian/Ubuntu system
+# 
+# Usage:
+#   ./install.sh
+#   curl -sSL https://raw.githubusercontent.com/wagov-dtt/devcontainer-base/main/install.sh | sh
+#   curl -sSL https://raw.githubusercontent.com/wagov-dtt/devcontainer-base/main/install.sh | SETUP_USER=myuser sh
 
 echo "Installing devcontainer base for user: ${SETUP_USER:-$(whoami)}..."
 
@@ -10,5 +17,4 @@ command -v pipx >/dev/null || {
 }
 
 # Run build
-curl -sSL https://raw.githubusercontent.com/wagov-dtt/devcontainer-base/main/build.py | \
-    pipx run pyinfra @local -y /dev/stdin
+pipx run https://raw.githubusercontent.com/wagov-dtt/devcontainer-base/main/build.py

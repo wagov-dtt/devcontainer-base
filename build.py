@@ -88,8 +88,9 @@ MISE_TOOLS = (
 
 MISE_TOML = f"""
 [settings]
-python.compile = false
+lockfile = true
 pipx.uvx = true
+python.compile = false
 trusted_config_paths = ["/workspaces"]
 
 [tools]
