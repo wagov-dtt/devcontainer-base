@@ -10,7 +10,7 @@ RUN --mount=type=cache,target=/var/cache/apt --mount=type=cache,target=/var/lib/
     --mount=type=cache,target=/root/.cache \
     --mount=type=secret,id=GITHUB_TOKEN,env=GITHUB_TOKEN \
     apt-get update -y && apt-get install -y pipx sudo && \
-    SETUP_USER=vscode pipx run pyinfra @local -y build.py -vv
+    SETUP_USER=vscode pipx run build.py
 
 # Final stage
 FROM scratch

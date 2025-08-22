@@ -105,7 +105,7 @@ This container uses a hybrid approach: essential tools via Debian packages, spec
 - **Code Analysis**: [scc](https://github.com/boyter/scc)
 - **Local Development**: [LocalStack](https://localstack.cloud/)
 
-> **Current tools**: See [`mise.toml`](mise.toml) and [`Dockerfile`](Dockerfile) for complete, up-to-date lists.
+> **Current tools**: See [`mise.toml`](mise.toml) and [`build.py`](build.py) for complete, up-to-date lists.
 > 
 > **Learning CLI tools**: Use `tldr <command>` to get practical examples for any CLI tool - much faster than reading full man pages.
 
@@ -133,7 +133,7 @@ just shell           # Run published image interactively
 your-tool = "latest"
 ```
 
-**Custom packages**: Add to [`Dockerfile`](Dockerfile) APT install section
+**Custom packages**: Add to [`build.py`](build.py) APT_PACKAGES section
 
 **Build configuration**: Modify [`docker-bake.hcl`](docker-bake.hcl) for advanced build options
 
@@ -207,7 +207,7 @@ your-tool = "latest"
 
 ### Development Workflow
 ```bash
-# Make changes to Dockerfile, mise.toml, docker-bake.hcl, or build.py
+# Make changes to build.py, mise.toml, docker-bake.hcl, or Dockerfile
 just build        # Build test image locally with docker bake
 just test         # Test Docker-in-Docker functionality
 just dev          # Interactive development shell

@@ -59,8 +59,8 @@ scan: build
 # Lint and format Python code
 lint:
     @echo "🎨 Linting and formatting Python code..."
-    uvx ruff format --line-length 120 build.py
-    uvx ruff check --fix --select I --line-length 120 build.py
+    uvx ruff format --line-length 200 build.py
+    uvx ruff check --fix --select I --line-length 200 build.py
 
 # Clean up images and volumes
 clean:
