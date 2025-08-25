@@ -56,6 +56,7 @@ APT_REPOS = [
     ("github", "https://cli.github.com/packages/githubcli-archive-keyring.gpg", "https://cli.github.com/packages stable main"),
     ("docker", "https://download.docker.com/linux/debian/gpg", "https://download.docker.com/linux/debian trixie stable"),
     ("microsoft", "https://packages.microsoft.com/keys/microsoft.asc", "https://packages.microsoft.com/repos/azure-cli/ bookworm main"),
+    ("kubernetes", "https://pkgs.k8s.io/core:/stable:/v1.33/deb/Release.key", "https://pkgs.k8s.io/core:/stable:/v1.33/deb/ /"),
 ]
 
 # APT packages configuration
@@ -63,7 +64,7 @@ APT_PACKAGES = (
     # Container & Development
     ["docker-ce", "docker-ce-cli", "containerd.io", "docker-buildx-plugin", "docker-compose-plugin", "git", "neovim", "build-essential", "python3-dev"]
     # Cloud & Infrastructure
-    + ["azure-cli", "google-cloud-cli", "gh", "terraform", "helm", "ddev"]
+    + ["azure-cli", "google-cloud-cli", "gh", "terraform", "helm", "ddev", "kubectl", "kustomize"]
     # System & Utilities
     + ["sudo", "tini", "openssh-client", "bash-completion", "locales", "iptables", "ripgrep", "ugrep", "jq", "less", "unzip", "zip", "file", "rsync", "librsvg2-bin"]
     # Monitoring & Network Tools
@@ -77,7 +78,7 @@ MISE_TOOLS = (
     # Languages & Package Management
     ["go", "node", "python", "pnpm", "uv", "pipx", "cargo-binstall"]
     # Cloud & Infrastructure
-    + ["aws-cli", "aws-sam", "localstack", "kubectl", "k9s", "k3d", "kustomize", "terraform", "tflint", "terraform-docs", "vault"]
+    + ["aws-cli", "aws-sam", "localstack", "k9s", "k3d", "terraform", "tflint", "terraform-docs", "vault"]
     # Security & Quality
     + ["trivy", "cosign", "slsa-verifier", "semgrep", "lychee"]
     # Shell & Development Tools
