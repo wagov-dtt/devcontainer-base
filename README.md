@@ -7,7 +7,8 @@ A production-ready development container for cloud-native and infrastructure dev
 **Base**: [`debian:stable-backports`](https://github.com/debuerreotype/docker-debian-artifacts) - Debian 13 Trixie stable + backports  
 **Docker**: Official Docker CE with manual Docker-in-Docker setup  
 **Package Management**: Hybrid approach - official Debian packages + mise for specialized tools  
-**Build System**: Modern Docker BuildKit with docker bake and optimised caching
+**Build System**: Modern Docker BuildKit with docker bake and optimised caching  
+**Automation**: Pyinfra handles repository setup and package installation during container build
 
 ## 🚀 Quick Start
 
@@ -36,6 +37,16 @@ Create a `.devcontainer/devcontainer.json` with the following configuration:
 
 Then open in VS Code: Cmd/Ctrl+Shift+P → "Dev Containers: Reopen in Container"
 
+### Install on existing Debian system
+```bash
+# Install devcontainer base tools on existing Debian system
+curl -sSL https://raw.githubusercontent.com/wagov-dtt/devcontainer-base/main/install.sh | sh
+
+# Or run the pyinfra script directly if pipx or uv already installed
+pipx run https://raw.githubusercontent.com/wagov-dtt/devcontainer-base/main/build.py
+uv run https://raw.githubusercontent.com/wagov-dtt/devcontainer-base/main/build.py
+```
+
 ### Use directly with Docker
 ```bash
 # Basic usage
@@ -50,7 +61,7 @@ docker run -it --privileged --cgroupns=host \
   ghcr.io/wagov-dtt/devcontainer-base:latest
 ```
 
-**Project switching**: Mount your local dev folder to `/workspaces` - mise automatically switches tool versions based on each project's `mise.toml` configuration.
+**Project switching**: Mount your local dev folder to `/workspaces` - mise automatically switches tool versions based on each project's mise configuration.
 
 ### For Image Development
 ```bash
@@ -67,44 +78,44 @@ just publish        # Multi-platform build + publish + sign with provenance (req
 3. **Local**: Clone and customize [`devcontainer.json`](.devcontainer/devcontainer.json) as needed
 
 ### Use in CI/CD
-- **Simple CI**: Use [mise GitHub Action](https://github.com/jdx/mise-action) with `mise.toml` for tool management
+- **Simple CI**: Use [mise GitHub Action](https://github.com/jdx/mise-action) for tool management
 - **Advanced CI**: Use full container image for complex workflows requiring Docker-in-Docker
 
 ## 📦 Included Tools
 
 This container uses a hybrid approach: essential tools via Debian packages, specialized tools via [mise](https://mise.jdx.dev/).
 
-### System & Core Tools (Debian packages)
-- **Docker**: [Docker CE](https://docs.docker.com/) with BuildKit, compose, and buildx plugins
-- **Cloud CLIs**: [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/), [Google Cloud CLI](https://cloud.google.com/sdk/gcloud), [GitHub CLI](https://cli.github.com/)
-- **Infrastructure**: [Terraform](https://www.terraform.io/) with [TFLint](https://github.com/terraform-linters/tflint) & [terraform-docs](https://terraform-docs.io/), [Helm](https://helm.sh/), [ddev](https://ddev.readthedocs.io/)
-- **Development**: [neovim](https://neovim.io/), [fzf](https://github.com/junegunn/fzf), [ripgrep](https://github.com/BurntSushi/ripgrep), [btop](https://github.com/aristocratos/btop), [htop](https://htop.dev/), [crush](https://github.com/charmbracelet/crush)
-- **Build tools**: build-essential, ca-certificates, openssh-client
-- **System utilities**: less, [jq](https://jqlang.github.io/jq/), unzip, zip, file, [rsync](https://rsync.samba.org/), bash-completion
-- **Network tools**: iputils-ping, dnsutils, net-tools, procps, lsof  
-- **File management**: [restic](https://restic.net/), [rclone](https://rclone.org/), ugrep
+### Container & Development (Debian packages)
+[Docker CE](https://docs.docker.com/), [Git](https://git-scm.com/), [neovim](https://neovim.io/), build-essential, python3-dev
 
-### Language Runtimes & Development (mise)
-- **Languages**: [Go](https://golang.org/), [Node.js](https://nodejs.org/), [Python](https://www.python.org/)
-- **Package Managers**: [pnpm](https://pnpm.io/), [uv](https://github.com/astral-sh/uv), [pipx](https://pypa.github.io/pipx/)
-- **Build Tools**: [just](https://just.systems/), [yq](https://mikefarah.gitbook.io/yq/)
+### Cloud & Infrastructure (Debian packages)
+[Azure CLI](https://docs.microsoft.com/en-us/cli/azure/), [Google Cloud CLI](https://cloud.google.com/sdk/gcloud), [GitHub CLI](https://cli.github.com/), [Terraform](https://www.terraform.io/), [Helm](https://helm.sh/), [ddev](https://ddev.readthedocs.io/)
 
-### Cloud & Kubernetes (mise)
-- **AWS**: [AWS CLI](https://aws.amazon.com/cli/), [AWS SAM](https://aws.amazon.com/serverless/sam/)
-- **Kubernetes**: [kubectl](https://kubernetes.io/docs/tasks/tools/), [k9s](https://k9scli.io/), [k3d](https://k3d.io/), [kustomize](https://kustomize.io/)
-- **Infrastructure**: [TFLint](https://github.com/terraform-linters/tflint), [terraform-docs](https://terraform-docs.io/)
-- **Security**: [Trivy](https://trivy.dev/), [Vault](https://www.vaultproject.io/)
+### System & Utilities (Debian packages)
+sudo, openssh-client, bash-completion, locales, iptables, [ripgrep](https://github.com/BurntSushi/ripgrep), ugrep, [jq](https://jqlang.github.io/jq/), less, unzip, zip, file, [rsync](https://rsync.samba.org/)
 
-### Productivity & Terminal (mise)
-- **Terminal**: [Zellij](https://zellij.dev/), [starship](https://starship.rs/), [zoxide](https://github.com/ajeetdsouza/zoxide), [eza](https://eza.rocks/), [direnv](https://direnv.net/), [tldr](https://tldr.sh/)
-- **Git**: [LazyGit](https://github.com/jesseduffield/lazygit)
-- **Documentation**: [mdbook](https://rust-lang.github.io/mdBook/), [Lychee](https://lychee.cli.rs/), [rumdl](https://github.com/rvben/rumdl)
-- **Testing**: [Hurl](https://hurl.dev/), [HTTPie](https://httpie.io/), [Semgrep](https://semgrep.dev/)
-- **Package Managers**: [@devcontainers/cli](https://github.com/devcontainers/cli), [cargo-binstall](https://github.com/cargo-bins/cargo-binstall)
-- **Code Analysis**: [scc](https://github.com/boyter/scc)
-- **Local Development**: [LocalStack](https://localstack.cloud/)
+### Monitoring & Network Tools (Debian packages)
+[btop](https://github.com/aristocratos/btop), [htop](https://htop.dev/), procps, lsof, iputils-ping, dnsutils, net-tools, [restic](https://restic.net/), [rclone](https://rclone.org/), [crush](https://github.com/charmbracelet/crush), wget, [fzf](https://github.com/junegunn/fzf)
 
-> **Current tools**: See [`mise.toml`](mise.toml) and [`Dockerfile`](Dockerfile) for complete, up-to-date lists.
+### Tool Managers (Debian packages)
+[mise](https://mise.jdx.dev/)
+
+### Languages & Package Management (mise)
+[Go](https://golang.org/), [Node.js](https://nodejs.org/), [Python](https://www.python.org/), [pnpm](https://pnpm.io/), [uv](https://github.com/astral-sh/uv), [pipx](https://pipx.pypa.io/stable/), [cargo-binstall](https://github.com/cargo-bins/cargo-binstall)
+
+### Cloud & Infrastructure (mise)
+[AWS CLI](https://aws.amazon.com/cli/), [AWS SAM](https://aws.amazon.com/serverless/sam/), [LocalStack](https://localstack.cloud/), [kubectl](https://kubernetes.io/docs/tasks/tools/), [k9s](https://k9scli.io/), [k3d](https://k3d.io/), [kustomize](https://kustomize.io/), [Terraform](https://www.terraform.io/), [TFLint](https://github.com/terraform-linters/tflint), [terraform-docs](https://terraform-docs.io/), [Vault](https://www.vaultproject.io/)
+
+### Security & Quality (mise)
+[Trivy](https://trivy.dev/), cosign, slsa-verifier, [Semgrep](https://semgrep.dev/), [Lychee](https://lychee.cli.rs/)
+
+### Shell & Development Tools (mise)
+[just](https://just.systems/), [yq](https://mikefarah.gitbook.io/yq/), [Zellij](https://zellij.dev/), [starship](https://starship.rs/), [zoxide](https://github.com/ajeetdsouza/zoxide), [eza](https://eza.rocks/), [direnv](https://direnv.net/), [LazyGit](https://github.com/jesseduffield/lazygit), [Hurl](https://hurl.dev/)
+
+### Documentation & Utilities (mise)
+[tldr](https://tldr.sh/), [HTTPie](https://httpie.io/), [mdbook](https://rust-lang.github.io/mdBook/), [@devcontainers/cli](https://github.com/devcontainers/cli), [rumdl](https://github.com/rvben/rumdl), [scc](https://github.com/boyter/scc)
+
+> **Current tools**: See [`build.py`](build.py) for complete, up-to-date lists.
 > 
 > **Learning CLI tools**: Use `tldr <command>` to get practical examples for any CLI tool - much faster than reading full man pages.
 
@@ -126,13 +137,25 @@ just shell           # Run published image interactively
 
 ### Customization
 
-**Add/remove tools**: Edit [`mise.toml`](mise.toml)
-```toml
-[tools]
-your-tool = "latest"
+**Add/remove tools**: Edit [`build.py`](build.py) MISE_TOOLS section
+```python
+MISE_TOOLS = (
+    ["go", "node", "python"]  # Languages & Package Management
+    + ["your-tool"]  # Add your tools here
+)
 ```
 
-**Custom packages**: Add to [`Dockerfile`](Dockerfile) APT install section
+**Pin versions**: Edit [`build.py`](build.py) MISE_TOML section
+```python
+MISE_TOML = f"""
+[tools]
+node = "20.11.0"  # Pin specific version
+go = "latest"     # Use latest
+your-tool = "1.2.3"
+"""
+```
+
+**Custom packages**: Add to [`build.py`](build.py) APT_PACKAGES section
 
 **Build configuration**: Modify [`docker-bake.hcl`](docker-bake.hcl) for advanced build options
 
@@ -206,7 +229,7 @@ your-tool = "latest"
 
 ### Development Workflow
 ```bash
-# Make changes to Dockerfile, mise.toml, or docker-bake.hcl
+# Make changes to build.py, docker-bake.hcl, or Dockerfile
 just build        # Build test image locally with docker bake
 just test         # Test Docker-in-Docker functionality
 just dev          # Interactive development shell
