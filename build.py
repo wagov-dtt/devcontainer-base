@@ -42,8 +42,8 @@ import getpass
 import os
 
 from pyinfra import host
-from pyinfra.facts.server import Users
-from pyinfra.operations import apt, files, server
+from pyinfra.facts.server import LinuxDistribution, Users
+from pyinfra.operations import apt, files, server, systemd
 
 # APT repositories configuration
 APT_REPOS = [
@@ -121,6 +121,15 @@ start_docker() {
 start_docker
 """
 
+# Check Debian version and warn if not Trixie
+distro = host.get_fact(LinuxDistribution)
+if distro and distro.get("name") == "Debian":
+    version = distro.get("major", "")
+    codename = distro.get("release_meta", {}).get("CODENAME", "")
+    if codename != "trixie" and version != "13":
+        print(f"Warning: This devcontainer is designed for Debian 13 (Trixie), but detected {distro.get('name')} {version} ({codename})")
+        print("Consider upgrading to Debian Trixie for optimal compatibility")
+
 # Get setup user from environment or current user
 user = os.getenv("SETUP_USER", getpass.getuser())
 server.user(user=user, create_home=True, _sudo=True)
@@ -145,7 +154,18 @@ files.block(name="Mise config", path=f"{home}/.config/mise/config.toml", try_pre
 files.file(path=f"{home}/.config/mise/config.toml", user=user, group=user, mode="644")
 server.shell(commands="mise install --yes", _env={"GITHUB_TOKEN": os.getenv("GITHUB_TOKEN", "")}, _su_user=user, _sudo=True)
 
+# Configure systemctl for rootful Docker (ignore failures if no systemd)
+systemd.service(service="docker", enabled=False, user_mode=True, _su_user=user, _sudo=True, _ignore_errors=True)
+docker_systemd = systemd.service(service="docker", enabled=True, running=True, _sudo=True, _ignore_errors=True)
+
+# Use legacy iptables only in container environments (when systemd docker service failed)
+server.shell(
+    name="iptables-legacy (container mode)",
+    commands=["update-alternatives --set iptables /usr/sbin/iptables-legacy", "update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy"],
+    _if=docker_systemd.did_error,
+    _sudo=True,
+)
+
 # Shell & docker configuration
-server.shell(name="iptables-legacy", commands=["update-alternatives --set iptables /usr/sbin/iptables-legacy", "update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy"], _sudo=True)
 server.user(name="Configure groups", user=user, shell="/bin/bash", groups=["sudo", "docker"], _sudo=True)
 files.block(name="Shell extras", path=f"{home}/.bashrc", content=BASHRC_EXTRAS, try_prevent_shell_expansion=True, _sudo_user=user)
