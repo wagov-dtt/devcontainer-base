@@ -139,7 +139,7 @@ home = f"/home/{user}"
 files.block(content=f"{user} ALL=(ALL) NOPASSWD:ALL", path=f"/etc/sudoers.d/{user}", _sudo=True)
 files.file(path=f"/etc/sudoers.d/{user}", mode=440, _sudo=True)
 apt.packages(packages=["curl", "gnupg", "locales"], update=True, _sudo=True)
-server.locale("en_US.UTF-8")
+server.locale("en_US.UTF-8", _sudo=True)
 
 # Setup repos and install packages
 files.directory(name="Create keyrings directory", path="/etc/apt/keyrings", mode="755", _sudo=True)
