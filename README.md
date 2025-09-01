@@ -78,46 +78,37 @@ just publish        # Multi-platform build + publish + sign with provenance (req
 3. **Local**: Clone and customize [`devcontainer.json`](.devcontainer/devcontainer.json) as needed
 
 ### Use in CI/CD
-- **Simple CI**: Use [mise GitHub Action](https://github.com/jdx/mise-action) for tool management
-- **Advanced CI**: Use full container image for complex workflows requiring Docker-in-Docker
+
+Use [devcontainers/ci](https://github.com/devcontainers/ci) to run `mise` tasks and `just` recipes in your devcontainer for guaranteed environment consistency:
+
+```yaml
+- name: Configure AWS credentials
+  uses: aws-actions/configure-aws-credentials@v4
+  with:
+    role-to-assume: arn:aws:iam::123456789012:role/GitHubActions
+    aws-region: ap-southeast-2
+
+- name: Run tests in devcontainer
+  uses: devcontainers/ci@v0.3
+  with:
+    imageName: local/devcontainer
+    push: never
+    runCmd: |
+      just test
+      mise run lint
+```
+
+**Alternative**: Use [mise GitHub Action](https://github.com/jdx/mise-action) for simple tool management without containers
 
 ## 📦 Included Tools
 
-This container uses a hybrid approach: essential tools via Debian packages, specialized tools via [mise](https://mise.jdx.dev/).
+**Languages**: Go, Node.js, Python, Rust toolchain  
+**Cloud**: AWS/Azure/GCP CLIs, Terraform, Kubernetes (kubectl, k9s, k3d), Docker  
+**Development**: Git, just, mise, direnv, starship, zellij, LazyGit, neovim  
+**Security**: Trivy, Semgrep, cosign, slsa-verifier  
 
-### Container & Development (Debian packages)
-[Docker CE](https://docs.docker.com/), [Git](https://git-scm.com/), [neovim](https://neovim.io/), build-essential, python3-dev
-
-### Cloud & Infrastructure (Debian packages)
-[Azure CLI](https://docs.microsoft.com/en-us/cli/azure/), [Google Cloud CLI](https://cloud.google.com/sdk/gcloud), [GitHub CLI](https://cli.github.com/), [Terraform](https://www.terraform.io/), [Helm](https://helm.sh/), [ddev](https://ddev.readthedocs.io/)
-
-### System & Utilities (Debian packages)
-sudo, openssh-client, bash-completion, locales, iptables, [ripgrep](https://github.com/BurntSushi/ripgrep), ugrep, [jq](https://jqlang.github.io/jq/), less, unzip, zip, file, [rsync](https://rsync.samba.org/)
-
-### Monitoring & Network Tools (Debian packages)
-[btop](https://github.com/aristocratos/btop), [htop](https://htop.dev/), procps, lsof, iputils-ping, dnsutils, net-tools, [restic](https://restic.net/), [rclone](https://rclone.org/), [crush](https://github.com/charmbracelet/crush), wget, [fzf](https://github.com/junegunn/fzf)
-
-### Tool Managers (Debian packages)
-[mise](https://mise.jdx.dev/)
-
-### Languages & Package Management (mise)
-[Go](https://golang.org/), [Node.js](https://nodejs.org/), [Python](https://www.python.org/), [pnpm](https://pnpm.io/), [uv](https://github.com/astral-sh/uv), [pipx](https://pipx.pypa.io/stable/), [cargo-binstall](https://github.com/cargo-bins/cargo-binstall)
-
-### Cloud & Infrastructure (mise)
-[AWS CLI](https://aws.amazon.com/cli/), [AWS SAM](https://aws.amazon.com/serverless/sam/), [LocalStack](https://localstack.cloud/), [kubectl](https://kubernetes.io/docs/tasks/tools/), [k9s](https://k9scli.io/), [k3d](https://k3d.io/), [kustomize](https://kustomize.io/), [Terraform](https://www.terraform.io/), [TFLint](https://github.com/terraform-linters/tflint), [terraform-docs](https://terraform-docs.io/), [Vault](https://www.vaultproject.io/)
-
-### Security & Quality (mise)
-[Trivy](https://trivy.dev/), cosign, slsa-verifier, [Semgrep](https://semgrep.dev/), [Lychee](https://lychee.cli.rs/)
-
-### Shell & Development Tools (mise)
-[just](https://just.systems/), [yq](https://mikefarah.gitbook.io/yq/), [Zellij](https://zellij.dev/), [starship](https://starship.rs/), [zoxide](https://github.com/ajeetdsouza/zoxide), [eza](https://eza.rocks/), [direnv](https://direnv.net/), [LazyGit](https://github.com/jesseduffield/lazygit), [Hurl](https://hurl.dev/)
-
-### Documentation & Utilities (mise)
-[tldr](https://tldr.sh/), [HTTPie](https://httpie.io/), [mdbook](https://rust-lang.github.io/mdBook/), [@devcontainers/cli](https://github.com/devcontainers/cli), [rumdl](https://github.com/rvben/rumdl), [scc](https://github.com/boyter/scc)
-
-> **Current tools**: See [`build.py`](build.py) for complete, up-to-date lists.
-> 
-> **Learning CLI tools**: Use `tldr <command>` to get practical examples for any CLI tool - much faster than reading full man pages.
+> **Complete list**: See [`build.py`](build.py) for all tools and versions  
+> **Learning**: Use `tldr <command>` for quick examples of any CLI tool
 
 ## 🔧 Configuration
 
