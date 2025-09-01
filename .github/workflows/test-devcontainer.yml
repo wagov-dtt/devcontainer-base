@@ -1,0 +1,48 @@
+name: Test DevContainer CI
+
+on:
+  push:
+    branches: [main]
+    paths: ['.devcontainer/**', 'justfile', 'build.py', 'Dockerfile']
+  pull_request:
+    branches: [main]
+    paths: ['.devcontainer/**', 'justfile', 'build.py', 'Dockerfile']
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test-devcontainer-ci:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Test devcontainer functionality  
+        uses: devcontainers/ci@v0.3
+        with:
+          imageName: local/devcontainer
+          push: never
+          runCmd: |
+            echo "=== DevContainer CI Test ==="
+            echo "Testing mise and just integration..."
+            
+            # Test mise tools are available
+            mise doctor
+            echo "✅ mise doctor passed"
+            
+            # Test just recipes work
+            just test
+            echo "✅ just test passed"
+            
+            # Test tool versions
+            echo "=== Tool Versions ==="
+            docker --version
+            git --version
+            python3 --version
+            node --version
+            go version
+            
+            echo "=== DevContainer CI Test Complete ✅ ==="

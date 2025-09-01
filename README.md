@@ -2,7 +2,7 @@
 
 A production-ready development container for cloud-native and infrastructure development, built with modern practices and optimised for performance.
 
-## 🏗️ Architecture
+## Architecture
 
 **Base**: [`debian:stable-backports`](https://github.com/debuerreotype/docker-debian-artifacts) - Debian 13 Trixie stable + backports  
 **Docker**: Official Docker CE with manual Docker-in-Docker setup  
@@ -78,46 +78,37 @@ just publish        # Multi-platform build + publish + sign with provenance (req
 3. **Local**: Clone and customize [`devcontainer.json`](.devcontainer/devcontainer.json) as needed
 
 ### Use in CI/CD
-- **Simple CI**: Use [mise GitHub Action](https://github.com/jdx/mise-action) for tool management
-- **Advanced CI**: Use full container image for complex workflows requiring Docker-in-Docker
+
+Use [devcontainers/ci](https://github.com/devcontainers/ci) to run `mise` tasks and `just` recipes in your devcontainer for guaranteed environment consistency:
+
+```yaml
+- name: Configure AWS credentials
+  uses: aws-actions/configure-aws-credentials@v4
+  with:
+    role-to-assume: arn:aws:iam::123456789012:role/GitHubActions
+    aws-region: ap-southeast-2
+
+- name: Run tests in devcontainer
+  uses: devcontainers/ci@v0.3
+  with:
+    imageName: local/devcontainer
+    push: never
+    runCmd: |
+      just test
+      mise run lint
+```
+
+**Alternative**: Use [mise GitHub Action](https://github.com/jdx/mise-action) for simple tool management without containers
 
 ## 📦 Included Tools
 
-This container uses a hybrid approach: essential tools via Debian packages, specialized tools via [mise](https://mise.jdx.dev/).
+**Languages**: Go, Node.js, Python, Rust toolchain  
+**Cloud**: AWS/Azure/GCP CLIs, Terraform, Kubernetes (kubectl, k9s, k3d), Docker  
+**Development**: Git, just, mise, direnv, starship, zellij, LazyGit, neovim  
+**Security**: Trivy, Semgrep, cosign, slsa-verifier  
 
-### Container & Development (Debian packages)
-[Docker CE](https://docs.docker.com/), [Git](https://git-scm.com/), [neovim](https://neovim.io/), build-essential, python3-dev
-
-### Cloud & Infrastructure (Debian packages)
-[Azure CLI](https://docs.microsoft.com/en-us/cli/azure/), [Google Cloud CLI](https://cloud.google.com/sdk/gcloud), [GitHub CLI](https://cli.github.com/), [Terraform](https://www.terraform.io/), [Helm](https://helm.sh/), [ddev](https://ddev.readthedocs.io/)
-
-### System & Utilities (Debian packages)
-sudo, openssh-client, bash-completion, locales, iptables, [ripgrep](https://github.com/BurntSushi/ripgrep), ugrep, [jq](https://jqlang.github.io/jq/), less, unzip, zip, file, [rsync](https://rsync.samba.org/)
-
-### Monitoring & Network Tools (Debian packages)
-[btop](https://github.com/aristocratos/btop), [htop](https://htop.dev/), procps, lsof, iputils-ping, dnsutils, net-tools, [restic](https://restic.net/), [rclone](https://rclone.org/), [crush](https://github.com/charmbracelet/crush), wget, [fzf](https://github.com/junegunn/fzf)
-
-### Tool Managers (Debian packages)
-[mise](https://mise.jdx.dev/)
-
-### Languages & Package Management (mise)
-[Go](https://golang.org/), [Node.js](https://nodejs.org/), [Python](https://www.python.org/), [pnpm](https://pnpm.io/), [uv](https://github.com/astral-sh/uv), [pipx](https://pipx.pypa.io/stable/), [cargo-binstall](https://github.com/cargo-bins/cargo-binstall)
-
-### Cloud & Infrastructure (mise)
-[AWS CLI](https://aws.amazon.com/cli/), [AWS SAM](https://aws.amazon.com/serverless/sam/), [LocalStack](https://localstack.cloud/), [kubectl](https://kubernetes.io/docs/tasks/tools/), [k9s](https://k9scli.io/), [k3d](https://k3d.io/), [kustomize](https://kustomize.io/), [Terraform](https://www.terraform.io/), [TFLint](https://github.com/terraform-linters/tflint), [terraform-docs](https://terraform-docs.io/), [Vault](https://www.vaultproject.io/)
-
-### Security & Quality (mise)
-[Trivy](https://trivy.dev/), cosign, slsa-verifier, [Semgrep](https://semgrep.dev/), [Lychee](https://lychee.cli.rs/)
-
-### Shell & Development Tools (mise)
-[just](https://just.systems/), [yq](https://mikefarah.gitbook.io/yq/), [Zellij](https://zellij.dev/), [starship](https://starship.rs/), [zoxide](https://github.com/ajeetdsouza/zoxide), [eza](https://eza.rocks/), [direnv](https://direnv.net/), [LazyGit](https://github.com/jesseduffield/lazygit), [Hurl](https://hurl.dev/)
-
-### Documentation & Utilities (mise)
-[tldr](https://tldr.sh/), [HTTPie](https://httpie.io/), [mdbook](https://rust-lang.github.io/mdBook/), [@devcontainers/cli](https://github.com/devcontainers/cli), [rumdl](https://github.com/rvben/rumdl), [scc](https://github.com/boyter/scc)
-
-> **Current tools**: See [`build.py`](build.py) for complete, up-to-date lists.
-> 
-> **Learning CLI tools**: Use `tldr <command>` to get practical examples for any CLI tool - much faster than reading full man pages.
+> **Complete list**: See [`build.py`](build.py) for all tools and versions  
+> **Learning**: Use `tldr <command>` for quick examples of any CLI tool
 
 ## 🔧 Configuration
 
@@ -137,90 +128,24 @@ just shell           # Run published image interactively
 
 ### Customization
 
-**Add/remove tools**: Edit [`build.py`](build.py) MISE_TOOLS section
-```python
-MISE_TOOLS = (
-    ["go", "node", "python"]  # Languages & Package Management
-    + ["your-tool"]  # Add your tools here
-)
-```
+**Tools**: Edit [`build.py`](build.py) MISE_TOOLS and APT_PACKAGES sections  
+**Versions**: Pin specific versions in [`build.py`](build.py) MISE_TOML  
+**VS Code**: Customize [`devcontainer.json`](.devcontainer/devcontainer.json)  
+**Build**: Modify [`docker-bake.hcl`](docker-bake.hcl) for advanced options
 
-**Pin versions**: Edit [`build.py`](build.py) MISE_TOML section
-```python
-MISE_TOML = f"""
-[tools]
-node = "20.11.0"  # Pin specific version
-go = "latest"     # Use latest
-your-tool = "1.2.3"
-"""
-```
+## Features
 
-**Custom packages**: Add to [`build.py`](build.py) APT_PACKAGES section
+**Security**: SBOM generation, signed packages, Trivy scanning, minimal attack surface  
+**Performance**: Multi-platform native builds, persistent caching, optimised layers  
+**Docker-in-Docker**: Privileged mode with volume persistence and automatic startup
 
-**Build configuration**: Modify [`docker-bake.hcl`](docker-bake.hcl) for advanced build options
+## Use Cases
 
-**VS Code settings**: Add to [`devcontainer.json`](.devcontainer/devcontainer.json) customizations
+**Cloud**: Multi-cloud CLIs, Terraform, Kubernetes, serverless development  
+**DevOps**: Container builds, security scanning, backup solutions, monitoring  
+**Development**: Go/Node.js/Python, package management, documentation, API testing
 
-**Environment variables**: Set in [`devcontainer.json`](.devcontainer/devcontainer.json) or during runtime
-
-## 🏭 Production Features
-
-### Modern Docker Practices
-- **Docker Bake**: Declarative multi-platform builds with HCL functions and native manifest creation
-- **Supply Chain Security**: Comprehensive SBOM generation and enhanced provenance attestations (`mode=max`)
-- **BuildKit**: Advanced build features with squashed layers and zstd compression
-- **Secrets**: Secure GITHUB_TOKEN handling for private repository access
-- **Cache mounts**: Persistent cache for APT packages and mise downloads
-
-### Security & Compliance
-- **Supply chain attestations**: Automated SBOM and detailed provenance generation for every build
-- **Official packages**: Debian repositories where available
-- **Signed packages**: GPG verification for all external repos
-- **Trivy scanning**: Automated vulnerability detection
-- **Minimal attack surface**: No unnecessary services
-
-### Performance Optimisations
-- **Native builds**: AMD64/ARM64 compile on matching hardware, no QEMU emulation
-- **Cache mounts**: APT packages and mise downloads persist across builds
-- **Architecture-specific caching**: Separate cache scopes prevent conflicts
-- **Single APT transaction**: Merged system upgrade and package installation
-- **Volume persistence**: Docker-in-Docker storage optimisation  
-- **Smart retries**: Resilient network operations for mise tool installation
-
-## 🔐 Docker-in-Docker
-
-### Features
-- **Privileged mode**: Full Docker daemon access
-- **Volume persistence**: Shared Docker storage across rebuilds
-- **Automatic startup**: Docker daemon starts with container
-- **Health checks**: Ensures Docker is ready before use
-
-### Security Considerations
-- Uses official Docker CE
-- No unnecessary network exposure
-- User-scoped permissions via docker group
-
-## 🎯 Use Cases
-
-### Cloud Development
-- Multi-cloud CLI tools (AWS, Azure, GCP)
-- Infrastructure as Code (Terraform with linting & documentation)  
-- Container orchestration (Kubernetes)
-- Serverless applications (AWS SAM)
-
-### DevOps & SRE  
-- Container builds and testing
-- Security scanning (Trivy) with automated provenance
-- Backup solutions (Restic, rclone)
-- Monitoring and debugging tools
-
-### Full-Stack Development
-- Multiple runtime support (Go, Node.js, Python)
-- Modern package managers (pnpm, uv)
-- Documentation tools (mdbook, Lychee)
-- API testing (Hurl, HTTPie)
-
-## 🤝 Contributing
+## Contributing
 
 1. **Issues**: Report bugs or request features
 2. **Pull Requests**: Improve tools, documentation, or performance  
@@ -242,7 +167,7 @@ just scan         # Security scan with Trivy
 - **Tool conflicts**: Run `mise install` to refresh tool installations
 - **Build cache**: Use `just clean` to reset Docker build cache if needed
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - [Debian](https://www.debian.org/) - Stable base operating system
 - [mise](https://mise.jdx.dev/) - Polyglot tool version manager
