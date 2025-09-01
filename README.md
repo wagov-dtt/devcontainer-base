@@ -2,7 +2,7 @@
 
 A production-ready development container for cloud-native and infrastructure development, built with modern practices and optimised for performance.
 
-## 🏗️ Architecture
+## Architecture
 
 **Base**: [`debian:stable-backports`](https://github.com/debuerreotype/docker-debian-artifacts) - Debian 13 Trixie stable + backports  
 **Docker**: Official Docker CE with manual Docker-in-Docker setup  
@@ -128,90 +128,24 @@ just shell           # Run published image interactively
 
 ### Customization
 
-**Add/remove tools**: Edit [`build.py`](build.py) MISE_TOOLS section
-```python
-MISE_TOOLS = (
-    ["go", "node", "python"]  # Languages & Package Management
-    + ["your-tool"]  # Add your tools here
-)
-```
+**Tools**: Edit [`build.py`](build.py) MISE_TOOLS and APT_PACKAGES sections  
+**Versions**: Pin specific versions in [`build.py`](build.py) MISE_TOML  
+**VS Code**: Customize [`devcontainer.json`](.devcontainer/devcontainer.json)  
+**Build**: Modify [`docker-bake.hcl`](docker-bake.hcl) for advanced options
 
-**Pin versions**: Edit [`build.py`](build.py) MISE_TOML section
-```python
-MISE_TOML = f"""
-[tools]
-node = "20.11.0"  # Pin specific version
-go = "latest"     # Use latest
-your-tool = "1.2.3"
-"""
-```
+## Features
 
-**Custom packages**: Add to [`build.py`](build.py) APT_PACKAGES section
+**Security**: SBOM generation, signed packages, Trivy scanning, minimal attack surface  
+**Performance**: Multi-platform native builds, persistent caching, optimised layers  
+**Docker-in-Docker**: Privileged mode with volume persistence and automatic startup
 
-**Build configuration**: Modify [`docker-bake.hcl`](docker-bake.hcl) for advanced build options
+## Use Cases
 
-**VS Code settings**: Add to [`devcontainer.json`](.devcontainer/devcontainer.json) customizations
+**Cloud**: Multi-cloud CLIs, Terraform, Kubernetes, serverless development  
+**DevOps**: Container builds, security scanning, backup solutions, monitoring  
+**Development**: Go/Node.js/Python, package management, documentation, API testing
 
-**Environment variables**: Set in [`devcontainer.json`](.devcontainer/devcontainer.json) or during runtime
-
-## 🏭 Production Features
-
-### Modern Docker Practices
-- **Docker Bake**: Declarative multi-platform builds with HCL functions and native manifest creation
-- **Supply Chain Security**: Comprehensive SBOM generation and enhanced provenance attestations (`mode=max`)
-- **BuildKit**: Advanced build features with squashed layers and zstd compression
-- **Secrets**: Secure GITHUB_TOKEN handling for private repository access
-- **Cache mounts**: Persistent cache for APT packages and mise downloads
-
-### Security & Compliance
-- **Supply chain attestations**: Automated SBOM and detailed provenance generation for every build
-- **Official packages**: Debian repositories where available
-- **Signed packages**: GPG verification for all external repos
-- **Trivy scanning**: Automated vulnerability detection
-- **Minimal attack surface**: No unnecessary services
-
-### Performance Optimisations
-- **Native builds**: AMD64/ARM64 compile on matching hardware, no QEMU emulation
-- **Cache mounts**: APT packages and mise downloads persist across builds
-- **Architecture-specific caching**: Separate cache scopes prevent conflicts
-- **Single APT transaction**: Merged system upgrade and package installation
-- **Volume persistence**: Docker-in-Docker storage optimisation  
-- **Smart retries**: Resilient network operations for mise tool installation
-
-## 🔐 Docker-in-Docker
-
-### Features
-- **Privileged mode**: Full Docker daemon access
-- **Volume persistence**: Shared Docker storage across rebuilds
-- **Automatic startup**: Docker daemon starts with container
-- **Health checks**: Ensures Docker is ready before use
-
-### Security Considerations
-- Uses official Docker CE
-- No unnecessary network exposure
-- User-scoped permissions via docker group
-
-## 🎯 Use Cases
-
-### Cloud Development
-- Multi-cloud CLI tools (AWS, Azure, GCP)
-- Infrastructure as Code (Terraform with linting & documentation)  
-- Container orchestration (Kubernetes)
-- Serverless applications (AWS SAM)
-
-### DevOps & SRE  
-- Container builds and testing
-- Security scanning (Trivy) with automated provenance
-- Backup solutions (Restic, rclone)
-- Monitoring and debugging tools
-
-### Full-Stack Development
-- Multiple runtime support (Go, Node.js, Python)
-- Modern package managers (pnpm, uv)
-- Documentation tools (mdbook, Lychee)
-- API testing (Hurl, HTTPie)
-
-## 🤝 Contributing
+## Contributing
 
 1. **Issues**: Report bugs or request features
 2. **Pull Requests**: Improve tools, documentation, or performance  
@@ -233,7 +167,7 @@ just scan         # Security scan with Trivy
 - **Tool conflicts**: Run `mise install` to refresh tool installations
 - **Build cache**: Use `just clean` to reset Docker build cache if needed
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - [Debian](https://www.debian.org/) - Stable base operating system
 - [mise](https://mise.jdx.dev/) - Polyglot tool version manager
