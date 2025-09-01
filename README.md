@@ -93,6 +93,7 @@ Use [devcontainers/ci](https://github.com/devcontainers/ci) to run `mise` tasks 
   with:
     imageName: local/devcontainer
     push: never
+    inheritEnv: true
     runCmd: |
       just test
       mise run lint
