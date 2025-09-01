@@ -169,3 +169,5 @@ server.shell(
 # Shell & docker configuration
 server.user(name="Configure groups", user=user, shell="/bin/bash", groups=["sudo", "docker"], _sudo=True)
 files.block(name="Shell extras", path=f"{home}/.bashrc", content=BASHRC_EXTRAS, try_prevent_shell_expansion=True, _sudo_user=user)
+# Fix home directory ownership recursively
+server.shell(commands=f"chown -R {user}:{user} {home}", _sudo=True)
