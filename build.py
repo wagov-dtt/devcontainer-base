@@ -45,24 +45,26 @@ from pyinfra import host
 from pyinfra.facts.server import LinuxDistribution, Users
 from pyinfra.operations import apt, files, server, systemd
 
-# APT repositories configuration
+# APT repositories (extrepo where available, manual otherwise)
 APT_REPOS = [
+    # extrepo-managed (secure & standardised)
+    ("docker-ce", None, "extrepo"),
+    ("helm", None, "extrepo"),
+    ("github-cli", None, "extrepo"),
+    ("kubernetes", None, "extrepo"),
+    ("google_cloud", None, "extrepo"),
+    # Manual repositories (not in extrepo)
     ("ddev", "https://pkg.ddev.com/apt/gpg.key", "https://pkg.ddev.com/apt/ * *"),
     ("charm", "https://repo.charm.sh/apt/gpg.key", "https://repo.charm.sh/apt/ * *"),
     ("mise", "https://mise.jdx.dev/gpg-key.pub", "https://mise.jdx.dev/deb stable main"),
-    ("helm", "https://baltocdn.com/helm/signing.asc", "https://baltocdn.com/helm/stable/debian/ all main"),
     ("hashicorp", "https://apt.releases.hashicorp.com/gpg", "https://apt.releases.hashicorp.com bookworm main"),
-    ("gcloud", "https://packages.cloud.google.com/apt/doc/apt-key.gpg", "https://packages.cloud.google.com/apt cloud-sdk main"),
-    ("github", "https://cli.github.com/packages/githubcli-archive-keyring.gpg", "https://cli.github.com/packages stable main"),
-    ("docker", "https://download.docker.com/linux/debian/gpg", "https://download.docker.com/linux/debian trixie stable"),
     ("microsoft", "https://packages.microsoft.com/keys/microsoft.asc", "https://packages.microsoft.com/repos/azure-cli/ bookworm main"),
-    ("kubernetes", "https://pkgs.k8s.io/core:/stable:/v1.33/deb/Release.key", "https://pkgs.k8s.io/core:/stable:/v1.33/deb/ /"),
 ]
 
 # APT packages configuration
 APT_PACKAGES = (
     # Container & Development
-    ["docker-ce", "docker-ce-cli", "containerd.io", "docker-buildx-plugin", "docker-compose-plugin", "git", "neovim", "build-essential", "python3-dev"]
+    ["extrepo", "docker-ce", "docker-ce-cli", "containerd.io", "docker-buildx-plugin", "docker-compose-plugin", "git", "neovim", "build-essential", "python3-dev"]
     # Cloud & Infrastructure
     + ["azure-cli", "google-cloud-cli", "gh", "terraform", "helm", "ddev", "kubectl", "kustomize"]
     # System & Utilities
@@ -82,7 +84,7 @@ MISE_TOOLS = (
     # Security & Quality
     + ["trivy", "cosign", "slsa-verifier", "semgrep", "lychee"]
     # Shell & Development Tools
-    + ["just", "yq", "zellij", "starship", "zoxide", "eza", "direnv", "lazygit", "hurl"]
+    + ["just", "yq", "zellij", "starship", "zoxide", "eza", "direnv", "lazygit", "hurl", "envsubst"]
     # Documentation & Utilities
     + ["pipx:tldr", "pipx:httpie", "cargo:mdbook", "npm:@devcontainers/cli", "ubi:rvben/rumdl", "ubi:boyter/scc"]
 )
@@ -138,14 +140,23 @@ home = f"/home/{user}"
 # Configure sudo and locale
 files.block(content=f"{user} ALL=(ALL) NOPASSWD:ALL", path=f"/etc/sudoers.d/{user}", _sudo=True)
 files.file(path=f"/etc/sudoers.d/{user}", mode=440, _sudo=True)
-apt.packages(packages=["curl", "gnupg", "locales"], update=True, _sudo=True)
+apt.packages(packages=["curl", "gnupg", "locales", "extrepo"], update=True, _sudo=True)
 server.locale("en_US.UTF-8", _sudo=True)
 
-# Setup repos and install packages
+# Configure extrepo to enable non-free policies
+files.line(name="Enable contrib policy", path="/etc/extrepo/config.yaml", line="# - contrib", replace="- contrib", _sudo=True)
+files.line(name="Enable non-free policy", path="/etc/extrepo/config.yaml", line="# - non-free", replace="- non-free", _sudo=True)
+
+# Setup repositories (extrepo & manual)
 files.directory(name="Create keyrings directory", path="/etc/apt/keyrings", mode="755", _sudo=True)
 for name, key_url, deb_info in APT_REPOS:
-    repo = apt.repo(src=f"deb [signed-by=/etc/apt/keyrings/{name}.gpg] {deb_info}", filename=name, _sudo=True)
-    server.shell(commands=f"curl -fsSL {key_url} | gpg --dearmor --yes -o /etc/apt/keyrings/{name}.gpg", _sudo=True, _if=repo.did_change)
+    if deb_info == "extrepo":
+        # Use extrepo for secure & standardised repos
+        server.shell(commands=f"extrepo enable {name}", _sudo=True)
+    else:
+        # Manual repository setup
+        repo = apt.repo(src=f"deb [signed-by=/etc/apt/keyrings/{name}.gpg] {deb_info}", filename=name, _sudo=True)
+        server.shell(commands=f"curl -fsSL {key_url} | gpg --dearmor --yes -o /etc/apt/keyrings/{name}.gpg", _sudo=True, _if=repo.did_change)
 apt.packages(name="Install apt packages", packages=APT_PACKAGES, update=True, upgrade=True, _sudo=True)
 
 # Mise config/install

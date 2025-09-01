@@ -105,7 +105,7 @@ Use [devcontainers/ci](https://github.com/devcontainers/ci) to run `mise` tasks 
 
 **Languages**: Go, Node.js, Python, Rust toolchain  
 **Cloud**: AWS/Azure/GCP CLIs, Terraform, Kubernetes (kubectl, k9s, k3d), Docker  
-**Development**: Git, just, mise, direnv, starship, zellij, LazyGit, neovim  
+**Development**: Git, just, mise, direnv, starship, zellij, LazyGit, neovim, envsubst  
 **Security**: Trivy, Semgrep, cosign, slsa-verifier  
 
 > **Complete list**: See [`build.py`](build.py) for all tools and versions  
@@ -138,7 +138,8 @@ just shell           # Run published image interactively
 
 **Security**: SBOM generation, signed packages, Trivy scanning, minimal attack surface  
 **Performance**: Multi-platform native builds, persistent caching, optimised layers  
-**Docker-in-Docker**: Privileged mode with volume persistence and automatic startup
+**Docker-in-Docker**: Privileged mode with volume persistence and automatic startup  
+**Repository Management**: Uses extrepo for secure standardised repos (Docker, Kubernetes, etc.)
 
 ## Use Cases
 
