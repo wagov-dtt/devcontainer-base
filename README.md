@@ -79,7 +79,7 @@ just publish        # Multi-platform build + publish + sign with provenance (req
 
 ### Use in CI/CD
 
-Use [devcontainers/ci](https://github.com/devcontainers/ci) to run `mise` tasks and `just` recipes in your devcontainer for guaranteed environment consistency:
+Use [devcontainers/ci](https://github.com/devcontainers/ci) to run `mise` tasks and `just` recipes in your devcontainer for guaranteed environment consistency (example [`test-devcontainer.yml`](.github/workflows/test-devcontainer.yml)):
 
 ```yaml
 - name: Configure AWS credentials
@@ -90,10 +90,13 @@ Use [devcontainers/ci](https://github.com/devcontainers/ci) to run `mise` tasks 
 
 - name: Run tests in devcontainer
   uses: devcontainers/ci@v0.3
+  env:
+    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   with:
     imageName: local/devcontainer
     push: never
-    inheritEnv: true
+    env: |
+      GITHUB_TOKEN
     runCmd: |
       just test
       mise run lint
