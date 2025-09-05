@@ -49,7 +49,6 @@ from pyinfra.operations import apt, files, server, systemd
 APT_REPOS = [
     # extrepo-managed (secure & standardised)
     ("docker-ce", None, "extrepo"),
-    ("helm", None, "extrepo"),
     ("github-cli", None, "extrepo"),
     ("kubernetes", None, "extrepo"),
     ("google_cloud", None, "extrepo"),
@@ -66,7 +65,7 @@ APT_PACKAGES = (
     # Container & Development
     ["extrepo", "docker-ce", "docker-ce-cli", "containerd.io", "docker-buildx-plugin", "docker-compose-plugin", "git", "neovim", "build-essential", "python3-dev"]
     # Cloud & Infrastructure
-    + ["azure-cli", "google-cloud-cli", "gh", "terraform", "helm", "ddev", "kubectl", "kustomize"]
+    + ["azure-cli", "google-cloud-cli", "gh", "terraform", "ddev", "kubectl", "kustomize"]
     # System & Utilities
     + ["sudo", "tini", "openssh-client", "bash-completion", "locales", "iptables", "ripgrep", "ugrep", "jq", "less", "unzip", "zip", "file", "rsync", "librsvg2-bin"]
     # Monitoring & Network Tools
@@ -80,7 +79,7 @@ MISE_TOOLS = (
     # Languages & Package Management
     ["go", "node", "python", "pnpm", "uv", "pipx", "cargo-binstall"]
     # Cloud & Infrastructure
-    + ["aws-cli", "aws-sam", "localstack", "k9s", "k3d", "terraform", "tflint", "terraform-docs", "vault"]
+    + ["aws-cli", "aws-sam", "localstack", "helm", "k9s", "k3d", "terraform", "tflint", "terraform-docs", "vault"]
     # Security & Quality
     + ["trivy", "cosign", "slsa-verifier", "semgrep", "lychee"]
     # Shell & Development Tools
