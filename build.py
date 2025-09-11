@@ -134,7 +134,8 @@ if distro and distro.get("name") == "Debian":
 # Get setup user from environment or current user
 user = os.getenv("SETUP_USER", getpass.getuser())
 server.user(user=user, create_home=True, _sudo=True)
-home = f"/home/{user}"
+_status, _stdout = host.run_shell_command(f"getent passwd {user} | cut -d: -f6")
+home = _stdout.output.strip()
 
 # Configure sudo and locale
 files.block(content=f"{user} ALL=(ALL) NOPASSWD:ALL", path=f"/etc/sudoers.d/{user}", _sudo=True)
@@ -180,4 +181,4 @@ server.shell(
 server.user(name="Configure groups", user=user, shell="/bin/bash", groups=["sudo", "docker"], _sudo=True)
 files.block(name="Shell extras", path=f"{home}/.bashrc", content=BASHRC_EXTRAS, try_prevent_shell_expansion=True, _sudo_user=user)
 # Fix home directory ownership recursively
-server.shell(commands=f"chown -R {user}:{user} {home}", _sudo=True)
+server.shell(commands=f"find {home} -maxdepth 2 -type d -exec chown {user}:{user} {{}} \\;", _sudo=True)
