@@ -29,8 +29,8 @@ test: build
         {{test_tag}} \
         -c "mise doctor && docker network create test-network && docker run --rm --network test-network ghcr.io/curl/curl-container/curl-multi:master -s ipinfo.io && https ipinfo.io && docker network rm test-network"
 
-# Interactive development shell (build + test + shell)
-dev: test
+# Interactive development shell (build + shell)
+dev: build
     @echo "🔓 Starting development shell..."
     docker run {{docker_args}} {{test_tag}}
 

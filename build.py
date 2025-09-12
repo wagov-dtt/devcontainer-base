@@ -41,9 +41,9 @@ if __name__ == "__main__":
 import getpass
 import os
 
-from pyinfra import host
+from pyinfra import config, host
 from pyinfra.facts.server import LinuxDistribution, Users
-from pyinfra.operations import apt, files, server, systemd
+from pyinfra.operations import apt, files, python, server, systemd
 
 # APT repositories (extrepo where available, manual otherwise)
 APT_REPOS = [
@@ -122,6 +122,8 @@ start_docker() {
 start_docker
 """
 
+config.SUDO = True
+
 # Check Debian version and warn if not Trixie
 distro = host.get_fact(LinuxDistribution)
 if distro and distro.get("name") == "Debian":
@@ -133,52 +135,58 @@ if distro and distro.get("name") == "Debian":
 
 # Get setup user from environment or current user
 user = os.getenv("SETUP_USER", getpass.getuser())
-server.user(user=user, create_home=True, _sudo=True)
-_status, _stdout = host.run_shell_command(f"getent passwd {user} | cut -d: -f6")
-home = _stdout.output.strip()
+server.user(user=user, create_home=True)
 
 # Configure sudo and locale
-files.block(content=f"{user} ALL=(ALL) NOPASSWD:ALL", path=f"/etc/sudoers.d/{user}", _sudo=True)
-files.file(path=f"/etc/sudoers.d/{user}", mode=440, _sudo=True)
-apt.packages(packages=["curl", "gnupg", "locales", "extrepo"], update=True, _sudo=True)
-server.locale("en_US.UTF-8", _sudo=True)
+files.block(content=f"{user} ALL=(ALL) NOPASSWD:ALL", path=f"/etc/sudoers.d/{user}")
+files.file(path=f"/etc/sudoers.d/{user}", mode=440)
+apt.packages(packages=["curl", "gnupg", "locales", "extrepo"], update=True)
+server.locale("en_US.UTF-8")
 
 # Configure extrepo to enable non-free policies
-files.line(name="Enable contrib policy", path="/etc/extrepo/config.yaml", line="# - contrib", replace="- contrib", _sudo=True)
-files.line(name="Enable non-free policy", path="/etc/extrepo/config.yaml", line="# - non-free", replace="- non-free", _sudo=True)
+files.line(name="Enable contrib policy", path="/etc/extrepo/config.yaml", line="# - contrib", replace="- contrib")
+files.line(name="Enable non-free policy", path="/etc/extrepo/config.yaml", line="# - non-free", replace="- non-free")
 
 # Setup repositories (extrepo & manual)
-files.directory(name="Create keyrings directory", path="/etc/apt/keyrings", mode="755", _sudo=True)
+files.directory(name="Create keyrings directory", path="/etc/apt/keyrings", mode="755")
 for name, key_url, deb_info in APT_REPOS:
     if deb_info == "extrepo":
         # Use extrepo for secure & standardised repos
-        server.shell(commands=f"extrepo enable {name}", _sudo=True)
+        server.shell(commands=f"extrepo enable {name}")
     else:
         # Manual repository setup
-        repo = apt.repo(src=f"deb [signed-by=/etc/apt/keyrings/{name}.gpg] {deb_info}", filename=name, _sudo=True)
-        server.shell(commands=f"curl -fsSL {key_url} | gpg --dearmor --yes -o /etc/apt/keyrings/{name}.gpg", _sudo=True, _if=repo.did_change)
-apt.packages(name="Install apt packages", packages=APT_PACKAGES, update=True, upgrade=True, _sudo=True)
-
-# Mise config/install
-files.directory(path=f"{home}/.config/mise", user=user, group=user, mode="755")
-files.block(name="Mise config", path=f"{home}/.config/mise/config.toml", try_prevent_shell_expansion=True, content=MISE_TOML)
-files.file(path=f"{home}/.config/mise/config.toml", user=user, group=user, mode="644")
-server.shell(commands="mise install --yes", _env={"GITHUB_TOKEN": os.getenv("GITHUB_TOKEN", "")}, _su_user=user, _sudo=True)
+        repo = apt.repo(src=f"deb [signed-by=/etc/apt/keyrings/{name}.gpg] {deb_info}", filename=name)
+        server.shell(commands=f"curl -fsSL {key_url} | gpg --dearmor --yes -o /etc/apt/keyrings/{name}.gpg", _if=repo.did_change)
+apt.packages(name="Install apt packages", packages=APT_PACKAGES, update=True, upgrade=True)
 
 # Configure systemctl for rootful Docker (ignore failures if no systemd)
-systemd.service(service="docker", enabled=False, user_mode=True, _su_user=user, _sudo=True, _ignore_errors=True)
-docker_systemd = systemd.service(service="docker", enabled=True, running=True, _sudo=True, _ignore_errors=True)
+server.user(name="Configure groups", user=user, shell="/bin/bash", groups=["sudo", "docker"])
+systemd.service(service="docker", enabled=False, user_mode=True, _su_user=user, _ignore_errors=True)
+docker_systemd = systemd.service(service="docker", enabled=True, running=True, _ignore_errors=True)
 
 # Use legacy iptables only in container environments (when systemd docker service failed)
 server.shell(
     name="iptables-legacy (container mode)",
     commands=["update-alternatives --set iptables /usr/sbin/iptables-legacy", "update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy"],
     _if=docker_systemd.did_error,
-    _sudo=True,
 )
 
-# Shell & docker configuration
-server.user(name="Configure groups", user=user, shell="/bin/bash", groups=["sudo", "docker"], _sudo=True)
-files.block(name="Shell extras", path=f"{home}/.bashrc", content=BASHRC_EXTRAS, try_prevent_shell_expansion=True, _sudo_user=user)
-# Fix home directory ownership recursively
-server.shell(commands=f"find {home} -maxdepth 2 -type d -exec chown {user}:{user} {{}} \\;", _sudo=True)
+
+# Configure home dir
+def in_home(state, host):
+    _status, _stdout = host.run_shell_command(f"getent passwd {user} | cut -d: -f6")
+    home = _stdout.output.strip()
+
+    # Mise config/install
+    files.directory(path=f"{home}/.config/mise", user=user, group=user, mode="755")
+    files.block(name="Mise config", path=f"{home}/.config/mise/config.toml", try_prevent_shell_expansion=True, content=MISE_TOML)
+    files.file(path=f"{home}/.config/mise/config.toml", user=user, group=user, mode="644")
+    server.shell(commands="mise install --yes", _env={"GITHUB_TOKEN": os.getenv("GITHUB_TOKEN", "")}, _su_user=user)
+
+    # Shell & docker configuration
+    files.block(name="Shell extras", path=f"{home}/.bashrc", content=BASHRC_EXTRAS, try_prevent_shell_expansion=True, _sudo_user=user)
+    # Fix home directory ownership recursively
+    server.shell(commands=f"find {home} -maxdepth 2 -type d -exec chown {user}:{user} {{}} \\;")
+
+
+python.call(function=in_home)
