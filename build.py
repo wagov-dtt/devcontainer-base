@@ -77,7 +77,7 @@ APT_PACKAGES = (
 # Mise tools configuration
 MISE_TOOLS = (
     # Languages & Package Management
-    ["go", "node", "python", "pnpm", "uv", "pipx", "cargo-binstall"]
+    ["go", "node", "python", "pnpm", "uv", "pipx", "cargo-binstall", "ubi:railwayapp/railpack"]
     # Cloud & Infrastructure
     + ["aws-cli", "aws-sam", "localstack", "helm", "k9s", "k3d", "terraform", "tflint", "terraform-docs", "vault"]
     # Security & Quality
