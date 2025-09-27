@@ -181,7 +181,7 @@ def in_home(state, host):
     files.directory(path=f"{home}/.config/mise", user=user, group=user, mode="755")
     files.block(name="Mise config", path=f"{home}/.config/mise/config.toml", try_prevent_shell_expansion=True, content=MISE_TOML)
     files.file(path=f"{home}/.config/mise/config.toml", user=user, group=user, mode="644")
-    server.shell(commands="mise install --yes", _env={"GITHUB_TOKEN": os.getenv("GITHUB_TOKEN", "")}, _su_user=user)
+    server.shell(commands="mise install --yes", _env={"GITHUB_TOKEN": os.getenv("GITHUB_TOKEN", "")}, _sudo=True, _su_user=user)
 
     # Shell & docker configuration
     files.block(name="Shell extras", path=f"{home}/.bashrc", content=BASHRC_EXTRAS, try_prevent_shell_expansion=True, _sudo_user=user)
