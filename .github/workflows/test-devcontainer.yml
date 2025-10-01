@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
   test-devcontainer-ci:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-16core
     steps:
       - name: Checkout
         uses: actions/checkout@v4
