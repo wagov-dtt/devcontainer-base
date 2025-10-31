@@ -39,9 +39,11 @@ if __name__ == "__main__":
         cli()
 
 import getpass
+import io
 import os
 
 from pyinfra import config, host
+from pyinfra.facts.files import FileContents
 from pyinfra.facts.server import LinuxDistribution, Users
 from pyinfra.operations import apt, files, python, server, systemd
 
@@ -99,7 +101,9 @@ trusted_config_paths = ["/workspaces"]
 {"\n".join([f'"{tool}" = "latest"' for tool in MISE_TOOLS])}
 """
 
-BASHRC_EXTRAS = """
+BASHRC = io.StringIO(
+    "\n".join(host.get_fact(FileContents, "/etc/skel/.bashrc"))
+    + """
 # Shell enhancements
 eval "$(mise activate bash)"
 eval "$(starship init bash)"
@@ -121,6 +125,7 @@ start_docker() {
 }
 start_docker
 """
+)
 
 config.SUDO = True
 
@@ -184,7 +189,7 @@ def in_home(state, host):
     server.shell(commands="mise install --yes", _env={"GITHUB_TOKEN": os.getenv("GITHUB_TOKEN", "")}, _sudo=True, _su_user=user)
 
     # Shell & docker configuration
-    files.block(name="Shell extras", path=f"{home}/.bashrc", content=BASHRC_EXTRAS, try_prevent_shell_expansion=True, _sudo_user=user)
+    files.put(name="Shell extras", src=BASHRC, dest=f"{home}/.bashrc", _sudo_user=user)
     # Fix home directory ownership recursively
     server.shell(commands=f"find {home} -maxdepth 2 -type d -exec chown {user}:{user} {{}} \\;")
 
