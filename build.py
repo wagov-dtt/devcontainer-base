@@ -56,7 +56,6 @@ APT_REPOS = [
     ("google_cloud", None, "extrepo"),
     # Manual repositories (not in extrepo)
     ("ddev", "https://pkg.ddev.com/apt/gpg.key", "https://pkg.ddev.com/apt/ * *"),
-    ("charm", "https://repo.charm.sh/apt/gpg.key", "https://repo.charm.sh/apt/ * *"),
     ("mise", "https://mise.jdx.dev/gpg-key.pub", "https://mise.jdx.dev/deb stable main"),
     ("hashicorp", "https://apt.releases.hashicorp.com/gpg", "https://apt.releases.hashicorp.com bookworm main"),
     ("microsoft", "https://packages.microsoft.com/keys/microsoft.asc", "https://packages.microsoft.com/repos/azure-cli/ bookworm main"),
@@ -71,12 +70,14 @@ APT_PACKAGES = (
     # System & Utilities
     + ["sudo", "tini", "openssh-client", "bash-completion", "locales", "iptables", "ripgrep", "ugrep", "jq", "less", "unzip", "zip", "file", "rsync", "librsvg2-bin"]
     # Monitoring & Network Tools
-    + ["btop", "htop", "procps", "lsof", "iputils-ping", "dnsutils", "net-tools", "restic", "rclone", "crush", "wget", "fzf"]
+    + ["btop", "htop", "procps", "lsof", "iputils-ping", "dnsutils", "net-tools", "restic", "rclone", "wget", "fzf"]
     # Tool Managers
     + ["mise"]
 )
 
 # Mise tools configuration
+# Simple: "tool-name" -> "tool-name" = "latest"
+# Complex: ("tool-name", {"version": "latest", "extras": ["proxy"], "uvx_args": "--with boto3"})
 MISE_TOOLS = (
     # Languages & Package Management
     ["go", "node", "python", "pnpm", "uv", "pipx", "cargo-binstall", "ubi:railwayapp/railpack"]
@@ -86,9 +87,64 @@ MISE_TOOLS = (
     + ["trivy", "cosign", "slsa-verifier", "semgrep", "lychee"]
     # Shell & Development Tools
     + ["just", "yq", "zellij", "starship", "zoxide", "eza", "direnv", "lazygit", "hurl", "envsubst"]
+    # AI & Development Tools
+    + ["ubi:block/goose", ("pipx:litellm", {"version": "latest", "extras": ["proxy"], "uvx_args": "--with boto3"})]
     # Documentation & Utilities
     + ["pipx:tldr", "pipx:httpie", "cargo:mdbook", "npm:@devcontainers/cli", "ubi:rvben/rumdl", "ubi:boyter/scc"]
 )
+
+
+def format_mise_tool(tool):
+    """Convert tool definition to TOML format.
+    
+    Args:
+        tool: String "tool-name" or tuple ("tool-name", config_dict)
+    
+    Returns:
+        TOML formatted string
+    """
+    if isinstance(tool, str):
+        return f'"{tool}" = "latest"'
+    elif isinstance(tool, tuple):
+        name, config = tool
+        return f'"{name}" = {format_tool_config(config)}'
+    else:
+        raise ValueError(f"Invalid tool format: {tool}")
+
+
+def format_tool_config(config):
+    """Format a config dict to TOML inline table.
+    
+    Args:
+        config: Dict like {"version": "latest", "extras": ["proxy"], "uvx_args": "--with boto3"}
+    
+    Returns:
+        TOML inline table string like '{ version = "latest", extras = "proxy", uvx_args = "--with boto3" }'
+    """
+    if isinstance(config, str):
+        # Legacy support for raw TOML strings
+        return config
+    
+    parts = []
+    for key, value in config.items():
+        if isinstance(value, str):
+            parts.append(f'{key} = "{value}"')
+        elif isinstance(value, list):
+            # Convert list to TOML array syntax (but for extras we use string)
+            if key == "extras":
+                # mise expects extras as a string, not array
+                parts.append(f'{key} = "{",".join(value)}"')
+            else:
+                items = ", ".join(f'"{v}"' for v in value)
+                parts.append(f'{key} = [{items}]')
+        elif isinstance(value, (int, float)):
+            parts.append(f"{key} = {value}")
+        elif isinstance(value, bool):
+            parts.append(f"{key} = {str(value).lower()}")
+        else:
+            raise ValueError(f"Unsupported config value type for {key}: {type(value)}")
+    
+    return "{ " + ", ".join(parts) + " }"
 
 MISE_TOML = f"""
 [settings]
@@ -98,7 +154,7 @@ python.compile = false
 trusted_config_paths = ["/workspaces"]
 
 [tools]
-{"\n".join([f'"{tool}" = "latest"' for tool in MISE_TOOLS])}
+{"\n".join([format_mise_tool(tool) for tool in MISE_TOOLS])}
 """
 
 BASHRC = io.StringIO(
