@@ -67,7 +67,7 @@ APT_PACKAGES = (
 # Complex: ("tool-name", {"version": "latest", "extras": ["proxy"], "uvx_args": "--with boto3"})
 MISE_TOOLS = (
     # Languages & Package Management
-    ["go", "node", "python", "pnpm", "uv", "pipx", "cargo-binstall", "ubi:railwayapp/railpack"]
+    ["go", "node", "python", "pnpm", "uv", "pipx", "cargo-binstall", "github:railwayapp/railpack"]
     # Cloud & Infrastructure
     + ["aws-cli", "aws-sam", "localstack", "helm", "k9s", "k3d", "terraform", "tflint", "terraform-docs", "vault"]
     # Security & Quality
@@ -75,9 +75,9 @@ MISE_TOOLS = (
     # Shell & Development Tools
     + ["just", "yq", "zellij", "starship", "zoxide", "eza", "direnv", "lazygit", "hurl", "envsubst"]
     # AI & Development Tools
-    + ["ubi:block/goose", ("pipx:litellm", '{ version = "latest", extras = "proxy", uvx_args = "--with boto3" }')]
+    + ["github:block/goose", ("pipx:litellm", '{ version = "latest", extras = "proxy", uvx_args = "--with boto3" }')]
     # Documentation & Utilities
-    + ["pipx:tldr", "pipx:httpie", "cargo:mdbook", "npm:@devcontainers/cli", "ubi:rvben/rumdl", "ubi:boyter/scc"]
+    + ["pipx:tldr", "pipx:httpie", "cargo:mdbook", "npm:@devcontainers/cli", "github:rvben/rumdl", "github:boyter/scc"]
 )
 
 
@@ -86,7 +86,7 @@ def format_mise_tool(tool):
         return f'"{tool}" = "latest"'
     elif isinstance(tool, tuple):
         name, config = tool
-        return f'"{name}" = {tool}'
+        return f'"{name}" = {config}'
 
 MISE_TOML = f"""
 [settings]
