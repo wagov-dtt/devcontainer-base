@@ -23,7 +23,9 @@ if __name__ == "__main__":
 
     from pyinfra_cli.main import cli
 
-    with tempfile.NamedTemporaryFile(delete_on_close=False, mode="w", suffix=".py") as tmpfile:
+    with tempfile.NamedTemporaryFile(
+        delete_on_close=False, mode="w", suffix=".py"
+    ) as tmpfile:
         # If being directly executed, save file to a deploy file pyinfra can use
         if sys.orig_argv[1] == "-c":
             tmpfile.write(sys.orig_argv[2])
@@ -48,18 +50,74 @@ from pyinfra.facts.server import LinuxDistribution, Users
 from pyinfra.operations import apt, files, python, server, systemd
 
 # APT repositories (extrepo)
-APT_REPOS = ["docker-ce", "github-cli", "kubernetes", "google_cloud", "ddev", "mise", "hashicorp"]
+APT_REPOS = [
+    "docker-ce",
+    "github-cli",
+    "kubernetes",
+    "google_cloud",
+    "ddev",
+    "mise",
+    "hashicorp",
+]
 
 # APT packages configuration
 APT_PACKAGES = (
     # Container & Development
-    ["extrepo", "docker-ce", "docker-ce-cli", "containerd.io", "docker-buildx-plugin", "docker-compose-plugin", "git", "neovim", "build-essential", "python3-dev"]
+    [
+        "extrepo",
+        "docker-ce",
+        "docker-ce-cli",
+        "containerd.io",
+        "docker-buildx-plugin",
+        "docker-compose-plugin",
+        "git",
+        "neovim",
+        "build-essential",
+        "python3-dev",
+    ]
     # Cloud & Infrastructure
-    + ["mise", "azure-cli", "google-cloud-cli", "gh", "terraform", "ddev", "kubectl", "kustomize"]
+    + [
+        "mise",
+        "azure-cli",
+        "google-cloud-cli",
+        "gh",
+        "terraform",
+        "ddev",
+        "kubectl",
+        "kustomize",
+    ]
     # System & Utilities
-    + ["sudo", "tini", "openssh-client", "bash-completion", "locales", "iptables", "ripgrep", "ugrep", "jq", "less", "unzip", "zip", "file", "rsync", "librsvg2-bin"]
+    + [
+        "sudo",
+        "tini",
+        "openssh-client",
+        "bash-completion",
+        "locales",
+        "iptables",
+        "ripgrep",
+        "ugrep",
+        "jq",
+        "less",
+        "unzip",
+        "zip",
+        "file",
+        "rsync",
+        "librsvg2-bin",
+    ]
     # Monitoring & Network Tools
-    + ["btop", "htop", "procps", "lsof", "iputils-ping", "dnsutils", "net-tools", "restic", "rclone", "wget", "fzf"]
+    + [
+        "btop",
+        "htop",
+        "procps",
+        "lsof",
+        "iputils-ping",
+        "dnsutils",
+        "net-tools",
+        "restic",
+        "rclone",
+        "wget",
+        "fzf",
+    ]
 )
 
 # Mise tools configuration
@@ -67,17 +125,63 @@ APT_PACKAGES = (
 # Complex: ("tool-name", {"version": "latest", "extras": ["proxy"], "uvx_args": "--with boto3"})
 MISE_TOOLS = (
     # Languages & Package Management
-    ["go", "node", "python", "pnpm", "uv", "pipx", "cargo-binstall", "github:railwayapp/railpack"]
+    [
+        "go",
+        "node",
+        "python",
+        "pnpm",
+        "uv",
+        "pipx",
+        "cargo-binstall",
+        "github:railwayapp/railpack",
+    ]
     # Cloud & Infrastructure
-    + ["aws-cli", "aws-sam", "localstack", "helm", "k9s", "k3d", "terraform", "tflint", "terraform-docs", "vault"]
+    + [
+        "aws-cli",
+        "aws-sam",
+        "localstack",
+        "helm",
+        "k9s",
+        "k3d",
+        "terraform",
+        "tflint",
+        "terraform-docs",
+        "vault",
+    ]
     # Security & Quality
     + ["trivy", "cosign", "slsa-verifier", "semgrep", "lychee"]
     # Shell & Development Tools
-    + ["just", "yq", "zellij", "starship", "zoxide", "eza", "direnv", "lazygit", "hurl", "envsubst"]
+    + [
+        "just",
+        "yq",
+        "zellij",
+        "starship",
+        "zoxide",
+        "eza",
+        "direnv",
+        "lazygit",
+        "hurl",
+        "envsubst",
+    ]
     # AI & Development Tools
-    + ["github:block/goose", ("pipx:litellm", '{ version = "latest", extras = "proxy", uvx_args = "--with boto3" }')]
+    + [
+        "github:block/goose",
+        (
+            "pipx:litellm",
+            '{ version = "latest", extras = "proxy", uvx_args = "--with boto3" }',
+        ),
+        "opencode",
+        "pipx:strix-agent",
+    ]
     # Documentation & Utilities
-    + ["pipx:tldr", "pipx:httpie", "cargo:mdbook", "npm:@devcontainers/cli", "github:rvben/rumdl", "github:boyter/scc"]
+    + [
+        "pipx:tldr",
+        "pipx:httpie",
+        "cargo:mdbook",
+        "npm:@devcontainers/cli",
+        "rumdl",
+        "github:boyter/scc",
+    ]
 )
 
 
@@ -87,6 +191,7 @@ def format_mise_tool(tool):
     elif isinstance(tool, tuple):
         name, config = tool
         return f'"{name}" = {config}'
+
 
 MISE_TOML = f"""
 [settings]
@@ -133,7 +238,9 @@ if distro and distro.get("name") == "Debian":
     version = distro.get("major", "")
     codename = distro.get("release_meta", {}).get("CODENAME", "")
     if codename != "trixie" and version != "13":
-        print(f"Warning: This devcontainer is designed for Debian 13 (Trixie), but detected {distro.get('name')} {version} ({codename})")
+        print(
+            f"Warning: This devcontainer is designed for Debian 13 (Trixie), but detected {distro.get('name')} {version} ({codename})"
+        )
         print("Consider upgrading to Debian Trixie for optimal compatibility")
 
 # Get setup user from environment or current user
@@ -147,23 +254,44 @@ apt.packages(packages=["curl", "gnupg", "locales", "extrepo"], update=True)
 server.locale("en_US.UTF-8")
 
 # Configure extrepo to enable non-free policies
-files.line(name="Enable contrib policy", path="/etc/extrepo/config.yaml", line="# - contrib", replace="- contrib")
-files.line(name="Enable non-free policy", path="/etc/extrepo/config.yaml", line="# - non-free", replace="- non-free")
+files.line(
+    name="Enable contrib policy",
+    path="/etc/extrepo/config.yaml",
+    line="# - contrib",
+    replace="- contrib",
+)
+files.line(
+    name="Enable non-free policy",
+    path="/etc/extrepo/config.yaml",
+    line="# - non-free",
+    replace="- non-free",
+)
 
 # Setup repositories (extrepo)
 for repo in APT_REPOS:
     server.shell(commands=f"extrepo enable {repo}")
-apt.packages(name="Install apt packages", packages=APT_PACKAGES, update=True, upgrade=True)
+apt.packages(
+    name="Install apt packages", packages=APT_PACKAGES, update=True, upgrade=True
+)
 
 # Configure systemctl for rootful Docker (ignore failures if no systemd)
-server.user(name="Configure groups", user=user, shell="/bin/bash", groups=["sudo", "docker"])
-systemd.service(service="docker", enabled=False, user_mode=True, _su_user=user, _ignore_errors=True)
-docker_systemd = systemd.service(service="docker", enabled=True, running=True, _ignore_errors=True)
+server.user(
+    name="Configure groups", user=user, shell="/bin/bash", groups=["sudo", "docker"]
+)
+systemd.service(
+    service="docker", enabled=False, user_mode=True, _su_user=user, _ignore_errors=True
+)
+docker_systemd = systemd.service(
+    service="docker", enabled=True, running=True, _ignore_errors=True
+)
 
 # Use legacy iptables only in container environments (when systemd docker service failed)
 server.shell(
     name="iptables-legacy (container mode)",
-    commands=["update-alternatives --set iptables /usr/sbin/iptables-legacy", "update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy"],
+    commands=[
+        "update-alternatives --set iptables /usr/sbin/iptables-legacy",
+        "update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy",
+    ],
     _if=docker_systemd.did_error,
 )
 
@@ -175,14 +303,28 @@ def in_home(state, host):
 
     # Mise config/install
     files.directory(path=f"{home}/.config/mise", user=user, group=user, mode="755")
-    files.block(name="Mise config", path=f"{home}/.config/mise/config.toml", try_prevent_shell_expansion=True, content=MISE_TOML)
-    files.file(path=f"{home}/.config/mise/config.toml", user=user, group=user, mode="644")
-    server.shell(commands="mise install --yes", _env={"GITHUB_TOKEN": os.getenv("GITHUB_TOKEN", "")}, _sudo=True, _su_user=user)
+    files.block(
+        name="Mise config",
+        path=f"{home}/.config/mise/config.toml",
+        try_prevent_shell_expansion=True,
+        content=MISE_TOML,
+    )
+    files.file(
+        path=f"{home}/.config/mise/config.toml", user=user, group=user, mode="644"
+    )
+    server.shell(
+        commands="mise install --yes",
+        _env={"GITHUB_TOKEN": os.getenv("GITHUB_TOKEN", "")},
+        _sudo=True,
+        _su_user=user,
+    )
 
     # Shell & docker configuration
     files.put(name="Shell extras", src=BASHRC, dest=f"{home}/.bashrc", _sudo_user=user)
     # Fix home directory ownership recursively
-    server.shell(commands=f"find {home} -maxdepth 2 -type d -exec chown {user}:{user} {{}} \\;")
+    server.shell(
+        commands=f"find {home} -maxdepth 2 -type d -exec chown {user}:{user} {{}} \\;"
+    )
 
 
 python.call(function=in_home)
