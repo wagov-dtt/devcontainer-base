@@ -97,6 +97,15 @@ See [`.github/workflows/test-devcontainer.yml`](.github/workflows/test-devcontai
 - **Build**: Pyinfra script (`build.py`) installs everything during Docker build
 - **Docker-in-Docker**: Automatic startup via .bashrc, volume persistence
 
+### Tool Sources
+
+Tools are installed from two sources, preferring APT when available:
+
+1. **APT via [extrepo](https://wiki.debian.org/ExtRepo)** (preferred) - Signed packages from official repos
+   - Docker, Azure CLI, GCP CLI, GitHub CLI, Terraform, kubectl, mise
+2. **[mise](https://mise.jdx.dev)** - Cross-platform tools not in APT, or needing version flexibility
+   - Languages (Go, Node, Python), k9s, trivy, starship, AI tools
+
 ### Key Features
 
 - **Security**: SBOM, signed images, Trivy scanning

@@ -1,8 +1,11 @@
 .git
 .github
-README.md
-LICENSE
+.devcontainer
+.ruff_cache
+__pycache__
 *.md
 .gitignore
+.dockerignore
 trivy.yaml
 justfile
+install.sh

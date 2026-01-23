@@ -81,9 +81,9 @@ Example adding a new tool:
 # In build.py, find the relevant section:
 MISE_TOOLS = (
     # AI & Development Tools
-    + ["ubi:block/goose", ("pipx:litellm", {"version": "latest", "extras": ["proxy"], "uvx_args": "--with boto3"})]
-    # Simple: "tool-name" -> becomes "tool-name" = "latest"
-    # Complex: ("tool-name", {...dict...}) -> Python dict converted to TOML inline table
+    + ["github:block/goose", ("pipx:litellm", '{ version = "latest", extras = "proxy", uvx_args = "--with boto3" }')]
+    # Simple: "tool-name" -> becomes "tool-name" = "latest" in TOML
+    # Complex: ("tool-name", '{ TOML inline table }') -> becomes "tool-name" = { ... } in TOML
 )
 ```
 
@@ -104,6 +104,19 @@ just dev      # Interactive shell to test tools manually
 
 ## Tool Management
 
+Tools are installed from two sources. **Prefer APT when available** - signed packages from known repos are more trustworthy than mise downloads.
+
+### Tool Source Priority
+
+1. **APT via extrepo** (preferred) - Official signed packages
+   - Add repo to `APT_REPOS`, package to `APT_PACKAGES`
+   - Used for: Docker, Azure CLI, GCP CLI, GitHub CLI, Terraform, kubectl, mise
+2. **mise** - Only when APT unavailable or version flexibility needed
+   - Add to `MISE_TOOLS`
+   - Used for: Languages (Go, Node, Python), k9s, trivy, starship, AI tools
+
+### Configuration
+
 - All tools defined in `build.py` - check there for what's installed
 - Tools are organised by category (Languages, Cloud, Security, Shell, AI, etc.)
 - Debian packages for official tools (Docker, kubectl, terraform)
@@ -115,7 +128,7 @@ just dev      # Interactive shell to test tools manually
 
 This devcontainer includes AI development tools:
 
-- **goose**: AI coding agent CLI from Block (via ubi - native binary)
+- **goose**: AI coding agent CLI from Block (via github: backend - native binary)
 - **litellm[proxy]**: LLM proxy with unified API (via pipx with boto3 injected)
 
 These tools work together:

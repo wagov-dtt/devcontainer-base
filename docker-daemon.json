@@ -1,5 +1,0 @@
-{
-  "storage-driver": "overlay2",
-  "tls": false,
-  "iptables": false
-}

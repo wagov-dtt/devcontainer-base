@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # /// script
-# requires-python = ">=3.9"
+# requires-python = ">=3.12"
 # dependencies = [
 #   "pyinfra>=3",
 # ]
@@ -143,7 +143,6 @@ MISE_TOOLS = (
         "helm",
         "k9s",
         "k3d",
-        "terraform",
         "tflint",
         "terraform-docs",
         "vault",
@@ -210,7 +209,6 @@ BASHRC = io.StringIO(
 # Shell enhancements
 eval "$(mise activate bash)"
 eval "$(starship init bash)"
-mise reshim
 
 # Docker-in-Docker initialization
 start_docker() {
