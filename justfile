@@ -12,6 +12,9 @@ docker_args := "--privileged --cgroupns=host -it --rm" + \
     " --mount type=bind,source=" + justfile_directory() + ",target=" + workspace + \
     " --workdir " + workspace
 
+# Test command used by both local and CI (single source of truth)
+test_cmd := "mise doctor && docker network create test-network && docker run --rm --network test-network ghcr.io/curl/curl-container/curl-multi:master -s ipinfo.io && https ipinfo.io && docker network rm test-network"
+
 # Show available commands
 default:
     @just --list
@@ -31,7 +34,11 @@ test: build
     docker run --privileged --cgroupns=host --rm \
         --mount source={{docker_volume}},target=/var/lib/docker,type=volume \
         {{test_tag}} \
-        -c "mise doctor && docker network create test-network && docker run --rm --network test-network ghcr.io/curl/curl-container/curl-multi:master -s ipinfo.io && https ipinfo.io && docker network rm test-network"
+        -c "{{test_cmd}}"
+
+# Print test command (for CI to use)
+test-cmd:
+    @echo "{{test_cmd}}"
 
 # Interactive development shell (build + shell)
 dev: build

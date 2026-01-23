@@ -4,15 +4,16 @@ Production-ready development container with modern tooling for cloud-native and 
 
 ## What's Inside
 
-**Languages**: Go, Node.js, Python, Rust  
-**Cloud**: AWS, Azure, GCP CLIs, Terraform, Kubernetes tools (kubectl, k9s, k3d)  
-**AI Tools**: goose (AI coding agent), litellm (LLM proxy with AWS Bedrock support)  
-**Development**: Docker-in-Docker, git, just, mise, direnv, starship, zellij, neovim  
-**Security**: Trivy, Semgrep, cosign, SLSA verification
+**Languages**: [Go](https://go.dev), [Node.js](https://nodejs.org), [Python](https://python.org), [Rust](https://rust-lang.org) (via [cargo-binstall](https://github.com/cargo-bins/cargo-binstall)), [uv](https://github.com/astral-sh/uv), [pnpm](https://pnpm.io)  
+**Cloud**: [AWS CLI](https://aws.amazon.com/cli/), [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/), [GCP CLI](https://cloud.google.com/sdk/gcloud), [Terraform](https://terraform.io), Kubernetes ([kubectl](https://kubernetes.io/docs/reference/kubectl/), [k9s](https://k9scli.io), [k3d](https://k3d.io), [helm](https://helm.sh), [kustomize](https://kustomize.io))  
+**AI Tools**: [goose](https://block.github.io/goose), [opencode](https://opencode.ai), [strix](https://strix.ai), [litellm](https://litellm.ai) (LLM proxy with AWS Bedrock support)  
+**Development**: Docker-in-Docker, [git](https://git-scm.com), [just](https://just.systems), [mise](https://mise.jdx.dev), [direnv](https://direnv.net), [starship](https://starship.rs), [zellij](https://zellij.dev), [neovim](https://neovim.io), [lazygit](https://github.com/jesseduffield/lazygit)  
+**Security**: [Trivy](https://trivy.dev), [Semgrep](https://semgrep.dev), [cosign](https://github.com/sigstore/cosign), [SLSA verifier](https://github.com/slsa-framework/slsa-verifier), [lychee](https://lychee.cli.rs) (link checker)  
+**Utilities**: [ripgrep](https://github.com/BurntSushi/ripgrep), [fzf](https://github.com/junegunn/fzf), [jq](https://jqlang.github.io/jq/), [yq](https://mikefarah.gitbook.io/yq), [httpie](https://httpie.io), [hurl](https://hurl.dev), [btop](https://github.com/aristocratos/btop), [restic](https://restic.net), [rclone](https://rclone.org)
 
-> 💡 **Complete list**: See [`build.py`](build.py) - all tools defined in one place
+> **Complete list**: See [`build.py`](build.py) - all tools defined in one place
 
-## 🚀 Quick Start
+## Quick Start
 
 ### VS Code Devcontainer (Recommended)
 
@@ -87,34 +88,32 @@ Run tests in the devcontainer for guaranteed consistency:
 
 See [`.github/workflows/test-devcontainer.yml`](.github/workflows/test-devcontainer.yml) for complete example.
 
-## 📚 How It Works
+## How It Works
 
 ### Architecture
 
-- **Base**: Debian 13 (Trixie) stable + backports
+- **Base**: Debian stable-backports (currently Trixie/13)
 - **Package Management**: APT for system tools, mise for development tools
-- **Build**: Pyinfra script installs everything during Docker build
-- **Docker-in-Docker**: Automatic startup, volume persistence
+- **Build**: Pyinfra script (`build.py`) installs everything during Docker build
+- **Docker-in-Docker**: Automatic startup via .bashrc, volume persistence
 
 ### Key Features
 
-- **🔒 Security**: SBOM, signed images, Trivy scanning
-- **⚡ Performance**: Multi-platform builds, layer caching
-- **🔧 Flexibility**: mise auto-switches tool versions per project
-- **📦 Supply Chain**: Verified packages via extrepo
+- **Security**: SBOM, signed images, Trivy scanning
+- **Performance**: Multi-platform builds (amd64/arm64), layer caching
+- **Flexibility**: mise auto-switches tool versions per project
+- **Supply Chain**: Verified packages via extrepo
 
 ### Adding Tools
 
 Edit [`build.py`](build.py) and add to the appropriate list:
 
 ```python
-# Simple tool
 MISE_TOOLS = (
-    + ["pipx:your-tool"]  # or npm:, cargo:, ubi:user/repo
-)
+    # Simple: just the tool name (defaults to latest)
+    + ["pipx:your-tool"]  # or npm:, cargo:, github:user/repo
 
-# Complex tool with config
-MISE_TOOLS = (
+    # Complex: tuple with TOML config string
     + [("pipx:tool", '{ version = "latest", extras = "extra", uvx_args = "--with dep" }')]
 )
 ```
@@ -123,41 +122,47 @@ Then rebuild: `just build`
 
 See [AGENTS.md](AGENTS.md) for detailed guidance.
 
-## 🤖 AI Development
+## AI Development
 
 This container includes AI coding tools:
 
-- **goose** - AI coding agent from Block ([docs](https://block.github.io/goose))
-- **litellm** - Unified LLM proxy (OpenAI, Anthropic, AWS Bedrock, etc.)
+- **[goose](https://block.github.io/goose)** - AI coding agent from Block
+- **[opencode](https://opencode.ai)** - Terminal-based AI coding assistant
+- **[strix](https://strix.ai)** - AI security testing agent
+- **[litellm](https://litellm.ai)** - Unified LLM proxy (OpenAI, Anthropic, AWS Bedrock, etc.)
 
 ```bash
-# Start using goose
-goose session start
+# Start goose
+goose
 
-# Or use litellm proxy
+# Start opencode
+opencode
+
+# Start litellm proxy
 litellm --model gpt-4
 ```
 
 boto3 is automatically included in litellm for AWS Bedrock authentication.
 
-## 🔧 Development Commands
+## Development Commands
 
 ```bash
 just              # List all commands
 just build        # Build test image
 just test         # Test Docker-in-Docker
 just dev          # Interactive shell
-just scan         # Security scan
-just clean        # Clean up
+just scan         # Security scan with Trivy
+just lint         # Format and lint build.py
+just clean        # Clean up images and volumes
 ```
 
 **For maintainers:**
 ```bash
-just publish      # Multi-platform build + sign
-just shell        # Run published image
+just publish      # Multi-platform build + push + sign
+just shell        # Run published image interactively
 ```
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 | Issue | Solution |
 |-------|----------|
@@ -167,7 +172,7 @@ just shell        # Run published image
 | Permission errors | User should be in docker group (automatic) |
 | mise issues | Run `mise doctor` inside container |
 
-## 🤝 Contributing
+## Contributing
 
 1. Fork and clone the repo
 2. Make changes to `build.py`, `Dockerfile`, or docs

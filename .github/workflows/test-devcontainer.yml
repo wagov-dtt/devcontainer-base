@@ -1,12 +1,12 @@
 name: Test DevContainer CI
 
+# This workflow tests devcontainer functionality on PRs only.
+# Main branch builds are handled by build.yml which includes full multi-arch builds.
+
 on:
-  push:
-    branches: [main]
-    paths: ['.devcontainer/**', 'justfile', 'build.py', 'Dockerfile']
   pull_request:
     branches: [main]
-    paths: ['.devcontainer/**', 'justfile', 'build.py', 'Dockerfile']
+    paths: ['.devcontainer/**', 'justfile', 'build.py', 'Dockerfile', 'docker-bake.hcl']
   workflow_dispatch:
 
 concurrency:

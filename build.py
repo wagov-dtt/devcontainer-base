@@ -46,7 +46,7 @@ import os
 
 from pyinfra import config, host
 from pyinfra.facts.files import FileContents
-from pyinfra.facts.server import LinuxDistribution, Users
+from pyinfra.facts.server import LinuxDistribution
 from pyinfra.operations import apt, files, python, server, systemd
 
 # APT repositories (extrepo)
@@ -121,8 +121,8 @@ APT_PACKAGES = (
 )
 
 # Mise tools configuration
-# Simple: "tool-name" -> "tool-name" = "latest"
-# Complex: ("tool-name", {"version": "latest", "extras": ["proxy"], "uvx_args": "--with boto3"})
+# Simple: "tool-name" -> becomes "tool-name" = "latest" in TOML
+# Complex: ("tool-name", '{ TOML inline table }') -> becomes "tool-name" = { ... } in TOML
 MISE_TOOLS = (
     # Languages & Package Management
     [

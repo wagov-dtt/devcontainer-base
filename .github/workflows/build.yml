@@ -40,6 +40,15 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v6
+
+    - name: Install just
+      uses: extractions/setup-just@v3
+
+    - name: Validate TOML configuration
+      run: just check
     
     - name: Set build date for cache busting
       id: date
@@ -97,10 +106,10 @@ jobs:
         docker run --privileged --rm \
           --mount source=dind-var-lib-docker,target=/var/lib/docker,type=volume \
           "${{ steps.test-tag.outputs.value }}" \
-          -c "mise doctor && docker run --rm ghcr.io/curl/curl-container/curl-multi:master -s ipinfo.io && https ipinfo.io"
+          -c "$(just test-cmd)"
 
     - name: Scan for vulnerabilities
-      uses: aquasecurity/trivy-action@0.32.0
+      uses: aquasecurity/trivy-action@0.33.1
       with:
         image-ref: ${{ steps.test-tag.outputs.value }}
         format: 'sarif'
