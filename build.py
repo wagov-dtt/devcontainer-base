@@ -257,13 +257,34 @@ server.shell(name="Ensure docker group", commands="groupadd -f docker")
 # Docker socket init script (fixes permissions and API version at container start)
 DOCKER_INIT = io.StringIO("""\
 #!/bin/bash
-# Fix Docker socket permissions and API version at container start
-if [ -S /var/run/docker.sock ]; then
-    sudo groupmod -g "$(stat -c '%g' /var/run/docker.sock)" docker
-    API_VERSION=$(curl -sf --unix-socket /var/run/docker.sock http://localhost/version | jq -r .ApiVersion)
-    [ -n "$API_VERSION" ] && echo "DOCKER_API_VERSION=$API_VERSION" \
-        | sudo tee /etc/environment > /dev/null
+SOCK="/var/run/docker.sock"
+
+# 1. Guard clause: Exit cleanly if socket missing
+if [ ! -S "$SOCK" ]; then
+    echo "No Docker socket found at $SOCK"
+    exit 0
 fi
+
+# 2. Fix Permissions
+# Logic: Try to modify. If it works, log it. If it fails (already set), log alternate message.
+GID=$(stat -c '%g' "$SOCK")
+sudo groupmod -g "$GID" docker 2>/dev/null \
+    && echo "Updated Docker GID to $GID" \
+    || echo "Docker GID check: Skipped (Already set or permission denied)"
+
+# 3. API Version
+# Logic: Fetch with 2s timeout. If valid, write to file and log.
+VER=$(curl -sf -m 2 --unix-socket "$SOCK" http://localhost/version | jq -r .ApiVersion 2>/dev/null)
+
+if [ -n "$VER" ] && [ "$VER" != "null" ]; then
+    echo "DOCKER_API_VERSION=$VER" | sudo tee -a /etc/environment > /dev/null
+    echo "Set DOCKER_API_VERSION=$VER"
+else
+    echo "Warning: Could not detect Docker API version"
+fi
+
+# 4. Always exit success to prevent container build failure
+exit 0
 """)
 files.put(name="Docker init script", src=DOCKER_INIT, dest="/usr/local/bin/docker-init.sh")
 files.file(path="/usr/local/bin/docker-init.sh", mode="755")

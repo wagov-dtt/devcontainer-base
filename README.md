@@ -25,7 +25,7 @@ Create `.devcontainer/devcontainer.json`:
   "mounts": [
     "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
   ],
-  "postStartCommand": "docker-init.sh",
+  "onCreateCommand": "docker-init.sh",
   "remoteEnv": {
     "LOCAL_WORKSPACE_FOLDER": "${localWorkspaceFolder}"
   },
@@ -39,7 +39,7 @@ Open in VS Code: **Cmd/Ctrl+Shift+P** → "Dev Containers: Reopen in Container"
 <summary>Why these settings?</summary>
 
 - Docker socket bind mount - Enables Docker via host socket (no privileged mode needed, Docker CLI pre-installed via extrepo)
-- `postStartCommand` - Runs baked-in `docker-init.sh` which fixes socket permissions and auto-detects the daemon's API version (for Codespaces compatibility)
+- `onCreateCommand` - Runs baked-in `docker-init.sh` which fixes socket permissions and auto-detects the daemon's API version (for Codespaces compatibility)
 - `LOCAL_WORKSPACE_FOLDER` - Enables bind mounts from inside the container using host paths
 - `remoteUser: vscode` - Correct user permissions
 </details>

@@ -84,8 +84,8 @@ target "build-test" {
   inherits   = ["base", "docker-metadata-action"]
   platforms  = [platform(ARCH)]
   tags       = notequal(TAGS, "devcontainer-base:latest") && notequal(TAGS, "") ? tags(TAGS) : ["devcontainer-base:test"]
-  cache-from = ["type=gha,scope=${ARCH}"]
-  cache-to   = ["type=gha,mode=max,scope=${ARCH}"]
+  cache-from = ["type=gha,scope=${GITHUB_REF_NAME}-${ARCH}"]
+  cache-to   = ["type=gha,mode=max,scope=${GITHUB_REF_NAME}-${ARCH}"]
 }
 
 # CI release - multi-platform with cache from native builds
@@ -98,7 +98,7 @@ target "release" {
     "type=sbom"
   ]
   cache-from = [
-    "type=gha,scope=amd64",
-    "type=gha,scope=arm64"
+    "type=gha,scope=${GITHUB_REF_NAME}-amd64",
+    "type=gha,scope=${GITHUB_REF_NAME}-arm64"
   ]
 }

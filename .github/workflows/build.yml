@@ -170,20 +170,22 @@ jobs:
         AMD64_IMAGE="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}-amd64"
         ARM64_IMAGE="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}-arm64"
 
-        # Build annotation flags from metadata-action output
-        ANNOTATION_FLAGS=""
-        while IFS= read -r line; do
-          if [ -n "$line" ]; then
-            ANNOTATION_FLAGS="${ANNOTATION_FLAGS} --annotation \"${line}\""
-          fi
-        done <<< "${{ steps.meta.outputs.annotations }}"
-
         # Create multi-platform manifest for each tag
         for TAG in "${{ github.ref_name }}" "latest"; do
           echo "Creating manifest for ${TAG}..."
+          
+          # Build annotation args from metadata-action output
+          # Only use index: annotations (manifest: annotations not supported by imagetools create)
+          ANNOTATION_ARGS=()
+          while IFS= read -r line; do
+            if [ -n "$line" ] && [[ "$line" == index:* ]]; then
+              ANNOTATION_ARGS+=("--annotation" "$line")
+            fi
+          done <<< "${{ steps.meta.outputs.annotations }}"
+          
           docker buildx imagetools create \
             -t "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${TAG}" \
-            ${ANNOTATION_FLAGS} \
+            "${ANNOTATION_ARGS[@]}" \
             "${AMD64_IMAGE}" \
             "${ARM64_IMAGE}"
         done
