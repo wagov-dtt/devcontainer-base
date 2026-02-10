@@ -1,12 +1,12 @@
 {
 	"name": "wagov-dtt devcontainer-base",
 	"image": "ghcr.io/wagov-dtt/devcontainer-base",
-	"privileged": true,
-	"runArgs": [
-		"--cgroupns=host"
-	],
 	"mounts": [
-		"source=dind-var-lib-docker,target=/var/lib/docker,type=volume"
+		"source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
 	],
+	"postStartCommand": "docker-init.sh",
+	"remoteEnv": {
+		"LOCAL_WORKSPACE_FOLDER": "${localWorkspaceFolder}"
+	},
 	"remoteUser": "vscode"
 }

@@ -1,8 +1,15 @@
 .git
 .github
-README.md
-LICENSE
+.devcontainer
+.ruff_cache
+.venv
+__pycache__
 *.md
 .gitignore
+.dockerignore
 trivy.yaml
 justfile
+install.sh
+docker-bake.hcl
+pyproject.toml
+uv.lock

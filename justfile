@@ -1,16 +1,22 @@
 # Cloud Native Devcontainer - Build & Development
 
+# Auto-detect GITHUB_TOKEN from gh CLI to avoid API rate limits
+export GITHUB_TOKEN := env("GITHUB_TOKEN", `gh auth token 2>/dev/null || echo ""`)
+
 # Configuration
 tag := "ghcr.io/wagov-dtt/devcontainer-base:latest"
 test_tag := "devcontainer-base:test"
-docker_volume := "dind-var-lib-docker"
 workspace := "/workspaces/devcontainer-base"
 
-# Docker run args for interactive use
-docker_args := "--privileged --cgroupns=host -it --rm" + \
-    " --mount source=" + docker_volume + ",target=/var/lib/docker,type=volume" + \
+# Docker run args for interactive use (Docker-from-Docker via host socket)
+docker_args := "-it --rm" + \
+    " -v /var/run/docker.sock:/var/run/docker.sock" + \
+    " --group-add " + `stat -c '%g' /var/run/docker.sock` + \
     " --mount type=bind,source=" + justfile_directory() + ",target=" + workspace + \
     " --workdir " + workspace
+
+# Test command used by both local and CI (single source of truth)
+test_cmd := "mise doctor && docker network create test-network && docker run --rm --network test-network ghcr.io/curl/curl-container/curl-multi:master -s ipinfo.io && https ipinfo.io && docker network rm test-network"
 
 # Show available commands
 default:
@@ -18,27 +24,32 @@ default:
 
 # Validate build.py generates valid TOML
 check:
-    @uvx --with pyinfra --with tomli python3 -c 'exec(open("build.py").read().split("config.SUDO")[0]); import tomli; tomli.loads(MISE_TOML); print("TOML valid")'
+    @uv run python3 -c 'exec(open("build.py").read().split("config.SUDO")[0]); import tomli; tomli.loads(MISE_TOML); print("TOML valid")'
 
 # Build test image locally  
 build: check
     @echo "Building test image..."
     docker buildx bake test --progress=plain
 
-# Test Docker-in-Docker functionality
+# Test Docker-from-Docker functionality
 test: build
-    @echo "Testing mise & Docker-in-Docker..."
-    docker run --privileged --cgroupns=host --rm \
-        --mount source={{docker_volume}},target=/var/lib/docker,type=volume \
+    @echo "Testing mise & Docker-from-Docker..."
+    docker run --rm \
+        -v /var/run/docker.sock:/var/run/docker.sock \
+        --group-add $(stat -c '%g' /var/run/docker.sock) \
         {{test_tag}} \
-        -c "mise doctor && docker network create test-network && docker run --rm --network test-network ghcr.io/curl/curl-container/curl-multi:master -s ipinfo.io && https ipinfo.io && docker network rm test-network"
+        -c "{{test_cmd}}"
+
+# Print test command (for CI to use)
+test-cmd:
+    @echo "{{test_cmd}}"
 
 # Interactive development shell (build + shell)
 dev: build
     @echo "Starting development shell..."
     docker run {{docker_args}} {{test_tag}}
 
-# Publish to registry (build + push + sign)
+# Publish to registry (build + push, signing handled by bake attestations)
 publish:
     @echo "Building and publishing release image..."
     @echo "Authenticating with GHCR..."
@@ -46,8 +57,6 @@ publish:
     docker buildx bake release \
         --progress=plain \
         --set="release.tags={{tag}}"
-    @echo "Signing with cosign..."
-    cosign sign --yes {{tag}}
 
 # Run published image
 shell:
@@ -63,12 +72,11 @@ scan: build
 # Lint and format Python code
 lint:
     @echo "Linting and formatting..."
-    uvx ruff format --line-length 200 build.py
-    uvx ruff check --fix --select I --line-length 200 build.py
+    uv run ruff format build.py
+    uv run ruff check --fix build.py
 
-# Clean up images and volumes
+# Clean up images
 clean:
     @echo "Cleaning up..."
     -docker rmi {{tag}} {{test_tag}}
-    -docker volume rm {{docker_volume}}
     docker system prune -f

@@ -1,6 +1,7 @@
 FROM debian:stable-backports AS builder
 
-ENV DEBIAN_FRONTEND=noninteractive DOCKER_BUILDKIT=1
+ARG DEBIAN_FRONTEND=noninteractive
+ARG DATE
 
 # Copy build file
 COPY build.py ./
@@ -19,5 +20,4 @@ COPY --from=builder --link / /
 ENV DOCKER_BUILDKIT=1 TZ=Australia/Perth EDITOR=nvim TERM=xterm-256color COLORTERM=truecolor
 
 USER vscode
-VOLUME [ "/var/lib/docker" ]
 ENTRYPOINT ["tini", "--", "bash", "-il"]

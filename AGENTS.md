@@ -24,7 +24,7 @@ This repo follows ["grug-brained"](https://grugbrain.dev) principles. The goal i
    - Only abstract with 3+ identical cases AND an obvious pattern.
 
 4. **Testing: Behavior Over Implementation**
-   - Test that Docker-in-Docker works, not internal implementation
+   - Test that Docker works (via host socket), not internal implementation
    - Test that tools are installed and functional
    - Test what users experience, not how it's built
 
@@ -46,7 +46,7 @@ Run `just` to see all available commands. Most common workflows:
 
 ```bash
 just build    # Build test image locally
-just test     # Test Docker-in-Docker functionality
+just test     # Test Docker-from-Docker functionality
 just dev      # Interactive development shell
 ```
 
@@ -54,7 +54,7 @@ just dev      # Interactive development shell
 
 - **Base Image**: `debian:stable-backports` (Debian 13 Trixie stable + backports)
 - **Package Management**: Hybrid approach - Debian packages for official tools, mise for specialised tools
-- **Docker**: Official Docker CE with manual Docker-in-Docker setup
+- **Docker**: Docker-from-Docker via host socket bind mount (Docker CLI installed via extrepo)
 - **Build System**: Modern Docker BuildKit with docker bake and optimised caching
 - **Automation**: Pyinfra (`build.py`) handles repository setup and package installation during container build
 
@@ -81,9 +81,9 @@ Example adding a new tool:
 # In build.py, find the relevant section:
 MISE_TOOLS = (
     # AI & Development Tools
-    + ["ubi:block/goose", ("pipx:litellm", {"version": "latest", "extras": ["proxy"], "uvx_args": "--with boto3"})]
-    # Simple: "tool-name" -> becomes "tool-name" = "latest"
-    # Complex: ("tool-name", {...dict...}) -> Python dict converted to TOML inline table
+    + ["github:block/goose", ("pipx:litellm", '{ version = "latest", extras = "proxy", uvx_args = "--with boto3" }')]
+    # Simple: "tool-name" -> becomes "tool-name" = "latest" in TOML
+    # Complex: ("tool-name", '{ TOML inline table }') -> becomes "tool-name" = { ... } in TOML
 )
 ```
 
@@ -91,7 +91,7 @@ MISE_TOOLS = (
 
 ```bash
 just build    # Build test image with your changes
-just test     # Verify Docker-in-Docker works
+just test     # Verify Docker-from-Docker works
 just dev      # Interactive shell to test tools manually
 ```
 
@@ -104,6 +104,21 @@ just dev      # Interactive shell to test tools manually
 
 ## Tool Management
 
+Tools are installed from two sources. **Prefer APT when available** - signed packages from known repos are more trustworthy than mise downloads.
+
+### Tool Source Priority
+
+1. **APT via extrepo** (preferred) - Official signed packages
+   - Add repo to `APT_REPOS`, package to `APT_PACKAGES`
+   - Used for: Docker, GitHub CLI, Terraform, kubectl, mise, ddev
+   - Repos pre-enabled but not installed: GCP CLI (`google-cloud-cli`)
+   - Not available via extrepo on Trixie: Azure CLI (use `pipx install azure-cli`)
+2. **mise** - Only when APT unavailable or version flexibility needed
+   - Add to `MISE_TOOLS`
+   - Used for: Languages (Go, Node, Python), k9s, trivy, starship, AI tools
+
+### Configuration
+
 - All tools defined in `build.py` - check there for what's installed
 - Tools are organised by category (Languages, Cloud, Security, Shell, AI, etc.)
 - Debian packages for official tools (Docker, kubectl, terraform)
@@ -115,17 +130,18 @@ just dev      # Interactive shell to test tools manually
 
 This devcontainer includes AI development tools:
 
-- **goose**: AI coding agent CLI from Block (via ubi - native binary)
+- **goose**: AI coding agent CLI from Block (via github: backend - native binary)
+- **opencode**: Terminal-based AI coding assistant (via mise)
 - **litellm[proxy]**: LLM proxy with unified API (via pipx with boto3 injected)
 
 These tools work together:
 - litellm provides unified interface to multiple LLM providers (OpenAI, Anthropic, AWS Bedrock, etc.)
 - boto3 is automatically injected into litellm's environment for AWS Bedrock authentication
-- goose provides the AI agent interface for coding assistance
+- goose and opencode provide AI agent interfaces for coding assistance
 
 ## Troubleshooting
 
-**Docker not starting**: Check `just test` output, ensure `--privileged --cgroupns=host` in run args  
+**Docker not working**: Check `just test` output, ensure Docker socket is available on the host  
 **Tool missing**: Check `build.py` MISE_TOOLS or APT_PACKAGES lists  
 **Build fails**: Run `just clean` then `just build` to clear cache  
 **Permission issues**: Ensure `vscode` user is in docker group (handled by `build.py`)

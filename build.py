@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # /// script
-# requires-python = ">=3.9"
+# requires-python = ">=3.12"
 # dependencies = [
 #   "pyinfra>=3",
 # ]
@@ -41,110 +41,150 @@ if __name__ == "__main__":
 import getpass
 import io
 import os
+import pathlib
 
 from pyinfra import config, host
 from pyinfra.facts.files import FileContents
-from pyinfra.facts.server import LinuxDistribution, Users
+from pyinfra.facts.server import LinuxDistribution
 from pyinfra.operations import apt, files, python, server, systemd
 
-# APT repositories (extrepo where available, manual otherwise)
+# APT repositories (extrepo)
 APT_REPOS = [
-    # extrepo-managed (secure & standardised)
-    ("docker-ce", None, "extrepo"),
-    ("github-cli", None, "extrepo"),
-    ("kubernetes", None, "extrepo"),
-    ("google_cloud", None, "extrepo"),
-    # Manual repositories (not in extrepo)
-    ("ddev", "https://pkg.ddev.com/apt/gpg.key", "https://pkg.ddev.com/apt/ * *"),
-    ("mise", "https://mise.jdx.dev/gpg-key.pub", "https://mise.jdx.dev/deb stable main"),
-    ("hashicorp", "https://apt.releases.hashicorp.com/gpg", "https://apt.releases.hashicorp.com bookworm main"),
-    ("microsoft", "https://packages.microsoft.com/keys/microsoft.asc", "https://packages.microsoft.com/repos/azure-cli/ bookworm main"),
+    "docker-ce",
+    "github-cli",
+    "kubernetes",
+    "google_cloud",
+    "ddev",
+    "mise",
+    "hashicorp",
 ]
 
 # APT packages configuration
 APT_PACKAGES = (
     # Container & Development
-    ["extrepo", "docker-ce", "docker-ce-cli", "containerd.io", "docker-buildx-plugin", "docker-compose-plugin", "git", "neovim", "build-essential", "python3-dev"]
+    [
+        "extrepo",
+        "docker-ce-cli",
+        "docker-buildx-plugin",
+        "docker-compose-plugin",
+        "git",
+        "neovim",
+        "build-essential",
+        "python3-dev",
+    ]
     # Cloud & Infrastructure
-    + ["azure-cli", "google-cloud-cli", "gh", "terraform", "ddev", "kubectl", "kustomize"]
+    + [
+        "mise",
+        "gh",
+        "terraform",
+        "ddev",
+        "kubectl",
+        "kustomize",
+    ]
     # System & Utilities
-    + ["sudo", "tini", "openssh-client", "bash-completion", "locales", "iptables", "ripgrep", "ugrep", "jq", "less", "unzip", "zip", "file", "rsync", "librsvg2-bin"]
+    + [
+        "sudo",
+        "tini",
+        "openssh-client",
+        "bash-completion",
+        "locales",
+        "ripgrep",
+        "ugrep",
+        "jq",
+        "less",
+        "unzip",
+        "zip",
+        "file",
+        "rsync",
+        "librsvg2-bin",
+    ]
     # Monitoring & Network Tools
-    + ["btop", "htop", "procps", "lsof", "iputils-ping", "dnsutils", "net-tools", "restic", "rclone", "wget", "fzf"]
-    # Tool Managers
-    + ["mise"]
+    + [
+        "btop",
+        "htop",
+        "procps",
+        "lsof",
+        "iputils-ping",
+        "dnsutils",
+        "net-tools",
+        "restic",
+        "rclone",
+        "wget",
+        "fzf",
+    ]
 )
 
 # Mise tools configuration
-# Simple: "tool-name" -> "tool-name" = "latest"
-# Complex: ("tool-name", {"version": "latest", "extras": ["proxy"], "uvx_args": "--with boto3"})
+# Simple: "tool-name" -> becomes "tool-name" = "latest" in TOML
+# Complex: ("tool-name", '{ TOML inline table }') -> becomes "tool-name" = { ... } in TOML
 MISE_TOOLS = (
     # Languages & Package Management
-    ["go", "node", "python", "pnpm", "uv", "pipx", "cargo-binstall", "ubi:railwayapp/railpack"]
+    [
+        "go",
+        "node",
+        "python",
+        "pnpm",
+        "uv",
+        "pipx",
+        "cargo-binstall",
+        "github:railwayapp/railpack",
+    ]
     # Cloud & Infrastructure
-    + ["aws-cli", "aws-sam", "localstack", "helm", "k9s", "k3d", "terraform", "tflint", "terraform-docs", "vault"]
+    + [
+        "aws-cli",
+        "aws-sam",
+        "localstack",
+        "helm",
+        "k9s",
+        "k3d",
+        "tflint",
+        "terraform-docs",
+        "vault",
+    ]
     # Security & Quality
     + ["trivy", "cosign", "slsa-verifier", "semgrep", "lychee"]
     # Shell & Development Tools
-    + ["just", "yq", "zellij", "starship", "zoxide", "eza", "direnv", "lazygit", "hurl", "envsubst"]
+    + [
+        "just",
+        "yq",
+        "zellij",
+        "starship",
+        "zoxide",
+        "eza",
+        "direnv",
+        "lazygit",
+        "hurl",
+        "envsubst",
+    ]
     # AI & Development Tools
-    + ["ubi:block/goose", ("pipx:litellm", {"version": "latest", "extras": ["proxy"], "uvx_args": "--with boto3"})]
+    + [
+        "github:block/goose",
+        (
+            "pipx:litellm",
+            '{ version = "latest", extras = "proxy", uvx_args = "--with boto3" }',
+        ),
+        "opencode",
+    ]
     # Documentation & Utilities
-    + ["pipx:tldr", "pipx:httpie", "cargo:mdbook", "npm:@devcontainers/cli", "ubi:rvben/rumdl", "ubi:boyter/scc"]
+    + [
+        "pipx:tldr",
+        "pipx:httpie",
+        "cargo:mdbook",
+        "npm:@devcontainers/cli",
+        "rumdl",
+        "github:boyter/scc",
+    ]
 )
 
 
 def format_mise_tool(tool):
-    """Convert tool definition to TOML format.
-    
-    Args:
-        tool: String "tool-name" or tuple ("tool-name", config_dict)
-    
-    Returns:
-        TOML formatted string
-    """
     if isinstance(tool, str):
         return f'"{tool}" = "latest"'
     elif isinstance(tool, tuple):
         name, config = tool
-        return f'"{name}" = {format_tool_config(config)}'
-    else:
-        raise ValueError(f"Invalid tool format: {tool}")
+        return f'"{name}" = {config}'
+    raise ValueError(f"Unexpected tool type: {type(tool)}")
 
-
-def format_tool_config(config):
-    """Format a config dict to TOML inline table.
-    
-    Args:
-        config: Dict like {"version": "latest", "extras": ["proxy"], "uvx_args": "--with boto3"}
-    
-    Returns:
-        TOML inline table string like '{ version = "latest", extras = "proxy", uvx_args = "--with boto3" }'
-    """
-    if isinstance(config, str):
-        # Legacy support for raw TOML strings
-        return config
-    
-    parts = []
-    for key, value in config.items():
-        if isinstance(value, str):
-            parts.append(f'{key} = "{value}"')
-        elif isinstance(value, list):
-            # Convert list to TOML array syntax (but for extras we use string)
-            if key == "extras":
-                # mise expects extras as a string, not array
-                parts.append(f'{key} = "{",".join(value)}"')
-            else:
-                items = ", ".join(f'"{v}"' for v in value)
-                parts.append(f'{key} = [{items}]')
-        elif isinstance(value, (int, float)):
-            parts.append(f"{key} = {value}")
-        elif isinstance(value, bool):
-            parts.append(f"{key} = {str(value).lower()}")
-        else:
-            raise ValueError(f"Unsupported config value type for {key}: {type(value)}")
-    
-    return "{ " + ", ".join(parts) + " }"
 
 MISE_TOML = f"""
 [settings]
@@ -163,23 +203,7 @@ BASHRC = io.StringIO(
 # Shell enhancements
 eval "$(mise activate bash)"
 eval "$(starship init bash)"
-mise reshim
-
-# Docker-in-Docker initialization
-start_docker() {
-    if test -d /run/systemd/system; then return 0; fi
-    if pgrep -x dockerd >/dev/null 2>&1; then return 0; fi
-    find /var/run -name "docker*.pid" -delete 2>/dev/null || true
-    sudo dockerd >/tmp/dockerd.log 2>&1 &
-    local timeout=5
-    while ((timeout-- > 0)); do
-        if docker version >/dev/null 2>&1; then return 0; fi
-        sleep 1
-    done
-    echo "Error: Docker failed to start within 5 seconds" >&2
-    return 1
-}
-start_docker
+eval "$(zoxide init bash)"
 """
 )
 
@@ -205,32 +229,49 @@ apt.packages(packages=["curl", "gnupg", "locales", "extrepo"], update=True)
 server.locale("en_US.UTF-8")
 
 # Configure extrepo to enable non-free policies
-files.line(name="Enable contrib policy", path="/etc/extrepo/config.yaml", line="# - contrib", replace="- contrib")
-files.line(name="Enable non-free policy", path="/etc/extrepo/config.yaml", line="# - non-free", replace="- non-free")
+files.line(
+    name="Enable contrib policy",
+    path="/etc/extrepo/config.yaml",
+    line="# - contrib",
+    replace="- contrib",
+)
+files.line(
+    name="Enable non-free policy",
+    path="/etc/extrepo/config.yaml",
+    line="# - non-free",
+    replace="- non-free",
+)
 
-# Setup repositories (extrepo & manual)
-files.directory(name="Create keyrings directory", path="/etc/apt/keyrings", mode="755")
-for name, key_url, deb_info in APT_REPOS:
-    if deb_info == "extrepo":
-        # Use extrepo for secure & standardised repos
-        server.shell(commands=f"extrepo enable {name}")
-    else:
-        # Manual repository setup
-        repo = apt.repo(src=f"deb [signed-by=/etc/apt/keyrings/{name}.gpg] {deb_info}", filename=name)
-        server.shell(commands=f"curl -fsSL {key_url} | gpg --dearmor --yes -o /etc/apt/keyrings/{name}.gpg", _if=repo.did_change)
+# Setup repositories (extrepo)
+for repo in APT_REPOS:
+    server.shell(commands=f"extrepo enable {repo}")
 apt.packages(name="Install apt packages", packages=APT_PACKAGES, update=True, upgrade=True)
 
-# Configure systemctl for rootful Docker (ignore failures if no systemd)
+# Install Docker daemon only on bare metal (systemd present, not in container builds)
+if pathlib.Path("/run/systemd/system").is_dir():
+    apt.packages(name="Install Docker daemon (bare metal)", packages=["docker-ce", "containerd.io"])
+
+# Ensure docker group exists (docker-ce-cli doesn't create it, only docker-ce does)
+server.shell(name="Ensure docker group", commands="groupadd -f docker")
+
+# Docker socket init script (fixes permissions and API version at container start)
+DOCKER_INIT = io.StringIO("""\
+#!/bin/bash
+# Fix Docker socket permissions and API version at container start
+if [ -S /var/run/docker.sock ]; then
+    sudo groupmod -g "$(stat -c '%g' /var/run/docker.sock)" docker
+    API_VERSION=$(curl -sf --unix-socket /var/run/docker.sock http://localhost/version | jq -r .ApiVersion)
+    [ -n "$API_VERSION" ] && echo "export DOCKER_API_VERSION=$API_VERSION" \
+        | sudo tee /etc/profile.d/docker-api.sh > /dev/null
+fi
+""")
+files.put(name="Docker init script", src=DOCKER_INIT, dest="/usr/local/bin/docker-init.sh")
+files.file(path="/usr/local/bin/docker-init.sh", mode="755")
+
+# Configure user groups and Docker service (for bare metal installs with systemd)
 server.user(name="Configure groups", user=user, shell="/bin/bash", groups=["sudo", "docker"])
 systemd.service(service="docker", enabled=False, user_mode=True, _su_user=user, _ignore_errors=True)
-docker_systemd = systemd.service(service="docker", enabled=True, running=True, _ignore_errors=True)
-
-# Use legacy iptables only in container environments (when systemd docker service failed)
-server.shell(
-    name="iptables-legacy (container mode)",
-    commands=["update-alternatives --set iptables /usr/sbin/iptables-legacy", "update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy"],
-    _if=docker_systemd.did_error,
-)
+systemd.service(service="docker", enabled=True, running=True, _ignore_errors=True)
 
 
 # Configure home dir
@@ -240,11 +281,21 @@ def in_home(state, host):
 
     # Mise config/install
     files.directory(path=f"{home}/.config/mise", user=user, group=user, mode="755")
-    files.block(name="Mise config", path=f"{home}/.config/mise/config.toml", try_prevent_shell_expansion=True, content=MISE_TOML)
+    files.block(
+        name="Mise config",
+        path=f"{home}/.config/mise/config.toml",
+        try_prevent_shell_expansion=True,
+        content=MISE_TOML,
+    )
     files.file(path=f"{home}/.config/mise/config.toml", user=user, group=user, mode="644")
-    server.shell(commands="mise install --yes", _env={"GITHUB_TOKEN": os.getenv("GITHUB_TOKEN", "")}, _sudo=True, _su_user=user)
+    server.shell(
+        commands="mise install --yes",
+        _env={"GITHUB_TOKEN": os.getenv("GITHUB_TOKEN", "")},
+        _sudo=True,
+        _su_user=user,
+    )
 
-    # Shell & docker configuration
+    # Shell configuration
     files.put(name="Shell extras", src=BASHRC, dest=f"{home}/.bashrc", _sudo_user=user)
     # Fix home directory ownership recursively
     server.shell(commands=f"find {home} -maxdepth 2 -type d -exec chown {user}:{user} {{}} \\;")
