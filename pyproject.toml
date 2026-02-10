@@ -1,0 +1,20 @@
+[project]
+name = "devcontainer-base"
+version = "0.1.0"
+description = "Cloud-native development container with modern tooling"
+requires-python = ">=3.12"
+dependencies = [
+    "pyinfra>=3",
+    "tomli",
+]
+
+[dependency-groups]
+dev = [
+    "ruff",
+]
+
+[tool.ruff]
+line-length = 200
+
+[tool.ruff.lint]
+select = ["I"]

@@ -54,14 +54,24 @@ target "base" {
     DATE = "${DATE}"
   }
   labels = {
-    "org.opencontainers.image.title" = "wagov-dtt devcontainer-base"
-    "org.opencontainers.image.description" = "Cloud-native development container with Docker-in-Docker"
-    "org.opencontainers.image.vendor" = "wagov-dtt"
+    "org.opencontainers.image.title"       = "wagov-dtt devcontainer-base"
+    "org.opencontainers.image.description"  = "Cloud-native development container with modern tooling"
+    "org.opencontainers.image.vendor"       = "wagov-dtt"
+    "org.opencontainers.image.url"          = "https://github.com/wagov-dtt/devcontainer-base"
+    "org.opencontainers.image.source"       = "https://github.com/wagov-dtt/devcontainer-base"
+    "org.opencontainers.image.documentation" = "https://github.com/wagov-dtt/devcontainer-base/blob/main/README.md"
+    "org.opencontainers.image.licenses"     = "Apache-2.0"
+    "org.opencontainers.image.base.name"    = "docker.io/library/debian:stable-backports"
   }
   secret     = ["id=GITHUB_TOKEN,env=GITHUB_TOKEN"]
   provenance = true
   sbom       = true
 }
+
+# Stub target for docker/metadata-action bake-file integration.
+# CI overrides this with dynamic annotations (created, revision, version)
+# via the metadata-action bake-file. Targets inherit from this to merge annotations.
+target "docker-metadata-action" {}
 
 # Local development - native platform only
 target "test" {
@@ -71,7 +81,7 @@ target "test" {
 
 # CI matrix builds - single platform for testing and caching
 target "build-test" {
-  inherits   = ["base"]
+  inherits   = ["base", "docker-metadata-action"]
   platforms  = [platform(ARCH)]
   tags       = notequal(TAGS, "devcontainer-base:latest") && notequal(TAGS, "") ? tags(TAGS) : ["devcontainer-base:test"]
   cache-from = ["type=gha,scope=${ARCH}"]
@@ -80,7 +90,7 @@ target "build-test" {
 
 # CI release - multi-platform with cache from native builds
 target "release" {
-  inherits   = ["base"]
+  inherits   = ["base", "docker-metadata-action"]
   platforms  = [platform("amd64"), platform("arm64")]
   tags       = notequal(TAGS, "devcontainer-base:latest") ? tags(TAGS) : release_tags()
   attestations = [

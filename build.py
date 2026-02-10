@@ -261,8 +261,8 @@ DOCKER_INIT = io.StringIO("""\
 if [ -S /var/run/docker.sock ]; then
     sudo groupmod -g "$(stat -c '%g' /var/run/docker.sock)" docker
     API_VERSION=$(curl -sf --unix-socket /var/run/docker.sock http://localhost/version | jq -r .ApiVersion)
-    [ -n "$API_VERSION" ] && echo "export DOCKER_API_VERSION=$API_VERSION" \
-        | sudo tee /etc/profile.d/docker-api.sh > /dev/null
+    [ -n "$API_VERSION" ] && echo "DOCKER_API_VERSION=$API_VERSION" \
+        | sudo tee /etc/environment > /dev/null
 fi
 """)
 files.put(name="Docker init script", src=DOCKER_INIT, dest="/usr/local/bin/docker-init.sh")
