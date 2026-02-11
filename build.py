@@ -43,7 +43,7 @@ import io
 import os
 import pathlib
 
-from pyinfra import config, host
+from pyinfra.context import config, host
 from pyinfra.facts.files import FileContents
 from pyinfra.facts.server import LinuxDistribution
 from pyinfra.operations import apt, files, python, server, systemd
@@ -226,7 +226,7 @@ server.user(user=user, create_home=True)
 files.block(content=f"{user} ALL=(ALL) NOPASSWD:ALL", path=f"/etc/sudoers.d/{user}")
 files.file(path=f"/etc/sudoers.d/{user}", mode=440)
 apt.packages(packages=["curl", "gnupg", "locales", "extrepo"], update=True)
-server.locale("en_US.UTF-8")
+server.locale(locale="en_US.UTF-8")
 
 # Configure extrepo to enable non-free policies
 files.line(
@@ -254,36 +254,23 @@ if pathlib.Path("/run/systemd/system").is_dir():
 # Ensure docker group exists (docker-ce-cli doesn't create it, only docker-ce does)
 server.shell(name="Ensure docker group", commands="groupadd -f docker")
 
-# Docker socket init script (fixes permissions and API version at container start)
+# Docker socket init script (fixes socket permissions only)
 DOCKER_INIT = io.StringIO("""\
 #!/bin/bash
 SOCK="/var/run/docker.sock"
 
-# 1. Guard clause: Exit cleanly if socket missing
+# Guard clause: Exit cleanly if socket missing
 if [ ! -S "$SOCK" ]; then
     echo "No Docker socket found at $SOCK"
     exit 0
 fi
 
-# 2. Fix Permissions
-# Logic: Try to modify. If it works, log it. If it fails (already set), log alternate message.
+# Fix Permissions
 GID=$(stat -c '%g' "$SOCK")
 sudo groupmod -g "$GID" docker 2>/dev/null \
     && echo "Updated Docker GID to $GID" \
-    || echo "Docker GID check: Skipped (Already set or permission denied)"
+    || echo "Docker GID check: Skipped (already set or permission denied)"
 
-# 3. API Version
-# Logic: Fetch with 2s timeout. If valid, write to file and log.
-VER=$(curl -sf -m 2 --unix-socket "$SOCK" http://localhost/version | jq -r .ApiVersion 2>/dev/null)
-
-if [ -n "$VER" ] && [ "$VER" != "null" ]; then
-    echo "DOCKER_API_VERSION=$VER" | sudo tee -a /etc/environment > /dev/null
-    echo "Set DOCKER_API_VERSION=$VER"
-else
-    echo "Warning: Could not detect Docker API version"
-fi
-
-# 4. Always exit success to prevent container build failure
 exit 0
 """)
 files.put(name="Docker init script", src=DOCKER_INIT, dest="/usr/local/bin/docker-init.sh")
