@@ -206,7 +206,7 @@ jobs:
         echo "Verifying attestations for ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@${{ steps.manifest.outputs.digest }}"
         
         # Verify provenance attestation exists
-        PROVENANCE=$(gh attestation verify "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@${{ steps.manifest.outputs.digest }}" \
+        PROVENANCE=$(gh attestation verify "oci://${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@${{ steps.manifest.outputs.digest }}" \
           --repo "${{ github.repository }}" \
           --predicate-type https://slsa.dev/provenance/v1 2>&1) || {
           echo "::error::Provenance attestation verification failed"
@@ -216,7 +216,7 @@ jobs:
         echo "Provenance attestation verified"
         
         # Verify SBOM attestation exists
-        SBOM=$(gh attestation verify "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@${{ steps.manifest.outputs.digest }}" \
+        SBOM=$(gh attestation verify "oci://${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@${{ steps.manifest.outputs.digest }}" \
           --repo "${{ github.repository }}" \
           --predicate-type https://spdx.dev/Document 2>&1) || {
           echo "::error::SBOM attestation verification failed"
