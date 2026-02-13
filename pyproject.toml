@@ -5,6 +5,7 @@ description = "Cloud-native development container with modern tooling"
 requires-python = ">=3.12"
 dependencies = [
     "pyinfra>=3",
+    "tenacity>=8",
     "tomli",
 ]
 
@@ -17,4 +18,4 @@ dev = [
 line-length = 200
 
 [tool.ruff.lint]
-select = ["I"]
+select = ["I", "E", "F", "W", "UP", "B", "SIM"]

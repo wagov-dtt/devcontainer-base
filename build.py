@@ -3,6 +3,7 @@
 # requires-python = ">=3.12"
 # dependencies = [
 #   "pyinfra>=3",
+#   "tenacity>=8",
 # ]
 # ///
 """
@@ -18,24 +19,34 @@ Environment variables:
 """
 
 if __name__ == "__main__":
+    import argparse
+    import os
     import sys
     import tempfile
 
     from pyinfra_cli.main import cli
 
+    parser = argparse.ArgumentParser(description="Devcontainer build using pyinfra @local connector")
+    parser.add_argument("--user", dest="setup_user", help="User to configure (default: current user)")
+    args, unknown = parser.parse_known_args()
+
+    if args.setup_user:
+        os.environ["SETUP_USER"] = args.setup_user
+
     with tempfile.NamedTemporaryFile(delete_on_close=False, mode="w", suffix=".py") as tmpfile:
-        # If being directly executed, save file to a deploy file pyinfra can use
-        if sys.orig_argv[1] == "-c":
+        if len(sys.orig_argv) > 1 and sys.orig_argv[1] == "-c":
             tmpfile.write(sys.orig_argv[2])
             tmpfile.close()
             build_py = tmpfile.name
-        else:
+        elif len(sys.orig_argv) > 1:
             build_py = sys.orig_argv[1]
+        else:
+            with open(__file__) as f:
+                tmpfile.write(f.read())
+            tmpfile.close()
+            build_py = tmpfile.name
 
-        # Set sys.argv to simulate command line arguments
         sys.argv = ["pyinfra", "@local", "-y", build_py]
-
-        # Call cli function directly
         cli()
 
 import getpass
@@ -47,6 +58,7 @@ from pyinfra.context import config, host
 from pyinfra.facts.files import FileContents
 from pyinfra.facts.server import LinuxDistribution
 from pyinfra.operations import apt, files, python, server, systemd
+from tenacity import retry, stop_after_attempt, wait_exponential
 
 # APT repositories (extrepo)
 APT_REPOS = [
@@ -197,15 +209,29 @@ trusted_config_paths = ["/workspaces"]
 {"\n".join([format_mise_tool(tool) for tool in MISE_TOOLS])}
 """
 
-BASHRC = io.StringIO(
-    "\n".join(host.get_fact(FileContents, "/etc/skel/.bashrc"))
-    + """
+
+def get_bashrc():
+    return io.StringIO(
+        "\n".join(host.get_fact(FileContents, "/etc/skel/.bashrc"))
+        + """
 # Shell enhancements
 eval "$(mise activate bash)"
 eval "$(starship init bash)"
 eval "$(zoxide init bash)"
 """
-)
+    )
+
+
+@retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=30))
+def install_mise_tools(target_user: str):
+    server.shell(
+        name="Install mise tools",
+        commands="mise install --yes",
+        _env={"GITHUB_TOKEN": os.getenv("GITHUB_TOKEN", "")},
+        _sudo=True,
+        _su_user=target_user,
+    )
+
 
 config.SUDO = True
 
@@ -222,9 +248,11 @@ if distro and distro.get("name") == "Debian":
 user = os.getenv("SETUP_USER", getpass.getuser())
 server.user(user=user, create_home=True)
 
-# Configure sudo and locale
-files.block(content=f"{user} ALL=(ALL) NOPASSWD:ALL", path=f"/etc/sudoers.d/{user}")
-files.file(path=f"/etc/sudoers.d/{user}", mode=440)
+# Configure sudo and locale (atomic file creation with correct mode)
+server.shell(
+    name="Create sudoers file",
+    commands=f"install -m 440 /dev/null /etc/sudoers.d/{user} && echo '{user} ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/{user}",
+)
 apt.packages(packages=["curl", "gnupg", "locales", "extrepo"], update=True)
 server.locale(locale="en_US.UTF-8")
 
@@ -257,7 +285,18 @@ server.shell(name="Ensure docker group", commands="groupadd -f docker")
 # Docker socket init script (fixes socket permissions only)
 DOCKER_INIT = io.StringIO("""\
 #!/bin/bash
-SOCK="/var/run/docker.sock"
+# Determine socket path from DOCKER_HOST or default
+if [ -n "$DOCKER_HOST" ]; then
+    # Extract socket path from unix:// prefix
+    SOCK="${DOCKER_HOST#unix://}"
+    # Handle non-socket DOCKER_HOST (TCP, SSH) - nothing to fix
+    if [[ ! "$SOCK" =~ ^/ ]]; then
+        echo "DOCKER_HOST is not a Unix socket: $DOCKER_HOST"
+        exit 0
+    fi
+else
+    SOCK="/var/run/docker.sock"
+fi
 
 # Guard clause: Exit cleanly if socket missing
 if [ ! -S "$SOCK" ]; then
@@ -278,6 +317,7 @@ files.file(path="/usr/local/bin/docker-init.sh", mode="755")
 
 # Configure user groups and Docker service (for bare metal installs with systemd)
 server.user(name="Configure groups", user=user, shell="/bin/bash", groups=["sudo", "docker"])
+# Disable user-level docker service first (can conflict with system service), then enable systemwide
 systemd.service(service="docker", enabled=False, user_mode=True, _su_user=user, _ignore_errors=True)
 systemd.service(service="docker", enabled=True, running=True, _ignore_errors=True)
 
@@ -296,15 +336,10 @@ def in_home(state, host):
         content=MISE_TOML,
     )
     files.file(path=f"{home}/.config/mise/config.toml", user=user, group=user, mode="644")
-    server.shell(
-        commands="mise install --yes",
-        _env={"GITHUB_TOKEN": os.getenv("GITHUB_TOKEN", "")},
-        _sudo=True,
-        _su_user=user,
-    )
+    install_mise_tools(user)
 
     # Shell configuration
-    files.put(name="Shell extras", src=BASHRC, dest=f"{home}/.bashrc", _sudo_user=user)
+    files.put(name="Shell extras", src=get_bashrc(), dest=f"{home}/.bashrc", _sudo_user=user)
     # Fix home directory ownership recursively
     server.shell(commands=f"find {home} -maxdepth 2 -type d -exec chown {user}:{user} {{}} \\;")
 

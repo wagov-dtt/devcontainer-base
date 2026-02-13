@@ -57,11 +57,13 @@ target "base" {
     "org.opencontainers.image.title"       = "wagov-dtt devcontainer-base"
     "org.opencontainers.image.description"  = "Cloud-native development container with modern tooling"
     "org.opencontainers.image.vendor"       = "wagov-dtt"
+    "org.opencontainers.image.authors"      = "wagov-dtt"
     "org.opencontainers.image.url"          = "https://github.com/wagov-dtt/devcontainer-base"
     "org.opencontainers.image.source"       = "https://github.com/wagov-dtt/devcontainer-base"
     "org.opencontainers.image.documentation" = "https://github.com/wagov-dtt/devcontainer-base/blob/main/README.md"
     "org.opencontainers.image.licenses"     = "Apache-2.0"
     "org.opencontainers.image.base.name"    = "docker.io/library/debian:stable-backports"
+    "org.opencontainers.image.version"      = "${DATE}"
   }
   secret     = ["id=GITHUB_TOKEN,env=GITHUB_TOKEN"]
   provenance = true

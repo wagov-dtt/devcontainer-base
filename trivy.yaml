@@ -3,6 +3,7 @@
 
 scan:
   # Skip dirs that distro package checks will cover
+  # Note: mise tools in ~/.local/share/mise/installs are tracked separately via mise lockfile
   skip-dirs:
     - /usr/bin
   # Default scanners to use
