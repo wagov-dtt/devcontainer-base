@@ -1,0 +1,7 @@
+[tools]
+just = "latest"
+uv = "latest"
+ruff = "latest"
+
+[settings]
+lockfile = true

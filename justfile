@@ -72,8 +72,8 @@ scan: build
 # Lint and format Python code
 lint:
     @echo "Linting and formatting..."
-    uv run ruff format build.py
-    uv run ruff check --fix build.py
+    ruff format build.py
+    ruff check --fix build.py
 
 # Clean up images
 clean:
