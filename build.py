@@ -91,7 +91,6 @@ APT_PACKAGES = (
         "terraform",
         "ddev",
         "kubectl",
-        "kustomize",
     ]
     # System & Utilities
     + [
@@ -147,6 +146,7 @@ MISE_TOOLS = (
         "aws-sam",
         "localstack",
         "helm",
+        "kustomize",
         "k9s",
         "k3d",
         "tflint",
