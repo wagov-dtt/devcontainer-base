@@ -113,7 +113,7 @@ jobs:
 
     - name: Scan for vulnerabilities
       if: github.event_name == 'pull_request'
-      uses: aquasecurity/trivy-action@0.34.0
+      uses: aquasecurity/trivy-action@0.34.1
       with:
         image-ref: ${{ steps.test-tag.outputs.value }}
         format: 'sarif'
@@ -195,7 +195,7 @@ jobs:
       id: manifest
 
     - name: Attest build provenance
-      uses: actions/attest-build-provenance@v3
+      uses: actions/attest-build-provenance@v4
       with:
         subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
         subject-digest: ${{ steps.manifest.outputs.digest }}
