@@ -125,17 +125,19 @@ Tools are installed from two sources, preferring APT when available:
 
 ### Adding Tools
 
-Edit [`src/wagov_devcontainer/spec.py`](src/wagov_devcontainer/spec.py) and add to the appropriate list:
+Edit [`src/wagov_devcontainer/spec.py`](src/wagov_devcontainer/spec.py) and add to the appropriate mapping:
 
 ```python
-MISE_TOOLS = (
-    # Simple: just the tool name (defaults to latest)
-    + ["pipx:your-tool"]  # or npm:, cargo:, github:user/repo
+MISE_TOOLS = {
+    # Simple: tool name -> pinned to "latest"
+    "pipx:your-tool": "latest",  # or npm:, cargo:, github:user/repo
 
-    # Complex: tuple with TOML config string
-    + [("pipx:tool", '{ version = "latest", extras = "extra", uvx_args = "--with dep" }')]
-)
+    # Complex: use structured values for inline TOML tables
+    "pipx:tool": {"version": "latest", "extras": "extra", "uvx_args": "--with dep"},
+}
 ```
+
+`MISE_SETTINGS` is also structured Python data, and `MISE_TOML` is rendered from it.
 
 For provisioning behaviour, edit [`src/wagov_devcontainer/deploy.py`](src/wagov_devcontainer/deploy.py). Then rebuild: `just build`
 

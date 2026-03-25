@@ -71,14 +71,16 @@ Prefer APT when possible. Signed distro or vendor packages are generally a bette
 
 ```python
 # In src/wagov_devcontainer/spec.py
-MISE_TOOLS = (
-    # Simple: "tool-name" -> becomes "tool-name" = "latest" in TOML
-    + ["your-tool"]
+MISE_TOOLS = {
+    # Simple: tool name -> becomes "tool-name" = "latest" in TOML
+    "your-tool": "latest",
 
-    # Complex: tuple with TOML config string
-    + [("pipx:tool", '{ version = "latest", extras = "extra" }')]
-)
+    # Complex: use structured values for inline TOML tables
+    "pipx:tool": {"version": "latest", "extras": "extra"},
+}
 ```
+
+`MISE_SETTINGS` follows the same pattern.
 
 ### Tool Source Priority
 
