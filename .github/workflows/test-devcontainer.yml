@@ -6,7 +6,7 @@ name: Test DevContainer CI
 on:
   pull_request:
     branches: [main]
-    paths: ['.devcontainer/**', 'justfile', 'build.py', 'Dockerfile', 'docker-bake.hcl']
+    paths: ['.devcontainer/**', 'justfile', 'build.py', 'Dockerfile', 'docker-bake.hcl', 'pyproject.toml', '.dockerignore', 'src/**']
   workflow_dispatch:
 
 concurrency:

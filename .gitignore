@@ -3,4 +3,6 @@ __pycache__/
 .ruff_cache/
 .venv/
 .env
+dist/
+*.egg-info/
 trivy-results.sarif

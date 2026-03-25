@@ -3,17 +3,16 @@ FROM debian:stable-backports AS builder
 ARG DEBIAN_FRONTEND=noninteractive
 ARG DATE
 
-# Copy build file
-COPY build.py ./
+COPY pyproject.toml README.md LICENSE ./
+COPY src ./src
 
-# Install pipx and run pyinfra build in one step
-RUN --mount=type=cache,target=/var/cache/apt --mount=type=cache,target=/var/lib/apt/lists \
+RUN --mount=type=cache,target=/var/cache/apt \
+    --mount=type=cache,target=/var/lib/apt/lists \
     --mount=type=cache,target=/root/.cache \
     --mount=type=secret,id=GITHUB_TOKEN,env=GITHUB_TOKEN \
     apt-get update -y && apt-get install -y pipx sudo && \
-    SETUP_USER=vscode pipx run build.py
+    SETUP_USER=vscode pipx run --spec . wagov-devcontainer
 
-# Final stage
 FROM scratch
 COPY --from=builder --link / /
 

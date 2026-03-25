@@ -10,7 +10,7 @@ Production-ready development container with modern tooling for cloud-native and 
 **Security**: [Trivy](https://trivy.dev), [Semgrep](https://semgrep.dev), [cosign](https://github.com/sigstore/cosign), [SLSA verifier](https://github.com/slsa-framework/slsa-verifier), [lychee](https://lychee.cli.rs) (link checker)  
 **Utilities**: [ripgrep](https://github.com/BurntSushi/ripgrep), [fzf](https://github.com/junegunn/fzf), [jq](https://jqlang.github.io/jq/), [yq](https://mikefarah.gitbook.io/yq), [httpie](https://httpie.io), [hurl](https://hurl.dev), [btop](https://github.com/aristocratos/btop), [restic](https://restic.net), [rclone](https://rclone.org)
 
-> **Complete list**: See [`build.py`](build.py) - all tools defined in one place
+> **Complete list**: See [`src/wagov_devcontainer/spec.py`](src/wagov_devcontainer/spec.py) and [`src/wagov_devcontainer/deploy.py`](src/wagov_devcontainer/deploy.py)
 
 ## Quick Start
 
@@ -65,11 +65,14 @@ docker run -it --rm \
 ### Install on Existing System
 
 ```bash
-# Debian/Ubuntu only
-curl -sSL https://raw.githubusercontent.com/wagov-dtt/devcontainer-base/main/install.sh | sh
+# Preferred: run the published package directly
+uvx wagov-devcontainer
 
-# Or with pipx/uv already installed
-pipx run https://raw.githubusercontent.com/wagov-dtt/devcontainer-base/main/build.py
+# Or with pipx
+pipx run --spec wagov-devcontainer wagov-devcontainer
+
+# Repo helper script for Debian/Ubuntu
+curl -sSL https://raw.githubusercontent.com/wagov-dtt/devcontainer-base/main/install.sh | sh
 ```
 
 ### Use as Template
@@ -101,7 +104,7 @@ See [`.github/workflows/test-devcontainer.yml`](.github/workflows/test-devcontai
 
 - **Base**: Debian stable-backports (currently Trixie/13)
 - **Package Management**: APT for system tools, mise for development tools
-- **Build**: Pyinfra script (`build.py`) installs everything during Docker build
+- **Build**: Python package (`wagov-devcontainer`) runs a pyinfra deploy during Docker build or local install
 - **Docker-from-Docker**: Host socket bind mount (Docker CLI pre-installed via extrepo, no privileged mode needed)
 
 ### Tool Sources
@@ -122,7 +125,7 @@ Tools are installed from two sources, preferring APT when available:
 
 ### Adding Tools
 
-Edit [`build.py`](build.py) and add to the appropriate list:
+Edit [`src/wagov_devcontainer/spec.py`](src/wagov_devcontainer/spec.py) and add to the appropriate list:
 
 ```python
 MISE_TOOLS = (
@@ -134,7 +137,7 @@ MISE_TOOLS = (
 )
 ```
 
-Then rebuild: `just build`
+For provisioning behaviour, edit [`src/wagov_devcontainer/deploy.py`](src/wagov_devcontainer/deploy.py). Then rebuild: `just build`
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for contributor guidance.
 
@@ -158,7 +161,7 @@ just build        # Build test image
 just test         # Test Docker-from-Docker
 just dev          # Interactive shell
 just scan         # Security scan with Trivy
-just lint         # Format and lint build.py
+just lint         # Format and lint Python sources
 just clean        # Clean up images
 ```
 
@@ -173,7 +176,7 @@ just shell        # Run published image interactively
 | Issue | Solution |
 |-------|----------|
 | Docker not working | Ensure Docker socket is available on the host |
-| Tool missing | Check `build.py` MISE_TOOLS or APT_PACKAGES |
+| Tool missing | Check `src/wagov_devcontainer/spec.py` |
 | Build fails | Run `just clean` then `just build` |
 | Permission errors | User should be in docker group (automatic) |
 | mise issues | Run `mise doctor` inside container |
@@ -181,7 +184,7 @@ just shell        # Run published image interactively
 ## Contributing
 
 1. Fork and clone the repo
-2. Make changes to `build.py`, `Dockerfile`, or docs
+2. Make changes to `src/wagov_devcontainer/`, `Dockerfile`, or docs
 3. Test: `just build && just test && just dev`
 4. Submit PR with test results
 

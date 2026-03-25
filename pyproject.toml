@@ -1,17 +1,45 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
 [project]
-name = "devcontainer-base"
+name = "wagov-devcontainer"
 version = "0.1.0"
-description = "Cloud-native development container with modern tooling"
+description = "Provision the wagov devcontainer toolchain with pyinfra"
+readme = "README.md"
 requires-python = ">=3.12"
+license = { file = "LICENSE" }
+authors = [{ name = "WA Government DTT" }]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Build Tools",
+    "Topic :: System :: Installation/Setup",
+]
 dependencies = [
     "pyinfra>=3",
     "tenacity>=8",
 ]
 
+[project.urls]
+Homepage = "https://github.com/wagov-dtt/devcontainer-base"
+Repository = "https://github.com/wagov-dtt/devcontainer-base"
+Issues = "https://github.com/wagov-dtt/devcontainer-base/issues"
+
+[project.scripts]
+wagov-devcontainer = "wagov_devcontainer.cli:main"
+
 [dependency-groups]
 dev = [
     "ruff",
 ]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/wagov_devcontainer"]
 
 [tool.ruff]
 line-length = 200

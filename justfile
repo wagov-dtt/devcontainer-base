@@ -18,15 +18,21 @@ docker_args := "-it --rm" + \
 # Test command used by both local and CI (single source of truth)
 test_cmd := "mise doctor && docker network create test-network && docker run --rm --network test-network ghcr.io/curl/curl-container/curl-multi:master -s ipinfo.io && https ipinfo.io && docker network rm test-network"
 
-# Show available commands
 default:
     @just --list
 
-# Validate build.py generates valid TOML
+# Validate generated config and CLI wiring
 check:
-    @uv run python3 -c 'exec(open("build.py").read().split("config.SUDO")[0]); import tomllib; tomllib.loads(MISE_TOML); print("TOML valid")'
+    @uv run python -c 'import tomllib; from wagov_devcontainer.spec import MISE_TOML; tomllib.loads(MISE_TOML); print("TOML valid")'
+    @uv run wagov-devcontainer --help >/dev/null
+    @echo "CLI valid"
 
-# Build test image locally  
+# Build Python distribution artifacts
+package:
+    rm -rf dist
+    uv build
+
+# Build test image locally
 build: check
     @echo "Building test image..."
     docker buildx bake test --progress=plain
@@ -72,8 +78,8 @@ scan: build
 # Lint and format Python code
 lint:
     @echo "Linting and formatting..."
-    ruff format build.py
-    ruff check --fix build.py
+    uv run ruff format build.py src
+    uv run ruff check --fix build.py src
 
 # Clean up images
 clean:
