@@ -29,8 +29,16 @@ jobs:
         shell: bash
         run: |
           tag=${GITHUB_REF_NAME#v}
+          case "$tag" in
+            *-beta)
+              expected_version="${tag%-beta}b0"
+              ;;
+            *)
+              expected_version="$tag"
+              ;;
+          esac
           version=$(python -c "import tomllib; print(tomllib.load(open('pyproject.toml', 'rb'))['project']['version'])")
-          test "$tag" = "$version"
+          test "$expected_version" = "$version"
 
       - name: Build distributions
         run: uv build

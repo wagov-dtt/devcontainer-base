@@ -34,7 +34,6 @@ jobs:
     permissions:
       contents: read
       packages: write
-      security-events: write
       id-token: write
       attestations: write
 
@@ -111,20 +110,6 @@ jobs:
           "${{ steps.test-tag.outputs.value }}" \
           -c "$(just test-cmd)"
 
-    - name: Scan for vulnerabilities
-      if: github.event_name == 'pull_request'
-      uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1 # v0.35.0
-      with:
-        image-ref: ${{ steps.test-tag.outputs.value }}
-        format: 'sarif'
-        output: 'trivy-results.sarif'
-        trivy-config: 'trivy.yaml'
-
-    - name: Upload security scan results
-      if: github.event_name == 'pull_request'
-      uses: github/codeql-action/upload-sarif@38697555549f1db7851b81482ff19f1fa5c4fedc # v4.34.1
-      with:
-        sarif_file: 'trivy-results.sarif'
 
   create-manifest:
     needs: build-and-test

@@ -7,7 +7,7 @@ Production-ready development container with modern tooling for cloud-native and 
 **Languages**: [Go](https://go.dev), [Node.js](https://nodejs.org), [Python](https://python.org), [Rust](https://rust-lang.org) (via [cargo-binstall](https://github.com/cargo-bins/cargo-binstall)), [uv](https://github.com/astral-sh/uv), [pnpm](https://pnpm.io)  
 **Cloud**: [AWS CLI](https://aws.amazon.com/cli/), [Terraform](https://terraform.io), Kubernetes ([kubectl](https://kubernetes.io/docs/reference/kubectl/), [k9s](https://k9scli.io), [k3d](https://k3d.io), [helm](https://helm.sh), [kustomize](https://kustomize.io))  
 **Development**: Docker-from-Docker, [git](https://git-scm.com), [just](https://just.systems), [mise](https://mise.jdx.dev), [direnv](https://direnv.net), [starship](https://starship.rs), [zellij](https://zellij.dev), [neovim](https://neovim.io), [lazygit](https://github.com/jesseduffield/lazygit)  
-**Security**: [Trivy](https://trivy.dev), [Semgrep](https://semgrep.dev), [cosign](https://github.com/sigstore/cosign), [SLSA verifier](https://github.com/slsa-framework/slsa-verifier), [lychee](https://lychee.cli.rs) (link checker)  
+**Security**: [Semgrep](https://semgrep.dev), [cosign](https://github.com/sigstore/cosign), [SLSA verifier](https://github.com/slsa-framework/slsa-verifier), [lychee](https://lychee.cli.rs) (link checker)  
 **Utilities**: [ripgrep](https://github.com/BurntSushi/ripgrep), [fzf](https://github.com/junegunn/fzf), [jq](https://jqlang.github.io/jq/), [yq](https://mikefarah.gitbook.io/yq), [httpie](https://httpie.io), [hurl](https://hurl.dev), [btop](https://github.com/aristocratos/btop), [restic](https://restic.net), [rclone](https://rclone.org)
 
 > **Complete list**: See [`src/wagov_devcontainer/spec.py`](src/wagov_devcontainer/spec.py) and [`src/wagov_devcontainer/deploy.py`](src/wagov_devcontainer/deploy.py)
@@ -114,11 +114,11 @@ Tools are installed from two sources, preferring APT when available:
 1. **APT via [extrepo](https://wiki.debian.org/ExtRepo)** (preferred) - Signed packages from official repos
    - Docker, GitHub CLI, Terraform, kubectl, mise
 2. **[mise](https://mise.jdx.dev)** - Cross-platform tools not in APT, or needing version flexibility
-   - Languages (Go, Node, Python), k9s, trivy, starship
+   - Languages (Go, Node, Python), k9s, starship
 
 ### Key Features
 
-- **Security**: SBOM, signed images, Trivy scanning
+- **Security**: SBOM, signed images, Semgrep in-container
 - **Performance**: Multi-platform builds (amd64/arm64), layer caching
 - **Flexibility**: mise auto-switches tool versions per project
 - **Supply Chain**: Verified packages via extrepo
@@ -160,7 +160,6 @@ just              # List all commands
 just build        # Build test image
 just test         # Test Docker-from-Docker
 just dev          # Interactive shell
-just scan         # Security scan with Trivy
 just lint         # Format and lint Python sources
 just clean        # Clean up images
 ```

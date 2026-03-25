@@ -70,11 +70,6 @@ shell:
     docker pull {{tag}}
     docker run {{docker_args}} --entrypoint bash {{tag}}
 
-# Security scan with Trivy
-scan: build
-    @echo "Security scanning..."
-    trivy image --config trivy.yaml {{test_tag}}
-
 # Lint and format Python code
 lint:
     @echo "Linting and formatting..."

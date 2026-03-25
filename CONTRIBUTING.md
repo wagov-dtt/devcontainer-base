@@ -45,7 +45,6 @@ just build        # Build test image locally
 just test         # Test Docker-from-Docker functionality
 just dev          # Interactive development shell
 just lint         # Format and lint Python files
-just scan         # Security scan with Trivy
 ```
 
 For maintainers only:

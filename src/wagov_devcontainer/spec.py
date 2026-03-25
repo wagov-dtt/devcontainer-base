@@ -83,7 +83,7 @@ MISE_TOOLS = (
         "terraform-docs",
         "vault",
     ]
-    + ["github:aquasecurity/trivy", "cosign", "slsa-verifier", "semgrep", "lychee"]
+    + ["cosign", "slsa-verifier", "semgrep", "lychee"]
     + [
         "just",
         "yq",

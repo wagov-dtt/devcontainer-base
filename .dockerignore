@@ -8,7 +8,6 @@ __pycache__
 !README.md
 .gitignore
 .dockerignore
-trivy.yaml
 justfile
 install.sh
 docker-bake.hcl
