@@ -6,7 +6,6 @@ Production-ready development container with modern tooling for cloud-native and 
 
 **Languages**: [Go](https://go.dev), [Node.js](https://nodejs.org), [Python](https://python.org), [Rust](https://rust-lang.org) (via [cargo-binstall](https://github.com/cargo-bins/cargo-binstall)), [uv](https://github.com/astral-sh/uv), [pnpm](https://pnpm.io)  
 **Cloud**: [AWS CLI](https://aws.amazon.com/cli/), [Terraform](https://terraform.io), Kubernetes ([kubectl](https://kubernetes.io/docs/reference/kubectl/), [k9s](https://k9scli.io), [k3d](https://k3d.io), [helm](https://helm.sh), [kustomize](https://kustomize.io))  
-**AI Tools**: [goose](https://block.github.io/goose), [opencode](https://opencode.ai)  
 **Development**: Docker-from-Docker, [git](https://git-scm.com), [just](https://just.systems), [mise](https://mise.jdx.dev), [direnv](https://direnv.net), [starship](https://starship.rs), [zellij](https://zellij.dev), [neovim](https://neovim.io), [lazygit](https://github.com/jesseduffield/lazygit)  
 **Security**: [Trivy](https://trivy.dev), [Semgrep](https://semgrep.dev), [cosign](https://github.com/sigstore/cosign), [SLSA verifier](https://github.com/slsa-framework/slsa-verifier), [lychee](https://lychee.cli.rs) (link checker)  
 **Utilities**: [ripgrep](https://github.com/BurntSushi/ripgrep), [fzf](https://github.com/junegunn/fzf), [jq](https://jqlang.github.io/jq/), [yq](https://mikefarah.gitbook.io/yq), [httpie](https://httpie.io), [hurl](https://hurl.dev), [btop](https://github.com/aristocratos/btop), [restic](https://restic.net), [rclone](https://rclone.org)
@@ -112,7 +111,7 @@ Tools are installed from two sources, preferring APT when available:
 1. **APT via [extrepo](https://wiki.debian.org/ExtRepo)** (preferred) - Signed packages from official repos
    - Docker, GitHub CLI, Terraform, kubectl, mise
 2. **[mise](https://mise.jdx.dev)** - Cross-platform tools not in APT, or needing version flexibility
-   - Languages (Go, Node, Python), k9s, trivy, starship, AI tools
+   - Languages (Go, Node, Python), k9s, trivy, starship
 
 ### Key Features
 
@@ -137,7 +136,7 @@ MISE_TOOLS = (
 
 Then rebuild: `just build`
 
-See [AGENTS.md](AGENTS.md) for detailed guidance.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for contributor guidance.
 
 ### Optional Cloud CLIs
 
@@ -150,23 +149,6 @@ sudo apt-get update && sudo apt-get install -y google-cloud-cli
 # Azure CLI (repo not available for Trixie, use pipx)
 pipx install azure-cli
 ```
-
-## AI Development
-
-This container includes AI coding tools:
-
-- **[goose](https://block.github.io/goose)** - AI coding agent from Block
-- **[opencode](https://opencode.ai)** - Terminal-based AI coding assistant
-
-```bash
-# Start goose
-goose
-
-# Start opencode
-opencode
-
-```
-
 
 ## Development Commands
 
@@ -209,4 +191,4 @@ just shell        # Run published image interactively
 - Bug fixes
 - Performance optimisations
 
-See [AGENTS.md](AGENTS.md) for AI agent guidance and grug-brain philosophy.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for contributor guidance and project philosophy.

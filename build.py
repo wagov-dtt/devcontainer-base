@@ -167,11 +167,6 @@ MISE_TOOLS = (
         "hurl",
         "envsubst",
     ]
-    # AI & Development Tools
-    + [
-        "github:block/goose",
-        "opencode",
-    ]
     # Documentation & Utilities
     + [
         "pipx:tldr",
