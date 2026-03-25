@@ -6,7 +6,6 @@ requires-python = ">=3.12"
 dependencies = [
     "pyinfra>=3",
     "tenacity>=8",
-    "tomli",
 ]
 
 [dependency-groups]

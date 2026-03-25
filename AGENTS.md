@@ -81,7 +81,7 @@ Example adding a new tool:
 # In build.py, find the relevant section:
 MISE_TOOLS = (
     # AI & Development Tools
-    + ["github:block/goose", ("pipx:litellm", '{ version = "latest", extras = "proxy", uvx_args = "--with boto3" }')]
+    + ["github:block/goose", "opencode"]
     # Simple: "tool-name" -> becomes "tool-name" = "latest" in TOML
     # Complex: ("tool-name", '{ TOML inline table }') -> becomes "tool-name" = { ... } in TOML
 )
@@ -132,11 +132,8 @@ This devcontainer includes AI development tools:
 
 - **goose**: AI coding agent CLI from Block (via github: backend - native binary)
 - **opencode**: Terminal-based AI coding assistant (via mise)
-- **litellm[proxy]**: LLM proxy with unified API (via pipx with boto3 injected)
 
 These tools work together:
-- litellm provides unified interface to multiple LLM providers (OpenAI, Anthropic, AWS Bedrock, etc.)
-- boto3 is automatically injected into litellm's environment for AWS Bedrock authentication
 - goose and opencode provide AI agent interfaces for coding assistance
 
 ## Troubleshooting

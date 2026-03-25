@@ -6,7 +6,7 @@ Production-ready development container with modern tooling for cloud-native and 
 
 **Languages**: [Go](https://go.dev), [Node.js](https://nodejs.org), [Python](https://python.org), [Rust](https://rust-lang.org) (via [cargo-binstall](https://github.com/cargo-bins/cargo-binstall)), [uv](https://github.com/astral-sh/uv), [pnpm](https://pnpm.io)  
 **Cloud**: [AWS CLI](https://aws.amazon.com/cli/), [Terraform](https://terraform.io), Kubernetes ([kubectl](https://kubernetes.io/docs/reference/kubectl/), [k9s](https://k9scli.io), [k3d](https://k3d.io), [helm](https://helm.sh), [kustomize](https://kustomize.io))  
-**AI Tools**: [goose](https://block.github.io/goose), [opencode](https://opencode.ai), [litellm](https://litellm.ai) (LLM proxy with AWS Bedrock support)  
+**AI Tools**: [goose](https://block.github.io/goose), [opencode](https://opencode.ai)  
 **Development**: Docker-from-Docker, [git](https://git-scm.com), [just](https://just.systems), [mise](https://mise.jdx.dev), [direnv](https://direnv.net), [starship](https://starship.rs), [zellij](https://zellij.dev), [neovim](https://neovim.io), [lazygit](https://github.com/jesseduffield/lazygit)  
 **Security**: [Trivy](https://trivy.dev), [Semgrep](https://semgrep.dev), [cosign](https://github.com/sigstore/cosign), [SLSA verifier](https://github.com/slsa-framework/slsa-verifier), [lychee](https://lychee.cli.rs) (link checker)  
 **Utilities**: [ripgrep](https://github.com/BurntSushi/ripgrep), [fzf](https://github.com/junegunn/fzf), [jq](https://jqlang.github.io/jq/), [yq](https://mikefarah.gitbook.io/yq), [httpie](https://httpie.io), [hurl](https://hurl.dev), [btop](https://github.com/aristocratos/btop), [restic](https://restic.net), [rclone](https://rclone.org)
@@ -157,7 +157,6 @@ This container includes AI coding tools:
 
 - **[goose](https://block.github.io/goose)** - AI coding agent from Block
 - **[opencode](https://opencode.ai)** - Terminal-based AI coding assistant
-- **[litellm](https://litellm.ai)** - Unified LLM proxy (OpenAI, Anthropic, AWS Bedrock, etc.)
 
 ```bash
 # Start goose
@@ -166,11 +165,8 @@ goose
 # Start opencode
 opencode
 
-# Start litellm proxy
-litellm --model gpt-4
 ```
 
-boto3 is automatically included in litellm for AWS Bedrock authentication.
 
 ## Development Commands
 

@@ -42,8 +42,6 @@ All tool installation happens in `build.py`:
 MISE_TOOLS = (
     # Simple: "tool-name" -> becomes "tool-name" = "latest" in TOML
     + ["your-tool"]
-    # Complex: ("tool-name", '{ version = "latest", extras = "extra" }')
-    + [("pipx:tool", '{ version = "latest", extras = "proxy" }')]
 )
 ```
 

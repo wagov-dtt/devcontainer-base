@@ -138,7 +138,6 @@ MISE_TOOLS = (
         "uv",
         "pipx",
         "cargo-binstall",
-        "github:railwayapp/railpack",
     ]
     # Cloud & Infrastructure
     + [
@@ -154,7 +153,7 @@ MISE_TOOLS = (
         "vault",
     ]
     # Security & Quality
-    + ["trivy", "cosign", "slsa-verifier", "semgrep", "lychee"]
+    + ["github:aquasecurity/trivy", "cosign", "slsa-verifier", "semgrep", "lychee"]
     # Shell & Development Tools
     + [
         "just",
@@ -171,10 +170,6 @@ MISE_TOOLS = (
     # AI & Development Tools
     + [
         "github:block/goose",
-        (
-            "pipx:litellm",
-            '{ version = "latest", extras = "proxy", uvx_args = "--with boto3" }',
-        ),
         "opencode",
     ]
     # Documentation & Utilities

@@ -24,7 +24,7 @@ default:
 
 # Validate build.py generates valid TOML
 check:
-    @uv run python3 -c 'exec(open("build.py").read().split("config.SUDO")[0]); import tomli; tomli.loads(MISE_TOML); print("TOML valid")'
+    @uv run python3 -c 'exec(open("build.py").read().split("config.SUDO")[0]); import tomllib; tomllib.loads(MISE_TOML); print("TOML valid")'
 
 # Build test image locally  
 build: check
