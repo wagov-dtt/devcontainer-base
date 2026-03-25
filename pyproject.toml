@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "wagov-devcontainer"
-version = "0.1.0"
+version = "2026.5"
 description = "Provision the wagov devcontainer toolchain with pyinfra"
 readme = "README.md"
 requires-python = ">=3.12"
