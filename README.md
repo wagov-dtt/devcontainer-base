@@ -64,16 +64,29 @@ docker run -it --rm \
 
 ### Install on Existing System
 
+Works on Debian/Ubuntu, including Ubuntu 26.04.
+
+For direct `uvx`/`pipx run` usage, install these first:
+
+- [GitHub CLI](https://cli.github.com/) (`gh`)
+- either [uv](https://docs.astral.sh/uv/) (`uvx`) or [pipx](https://pipx.pypa.io/)
+
+To avoid GitHub API rate limits during tool installs, export a token from `gh` first:
+
 ```bash
+export GITHUB_TOKEN="$(gh auth token)"
+
 # Preferred: run the published package directly
 uvx wagov-devcontainer
 
 # Or with pipx
 pipx run --spec wagov-devcontainer wagov-devcontainer
 
-# Repo helper script for Debian/Ubuntu
+# Repo helper script for Debian/Ubuntu, including Ubuntu 26.04
 curl -sSL https://raw.githubusercontent.com/wagov-dtt/devcontainer-base/main/install.sh | sh
 ```
+
+The helper script also auto-detects `GITHUB_TOKEN` from `gh auth token` when `gh` is installed.
 
 ### Use as Template
 
