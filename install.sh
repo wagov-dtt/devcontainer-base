@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 
-# Install wagov devcontainer tools on an existing Debian/Ubuntu system.
+# Install wagov devcontainer tools on an existing system.
 #
 # Usage:
 #   ./install.sh
@@ -18,12 +18,28 @@ if command -v uvx >/dev/null 2>&1; then
     exec uvx wagov-devcontainer "$@"
 fi
 
-if ! command -v pipx >/dev/null 2>&1; then
+if command -v pipx >/dev/null 2>&1; then
+    exec pipx run --spec wagov-devcontainer wagov-devcontainer "$@"
+fi
+
+if command -v apt-get >/dev/null 2>&1; then
     if [ "$(id -u)" = "0" ]; then
         apt-get update -y && apt-get install -y pipx sudo
     else
         sudo apt-get update -y && sudo apt-get install -y pipx sudo
     fi
+
+    exec pipx run --spec wagov-devcontainer wagov-devcontainer "$@"
 fi
 
-exec pipx run --spec wagov-devcontainer wagov-devcontainer "$@"
+cat >&2 <<'EOF'
+No supported bootstrap method found.
+
+Install one of these first, then rerun:
+  - uv (for `uvx wagov-devcontainer`)
+  - pipx (for `pipx run --spec wagov-devcontainer wagov-devcontainer`)
+
+The helper script only bootstraps pipx automatically on APT-based systems.
+On atomic hosts such as Bluefin, use uvx or pipx directly.
+EOF
+exit 1

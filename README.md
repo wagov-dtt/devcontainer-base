@@ -64,7 +64,7 @@ docker run -it --rm \
 
 ### Install on Existing System
 
-Works on Debian/Ubuntu, including Ubuntu 26.04.
+Works on Debian/Ubuntu, including Ubuntu 26.04. On atomic or other brew-based hosts, the pyinfra deploy can use Homebrew for user-space tooling instead of attempting APT/extrepo or Docker daemon changes.
 
 For direct `uvx`/`pipx run` usage, install these first:
 
@@ -87,6 +87,7 @@ curl -sSL https://raw.githubusercontent.com/wagov-dtt/devcontainer-base/main/ins
 ```
 
 The helper script also auto-detects `GITHUB_TOKEN` from `gh auth token` when `gh` is installed.
+On non-APT hosts, use `uvx` or `pipx run` directly; the helper script will not try to bootstrap packages there. If `brew` is on `PATH`, the deploy installs the needed user-space packages itself and then runs `mise install --yes` once `mise` is available.
 
 ### Use as Template
 

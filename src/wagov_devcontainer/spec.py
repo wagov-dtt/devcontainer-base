@@ -38,6 +38,8 @@ APT_PACKAGES = [
     "bash-completion",
     "ripgrep",
     "ugrep",
+    "fd-find",
+    "bat",
     "jq",
     "less",
     "unzip",
@@ -57,6 +59,29 @@ APT_PACKAGES = [
     "rclone",
     "wget",
     "fzf",
+]
+
+BREW_PACKAGES = [
+    # Base user-space toolchain for non-Debian brew hosts.
+    "mise",
+    "gh",
+    "ripgrep",
+    "ugrep",
+    "fd",
+    "bat",
+    "yq",
+    "starship",
+    "zoxide",
+    "eza",
+    "direnv",
+    # Additional repo-required compatibility packages where available.
+    "btop",
+    "ddev/ddev/ddev",
+    "hashicorp/tap/terraform",
+    "kubectl",
+    "librsvg",
+    "neovim",
+    "tini",
 ]
 
 MISE_SETTINGS = {
@@ -93,12 +118,7 @@ MISE_TOOLS = {
     "lychee": "latest",
     # Shell and developer UX
     "just": "latest",
-    "yq": "latest",
     "zellij": "latest",
-    "starship": "latest",
-    "zoxide": "latest",
-    "eza": "latest",
-    "direnv": "latest",
     "lazygit": "latest",
     "hurl": "latest",
     "envsubst": "latest",
