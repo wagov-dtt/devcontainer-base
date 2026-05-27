@@ -8,7 +8,7 @@ tag := "ghcr.io/wagov-dtt/devcontainer-base:latest"
 test_tag := "devcontainer-base:test"
 workspace := "/workspaces/devcontainer-base"
 
-# Docker run args for interactive use (Docker-from-Docker via host socket)
+# Docker run args for interactive use (Docker-outside-of-Docker via host socket)
 docker_args := "-it --rm" + \
     " -v /var/run/docker.sock:/var/run/docker.sock" + \
     " --group-add " + `stat -c '%g' /var/run/docker.sock` + \
@@ -16,7 +16,7 @@ docker_args := "-it --rm" + \
     " --workdir " + workspace
 
 # Test command used by both local and CI (single source of truth)
-test_cmd := "mise doctor && docker network create test-network && docker run --rm --network test-network ghcr.io/curl/curl-container/curl-multi:master -s ipinfo.io && https ipinfo.io && docker network rm test-network"
+test_cmd := 'network="devcontainer-test-$(date +%s)-$$"; trap "docker network rm \"$network\" >/dev/null 2>&1 || true" EXIT; docker network create "$network" >/dev/null && mise doctor && docker run --rm --network "$network" ghcr.io/curl/curl-container/curl-multi:master -s ipinfo.io && https ipinfo.io'
 
 default:
     @just --list
@@ -37,18 +37,18 @@ build: check
     @echo "Building test image..."
     docker buildx bake test --progress=plain
 
-# Test Docker-from-Docker functionality
+# Test Docker-outside-of-Docker functionality
 test: build
-    @echo "Testing mise & Docker-from-Docker..."
+    @echo "Testing mise & Docker-outside-of-Docker..."
     docker run --rm \
         -v /var/run/docker.sock:/var/run/docker.sock \
         --group-add $(stat -c '%g' /var/run/docker.sock) \
         {{test_tag}} \
-        -c "{{test_cmd}}"
+        -c '{{test_cmd}}'
 
 # Print test command (for CI to use)
 test-cmd:
-    @echo "{{test_cmd}}"
+    @printf '%s\n' '{{test_cmd}}'
 
 # Interactive development shell (build + shell)
 dev: build

@@ -42,7 +42,7 @@ This repo follows [grug-brained development](https://grugbrain.dev):
 ```bash
 just              # List all commands
 just build        # Build test image locally
-just test         # Test Docker-from-Docker functionality
+just test         # Test Docker-outside-of-Docker functionality
 just dev          # Interactive development shell
 just lint         # Format and lint Python files
 ```

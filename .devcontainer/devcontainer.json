@@ -1,13 +1,14 @@
 {
 	"name": "wagov-dtt devcontainer-base",
 	"image": "ghcr.io/wagov-dtt/devcontainer-base",
-	"mounts": [
-		"source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
-	],
-	"onCreateCommand": "docker-init.sh",
+	"features": {
+		"ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
+			"moby": false,
+			"dockerDashComposeVersion": "none"
+		}
+	},
 	"remoteEnv": {
-		"LOCAL_WORKSPACE_FOLDER": "${localWorkspaceFolder}",
-		"DOCKER_API_VERSION": "1.43"
+		"LOCAL_WORKSPACE_FOLDER": "${localWorkspaceFolder}"
 	},
 	"remoteUser": "vscode"
 }

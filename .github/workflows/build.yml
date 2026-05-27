@@ -104,11 +104,12 @@ jobs:
 
     - name: Test devcontainer functionality
       run: |
+        test_cmd=$(just test-cmd)
         docker run --rm \
           -v /var/run/docker.sock:/var/run/docker.sock \
           --group-add $(stat -c '%g' /var/run/docker.sock) \
           "${{ steps.test-tag.outputs.value }}" \
-          -c "$(just test-cmd)"
+          -c "$test_cmd"
 
 
   create-manifest:

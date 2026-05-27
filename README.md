@@ -4,10 +4,11 @@ Production-ready development container with modern tooling for cloud-native and 
 
 ## What's Inside
 
-**Languages**: [Go](https://go.dev), [Node.js](https://nodejs.org), [Python](https://python.org), [Rust](https://rust-lang.org) (via [cargo-binstall](https://github.com/cargo-bins/cargo-binstall)), [uv](https://github.com/astral-sh/uv), [pnpm](https://pnpm.io)  
+**Languages**: [Go](https://go.dev), [Node.js](https://nodejs.org), [Python](https://python.org), [Rust](https://rust-lang.org) (via [cargo-binstall](https://github.com/cargo-bins/cargo-binstall)), [uv](https://github.com/astral-sh/uv), [pnpm](https://pnpm.io), [aube](https://aube.en.dev)  
 **Cloud**: [AWS CLI](https://aws.amazon.com/cli/), [Terraform](https://terraform.io), Kubernetes ([kubectl](https://kubernetes.io/docs/reference/kubectl/), [k9s](https://k9scli.io), [k3d](https://k3d.io), [helm](https://helm.sh), [kustomize](https://kustomize.io))  
-**Development**: Docker-from-Docker, [git](https://git-scm.com), [just](https://just.systems), [mise](https://mise.jdx.dev), [direnv](https://direnv.net), [starship](https://starship.rs), [zellij](https://zellij.dev), [neovim](https://neovim.io), [lazygit](https://github.com/jesseduffield/lazygit)  
-**Security**: [Semgrep](https://semgrep.dev), [cosign](https://github.com/sigstore/cosign), [SLSA verifier](https://github.com/slsa-framework/slsa-verifier), [lychee](https://lychee.cli.rs) (link checker)  
+**Development**: Docker-outside-of-Docker, [OpenCode](https://opencode.ai), [oy](https://github.com/wagov-dtt/oy-cli), [git](https://git-scm.com), [just](https://just.systems), [mise](https://mise.jdx.dev), [direnv](https://direnv.net), [starship](https://starship.rs), [zellij](https://zellij.dev), [neovim](https://neovim.io), [lazygit](https://github.com/jesseduffield/lazygit), [delta](https://github.com/dandavison/delta), [difftastic](https://difftastic.wilfred.me.uk)  
+**Security**: [Semgrep](https://semgrep.dev), [cosign](https://github.com/sigstore/cosign), [SLSA verifier](https://github.com/slsa-framework/slsa-verifier), [lychee](https://lychee.cli.rs) (link checker), [Trivy](https://trivy.dev), [Syft](https://github.com/anchore/syft), [sops](https://getsops.io), [age](https://age-encryption.org)  
+**Linting/formatting**: [ShellCheck](https://www.shellcheck.net), [shfmt](https://github.com/mvdan/sh), [actionlint](https://github.com/rhysd/actionlint), [taplo](https://taplo.tamasfe.dev), [typos](https://github.com/crate-ci/typos), [hadolint](https://github.com/hadolint/hadolint), [yamlfmt](https://github.com/google/yamlfmt)  
 **Utilities**: [ripgrep](https://github.com/BurntSushi/ripgrep), [fzf](https://github.com/junegunn/fzf), [jq](https://jqlang.github.io/jq/), [yq](https://mikefarah.gitbook.io/yq), [httpie](https://httpie.io), [hurl](https://hurl.dev), [btop](https://github.com/aristocratos/btop), [restic](https://restic.net), [rclone](https://rclone.org)
 
 > **Complete list**: See [`src/wagov_devcontainer/spec.py`](src/wagov_devcontainer/spec.py) and [`src/wagov_devcontainer/deploy.py`](src/wagov_devcontainer/deploy.py)
@@ -21,13 +22,14 @@ Create `.devcontainer/devcontainer.json`:
 {
   "name": "My Project",
   "image": "ghcr.io/wagov-dtt/devcontainer-base",
-  "mounts": [
-    "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
-  ],
-  "onCreateCommand": "docker-init.sh",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
+      "moby": false,
+      "dockerDashComposeVersion": "none"
+    }
+  },
   "remoteEnv": {
-    "LOCAL_WORKSPACE_FOLDER": "${localWorkspaceFolder}",
-    "DOCKER_API_VERSION": "1.43"
+    "LOCAL_WORKSPACE_FOLDER": "${localWorkspaceFolder}"
   },
   "remoteUser": "vscode"
 }
@@ -38,14 +40,64 @@ Open in VS Code: **Cmd/Ctrl+Shift+P** → "Dev Containers: Reopen in Container"
 <details>
 <summary>Why these settings?</summary>
 
-- Docker socket bind mount - Enables Docker via host socket (no privileged mode needed, Docker CLI pre-installed via extrepo)
-- `onCreateCommand` - Runs baked-in `docker-init.sh` which fixes socket permissions
-- `DOCKER_API_VERSION` - Caps Docker client API version for compatibility with older daemons (set to 1.43 for broad compatibility)
-- `LOCAL_WORKSPACE_FOLDER` - Enables bind mounts from inside the container using host paths
+- `docker-outside-of-docker` - Reuses the host Docker socket without privileged mode and handles socket permissions/rootless setups more robustly than a manual bind mount.
+- `moby: false` - Uses the Docker CLI already baked into this Debian stable-backports image. The feature's default Moby packages are not available on Debian Trixie.
+- `dockerDashComposeVersion: "none"` - Avoids installing an extra `docker-compose` binary because `docker compose` is already included via `docker-compose-plugin`.
+- `LOCAL_WORKSPACE_FOLDER` - Makes the host workspace path available for Docker bind mounts from inside the container.
 - `remoteUser: vscode` - Correct user permissions
+
+If you need compatibility with an older Docker daemon, set `DOCKER_API_VERSION` in `remoteEnv` as a project-specific workaround rather than by default.
 </details>
 
+#### Rootless Docker
+
+For rootless Docker, override the feature's default socket mount to point at your user socket:
+
+```json
+{
+  "name": "My Project",
+  "image": "ghcr.io/wagov-dtt/devcontainer-base",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
+      "moby": false,
+      "dockerDashComposeVersion": "none"
+    }
+  },
+  "mounts": [
+    {
+      "source": "/run/user/1000/docker.sock",
+      "target": "/var/run/docker-host.sock",
+      "type": "bind"
+    }
+  ],
+  "remoteUser": "vscode"
+}
+```
+
+Replace `1000` with `id -u` from your host.
+
+#### Docker bind mounts from inside the devcontainer
+
+Docker commands run against the host daemon, so bind-mount source paths must exist on the host. Use `LOCAL_WORKSPACE_FOLDER` when invoking Docker:
+
+```bash
+docker run --rm -v "${LOCAL_WORKSPACE_FOLDER}:/workspace" debian:stable-slim pwd
+```
+
+For projects with Docker Compose files that assume container paths match host paths, mount the workspace at the same absolute path:
+
+```json
+{
+  "workspaceFolder": "${localWorkspaceFolder}",
+  "workspaceMount": "source=${localWorkspaceFolder},target=${localWorkspaceFolder},type=bind"
+}
+```
+
+This is not available when using VS Code's **Clone Repository in Container Volume** flow, because `${localWorkspaceFolder}` does not exist there.
+
 ### Docker CLI
+
+The image still includes Docker CLI/buildx/compose for direct `docker run` usage outside VS Code Dev Containers:
 
 ```bash
 # Basic usage (mount host Docker socket)
@@ -119,7 +171,7 @@ See [`.github/workflows/test-devcontainer.yml`](.github/workflows/test-devcontai
 - **Base**: Debian stable-backports (currently Trixie/13)
 - **Package Management**: APT for system tools, mise for development tools
 - **Build**: Python package (`wagov-devcontainer`) runs a pyinfra deploy during Docker build or local install
-- **Docker-from-Docker**: Host socket bind mount (Docker CLI pre-installed via extrepo, no privileged mode needed)
+- **Docker-outside-of-Docker**: Host socket reuse via the upstream Dev Containers feature; Docker CLI/buildx/compose are also pre-installed for plain `docker run` usage
 
 ### Tool Sources
 
@@ -129,6 +181,8 @@ Tools are installed from two sources, preferring APT when available:
    - Docker, GitHub CLI, Terraform, kubectl, mise
 2. **[mise](https://mise.jdx.dev)** - Cross-platform tools not in APT, or needing version flexibility
    - Languages (Go, Node, Python), k9s, starship
+   - npm-backed tools are installed through [aube](https://aube.en.dev) (`npm.package_manager = "aube"`)
+   - Cargo-backed tools use [cargo-binstall](https://github.com/cargo-bins/cargo-binstall) when prebuilt binaries are available
 
 ### Key Features
 
@@ -174,7 +228,7 @@ pipx install azure-cli
 ```bash
 just              # List all commands
 just build        # Build test image
-just test         # Test Docker-from-Docker
+just test         # Test Docker-outside-of-Docker
 just dev          # Interactive shell
 just lint         # Format and lint Python sources
 just clean        # Clean up images
@@ -190,10 +244,10 @@ just shell        # Run published image interactively
 
 | Issue | Solution |
 |-------|----------|
-| Docker not working | Ensure Docker socket is available on the host |
+| Docker not working | Ensure Docker is running and the host socket is available. For rootless Docker, override the socket mount as shown above. |
 | Tool missing | Check `src/wagov_devcontainer/spec.py` |
 | Build fails | Run `just clean` then `just build` |
-| Permission errors | User should be in docker group (automatic) |
+| Docker permission errors | Rebuild the devcontainer so the `docker-outside-of-docker` feature can refresh socket access. For direct `docker run`, pass `--group-add $(stat -c '%g' /var/run/docker.sock)`. |
 | mise issues | Run `mise doctor` inside container |
 
 ## Contributing
