@@ -22,7 +22,7 @@ jobs:
         with:
           python-version: '3.12'
 
-      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6.0.0
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v6.0.0
 
       - name: Verify tag matches project version
         if: startsWith(github.ref, 'refs/tags/v')
