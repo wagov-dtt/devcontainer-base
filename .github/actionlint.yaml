@@ -1,0 +1,4 @@
+self-hosted-runner:
+  labels:
+    - ubuntu-latest-16core
+    - ubuntu-24.04-arm-16core

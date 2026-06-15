@@ -198,20 +198,16 @@ See the project [`Dockerfile`](Dockerfile) for the full build pipeline including
 
 ### CI/CD Integration
 
-Run tests in the devcontainer for guaranteed consistency:
+Run tests in the devcontainer image for guaranteed consistency:
 
 ```yaml
-- name: Run tests in devcontainer
-  uses: devcontainers/ci@v0.3
-  with:
-    imageName: local/devcontainer
-    push: never
-    runCmd: |
-      just test
-      mise run lint
+- name: Build and smoke test image
+  run: |
+    docker buildx bake test
+    docker run --rm devcontainer-base:test -c 'mise doctor && https ipinfo.io'
 ```
 
-See [`.github/workflows/test-devcontainer.yml`](.github/workflows/test-devcontainer.yml) for complete example.
+See [`.github/workflows/build.yml`](.github/workflows/build.yml) for the complete multi-arch build, push, and smoke-test workflow.
 
 ## How It Works
 

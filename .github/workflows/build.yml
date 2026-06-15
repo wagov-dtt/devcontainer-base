@@ -40,17 +40,15 @@ jobs:
     steps:
     - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
 
-    - name: Install mise and tools
-      uses: jdx/mise-action@dba19683ed58901619b14f395a24841710cb4925 # v4.1.0
-      env:
-        GITHUB_TOKEN: ${{ github.token }}
-
     - name: Validate mise configuration
-      run: just check
+      run: |
+        curl --proto '=https' --tlsv1.2 -sSf https://mise.run | MISE_INSTALL_PATH=/usr/local/bin/mise sh
+        mise trust --yes .
+        mise config >/dev/null
 
     - name: Set build date for cache busting
       id: date
-      run: echo "value=$(date +%Y%m%d)" >> $GITHUB_OUTPUT
+      run: echo "value=$(date +%Y%m%d)" >> "$GITHUB_OUTPUT"
 
     - name: Extract metadata (tags) for Docker
       id: meta
@@ -100,14 +98,15 @@ jobs:
         if [ -z "$TAG" ]; then
           TAG="devcontainer-base:test"
         fi
-        echo "value=$TAG" >> $GITHUB_OUTPUT
+        echo "value=$TAG" >> "$GITHUB_OUTPUT"
 
     - name: Test devcontainer functionality
       run: |
-        test_cmd=$(just test-cmd)
+        # shellcheck disable=SC2016 # expand date/network inside the container, not on the runner
+        test_cmd='network="devcontainer-test-$(date +%s)-$$"; trap "docker network rm \"$network\" >/dev/null 2>&1 || true" EXIT; docker network create "$network" >/dev/null && mise doctor && docker run --rm --network "$network" ghcr.io/curl/curl-container/curl-multi:master -s ipinfo.io && https ipinfo.io'
         docker run --rm \
           -v /var/run/docker.sock:/var/run/docker.sock \
-          --group-add $(stat -c '%g' /var/run/docker.sock) \
+          --group-add "$(stat -c '%g' /var/run/docker.sock)" \
           "${{ steps.test-tag.outputs.value }}" \
           -c "$test_cmd"
 
