@@ -118,17 +118,11 @@ jobs:
     permissions:
       contents: read
       packages: write
-      id-token: write
-      attestations: write
 
     steps:
-    - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
-
     - name: Extract metadata for Docker
       id: meta
       uses: docker/metadata-action@80c7e94dd9b9319bd5eb7a0e0fe9291e23a2a2e9 # v6.1.0
-      env:
-        DOCKER_METADATA_ANNOTATIONS_LEVELS: manifest,index
       with:
         images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
         tags: |
@@ -148,15 +142,19 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ github.token }}
 
-    - name: Create and push manifest
-      uses: docker/bake-action@6614cfa25eff9a0b2b2697efb0b6159e7680d584 # v7.2.0
+    - name: Create and push multi-arch manifests
       env:
-        GITHUB_TOKEN: ${{ github.token }}
-      with:
-        source: .
-        targets: release
-        files: |
-          ./docker-bake.hcl
-          ${{ steps.meta.outputs.bake-file-labels }}
-          ${{ steps.meta.outputs.bake-file-annotations }}
-        push: true
+        TAGS: ${{ steps.meta.outputs.tags }}
+      run: |
+        while IFS= read -r tag; do
+          if [ -z "$tag" ]; then
+            continue
+          fi
+
+          docker buildx imagetools create \
+            --tag "$tag" \
+            "${tag}-amd64" \
+            "${tag}-arm64"
+        done <<EOF
+        $TAGS
+        EOF
