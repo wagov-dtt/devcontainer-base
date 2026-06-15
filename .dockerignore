@@ -1,9 +1,6 @@
 .git
 .github
 .devcontainer
-.ruff_cache
-.venv
-__pycache__
 *.md
 !README.md
 .gitignore
@@ -11,4 +8,5 @@ __pycache__
 justfile
 install.sh
 docker-bake.hcl
-uv.lock
+mise.lock
+.mise.local.toml

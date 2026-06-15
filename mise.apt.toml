@@ -1,0 +1,65 @@
+[bootstrap.packages]
+"apt:docker-ce-cli" = "latest"
+"apt:docker-buildx-plugin" = "latest"
+"apt:docker-compose-plugin" = "latest"
+"apt:git" = "latest"
+"apt:neovim" = "latest"
+"apt:build-essential" = "latest"
+"apt:python3-dev" = "latest"
+"apt:mise" = "latest"
+"apt:gh" = "latest"
+"apt:terraform" = "latest"
+"apt:ddev" = "latest"
+"apt:kubectl" = "latest"
+"apt:tini" = "latest"
+"apt:openssh-client" = "latest"
+"apt:bash-completion" = "latest"
+"apt:ripgrep" = "latest"
+"apt:ugrep" = "latest"
+"apt:fd-find" = "latest"
+"apt:bat" = "latest"
+"apt:jq" = "latest"
+"apt:less" = "latest"
+"apt:unzip" = "latest"
+"apt:zip" = "latest"
+"apt:file" = "latest"
+"apt:rsync" = "latest"
+"apt:librsvg2-bin" = "latest"
+"apt:btop" = "latest"
+"apt:htop" = "latest"
+"apt:procps" = "latest"
+"apt:lsof" = "latest"
+"apt:iputils-ping" = "latest"
+"apt:dnsutils" = "latest"
+"apt:net-tools" = "latest"
+"apt:restic" = "latest"
+"apt:rclone" = "latest"
+"apt:wget" = "latest"
+"apt:fzf" = "latest"
+"apt:locales" = "latest"
+
+[bootstrap.hooks]
+pre-packages = """
+  set -eu
+  echo ':: Bootstrapping APT prerequisites...'
+  export DEBIAN_FRONTEND=noninteractive
+  sudo apt-get update -y
+  sudo apt-get install -y extrepo curl gnupg sudo
+  sudo sed -i 's/^# - contrib/- contrib/' /etc/extrepo/config.yaml
+  sudo sed -i 's/^# - non-free/- non-free/' /etc/extrepo/config.yaml
+  # Enable extrepo vendor repos for tools not in Debian proper
+  for repo in docker-ce github-cli kubernetes google_cloud ddev mise hashicorp; do
+    sudo extrepo enable "$repo" || echo "extrepo: $repo skipped or already enabled"
+  done
+  sudo locale-gen en_US.UTF-8
+"""
+post-packages = """
+  set -eu
+  echo ':: Finishing APT bootstrap...'
+  # Docker daemon (bare metal / systemd hosts only)
+  if [ -d /run/systemd/system ] && [ ! -f /.dockerenv ]; then
+    sudo apt-get install -y docker-ce containerd.io 2>/dev/null || true
+    sudo systemctl enable docker 2>/dev/null || true
+    sudo systemctl start docker 2>/dev/null || true
+  fi
+"""

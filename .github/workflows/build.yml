@@ -45,9 +45,9 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ github.token }}
 
-    - name: Validate TOML configuration
+    - name: Validate mise configuration
       run: just check
-    
+
     - name: Set build date for cache busting
       id: date
       run: echo "value=$(date +%Y%m%d)" >> $GITHUB_OUTPUT
@@ -65,7 +65,7 @@ jobs:
           type=sha,prefix={{branch}}-,enable={{is_default_branch}}
         flavor: |
           suffix=-${{ matrix.arch }}
-    
+
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@4d04d5d9486b7bd6fa91e7baf45bbb4f8b9deedd # v4.0.0
 
@@ -139,9 +139,6 @@ jobs:
           type=ref,event=tag
           type=sha,prefix={{branch}}-,enable={{is_default_branch}}
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@4d04d5d9486b7bd6fa91e7baf45bbb4f8b9deedd # v4.0.0
-
     - name: Log in to Container Registry
       uses: docker/login-action@4907a6ddec9925e35a0a9e82d7399ccc52663121 # v4.1.0
       with:
@@ -149,57 +146,15 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ github.token }}
 
-    - name: Create and push multi-platform manifest
-      run: |
-        # Platform-specific images are tagged with -amd64 and -arm64 suffixes
-        AMD64_IMAGE="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}-amd64"
-        ARM64_IMAGE="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}-arm64"
-
-        # Create multi-platform manifest for each tag
-        for TAG in "${{ github.ref_name }}" "latest"; do
-          echo "Creating manifest for ${TAG}..."
-          
-          # Build annotation args from metadata-action output
-          # Only use index: annotations (manifest: annotations not supported by imagetools create)
-          ANNOTATION_ARGS=()
-          while IFS= read -r line; do
-            if [ -n "$line" ] && [[ "$line" == index:* ]]; then
-              ANNOTATION_ARGS+=("--annotation" "$line")
-            fi
-          done <<< "${{ steps.meta.outputs.annotations }}"
-          
-          docker buildx imagetools create \
-            -t "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${TAG}" \
-            "${ANNOTATION_ARGS[@]}" \
-            "${AMD64_IMAGE}" \
-            "${ARM64_IMAGE}"
-        done
-
-        # Output the digest for attestation
-        DIGEST=$(docker buildx imagetools inspect "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}" --format '{{json .}}' | jq -r '.manifest.digest')
-        echo "digest=${DIGEST}" >> $GITHUB_OUTPUT
-      id: manifest
-
-    - name: Attest build provenance
-      uses: actions/attest-build-provenance@a2bbfa25375fe432b6a289bc6b6cd05ecd0c4c32 # v4.1.0
-      with:
-        subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-        subject-digest: ${{ steps.manifest.outputs.digest }}
-        push-to-registry: true
-
-    - name: Verify attestations
-      run: |
-        echo "Verifying provenance attestation for ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@${{ steps.manifest.outputs.digest }}"
-        
-        # Verify provenance attestation exists
-        PROVENANCE=$(gh attestation verify "oci://${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@${{ steps.manifest.outputs.digest }}" \
-          --repo "${{ github.repository }}" \
-          --predicate-type https://slsa.dev/provenance/v1 2>&1) || {
-          echo "::error::Provenance attestation verification failed"
-          echo "$PROVENANCE"
-          exit 1
-        }
-        echo "Provenance attestation verified"
-        echo "SBOM is attached to the image in the registry (view with: docker sbom <image>)"
+    - name: Create and push manifest
+      uses: docker/bake-action@82490499d2e5613fcead7e128237ef0b0ea210f7 # v7.0.0
       env:
-        GH_TOKEN: ${{ github.token }}
+        GITHUB_TOKEN: ${{ github.token }}
+      with:
+        source: .
+        targets: release
+        files: |
+          ./docker-bake.hcl
+          ${{ steps.meta.outputs.bake-file-labels }}
+          ${{ steps.meta.outputs.bake-file-annotations }}
+        push: true

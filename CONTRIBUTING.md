@@ -21,21 +21,24 @@ This repo follows [grug-brained development](https://grugbrain.dev):
 
 ## Project Structure
 
-- `src/wagov_devcontainer/spec.py` — source of truth for APT repos, APT packages, and mise tools
-- `src/wagov_devcontainer/deploy.py` — pyinfra deploy executed by the CLI
-- `src/wagov_devcontainer/cli.py` — packaged CLI entry point for `uvx`/`pipx`
-- `build.py` — thin local shim for `uv run build.py` during repo development
-- `Dockerfile` — minimal image build that runs the packaged CLI from the local source tree
-- `docker-bake.hcl` — BuildKit bake targets and image metadata
-- `justfile` — common workflows; prefer `just` over raw docker commands
-- `.devcontainer/` — VS Code devcontainer configuration
+| File | Purpose |
+|---|---|
+| `mise.toml` | Core config: settings, 60+ tools, dotfiles, tasks |
+| `mise.apt.toml` | APT bootstrap packages + extrepo hooks (Debian/Ubuntu) |
+| `mise.brew.toml` | Brew bootstrap packages (macOS, atomic Linux) |
+| `Dockerfile` | Container build: installs mise, runs `mise bootstrap -E apt` |
+| `install.sh` | Host installer: platform detection → mise bootstrap |
+| `scripts/docker-init.sh` | Docker socket group synchronisation |
+| `docker-bake.hcl` | BuildKit bake targets and image metadata |
+| `justfile` | Development workflows (`just build`, `just test`, etc.) |
+| `.devcontainer/` | VS Code devcontainer configuration |
 
 ## Development Workflow
 
 ### Prerequisites
 
 - Docker with BuildKit support
-- [just](https://just.systems) command runner
+- [just](https://just.systems) command runner (also installed by mise)
 
 ### Common Commands
 
@@ -44,7 +47,8 @@ just              # List all commands
 just build        # Build test image locally
 just test         # Test Docker-outside-of-Docker functionality
 just dev          # Interactive development shell
-just lint         # Format and lint Python files
+just lint         # Lint project files (shell, TOML, workflows)
+just fmt          # Format project files
 ```
 
 For maintainers only:
@@ -60,46 +64,46 @@ Do not run `just publish` unless you intend to publish and have the required cre
 
 ### Adding Tools
 
-Tool definitions live in `src/wagov_devcontainer/spec.py` and provisioning logic lives in `src/wagov_devcontainer/deploy.py`:
+1. Add APT system packages to `mise.apt.toml` under `[bootstrap.packages]` with `apt:` prefix, and brew equivalents to `mise.brew.toml` with `brew:` prefix
+2. Add development tools to `mise.toml` under `[tools]`
 
-1. Add APT repos to `APT_REPOS` when an official signed repo exists
-2. Add Debian packages to `APT_PACKAGES` when available
-3. Add tools to `MISE_TOOLS` only when APT is unavailable or version flexibility matters
-4. Change pyinfra operations in `deploy.py` only when behaviour needs to change
+Prefer APT/brew system packages for system-level tools. Use mise for dev tools that need version flexibility or aren't available in system repos.
 
-Prefer APT when possible. Signed distro or vendor packages are generally a better supply-chain choice than ad hoc downloads.
+```toml
+# mise.toml — development tools
+[tools]
+"pipx:tool" = "latest"
+"cargo:tool" = "latest"
+"npm:tool" = "latest"
+tool = "latest"              # mise default registry
 
-```python
-# In src/wagov_devcontainer/spec.py
-MISE_TOOLS = {
-    # Simple: tool name -> becomes "tool-name" = "latest" in TOML
-    "your-tool": "latest",
+# mise.apt.toml — Debian/Ubuntu system packages
+[bootstrap.packages]
+"apt:your-package" = "latest"
 
-    # Complex: use structured values for inline TOML tables
-    "pipx:tool": {"version": "latest", "extras": "extra"},
-}
+# mise.brew.toml — macOS/brew system packages
+[bootstrap.packages]
+"brew:your-formula" = "latest"
 ```
-
-`MISE_SETTINGS` follows the same pattern.
 
 ### Tool Source Priority
 
-1. **APT via extrepo** — preferred for official signed packages
-2. **mise** — use when APT is unavailable or too limiting
+1. **APT via extrepo** - preferred for official signed packages
+2. **mise** - use when APT is unavailable or too limiting
 
 ### Testing
 
 Before submitting a PR:
 
-1. Build succeeds: `just build`
-2. Runtime test passes: `just test`
-3. Lint passes: `just lint`
-4. For tooling or shell changes, sanity check interactively with `just dev`
+1. Validate config: `just check`
+2. Build succeeds: `just build`
+3. Runtime test passes: `just test`
+4. Lint passes: `just lint`
+5. For tooling or shell changes, sanity check interactively with `just dev`
 
 ## Code Style
 
 - Use Australian English spelling where practical
-- Follow existing `src/wagov_devcontainer/` patterns
 - Keep changes simple and local
 - Favour clear duplication over clever abstraction
 - Write commit messages that explain why, not just what
@@ -122,7 +126,7 @@ Before submitting a PR:
 | Issue | Solution |
 |---|---|
 | Docker not working | Ensure the host Docker socket is available |
-| Tool missing | Check `src/wagov_devcontainer/spec.py` |
+| Tool missing | Check `mise.toml` |
 | Build fails | Run `just clean` then `just build` |
 | Permission errors | Ensure the user is in the `docker` group |
 | mise issues | Run `mise doctor` inside the container |

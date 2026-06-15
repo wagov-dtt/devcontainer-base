@@ -1,8 +1,5 @@
 # Cloud Native Devcontainer - Build & Development
 
-# Auto-detect GITHUB_TOKEN from gh CLI to avoid API rate limits
-export GITHUB_TOKEN := env("GITHUB_TOKEN", `gh auth token 2>/dev/null || echo ""`)
-
 # Configuration
 tag := "ghcr.io/wagov-dtt/devcontainer-base:latest"
 test_tag := "devcontainer-base:test"
@@ -15,22 +12,12 @@ docker_args := "-it --rm" + \
     " --mount type=bind,source=" + justfile_directory() + ",target=" + workspace + \
     " --workdir " + workspace
 
-# Test command used by both local and CI (single source of truth)
-test_cmd := 'network="devcontainer-test-$(date +%s)-$$"; trap "docker network rm \"$network\" >/dev/null 2>&1 || true" EXIT; docker network create "$network" >/dev/null && mise doctor && docker run --rm --network "$network" ghcr.io/curl/curl-container/curl-multi:master -s ipinfo.io && https ipinfo.io'
-
 default:
     @just --list
 
-# Validate generated config and CLI wiring
+# Validate mise configuration
 check:
-    @uv run python -c 'import tomllib; from wagov_devcontainer.spec import MISE_TOML; tomllib.loads(MISE_TOML); print("TOML valid")'
-    @uv run wagov-devcontainer --help >/dev/null
-    @echo "CLI valid"
-
-# Build Python distribution artifacts
-package:
-    rm -rf dist
-    uv build
+    @mise trust --yes && mise config >/dev/null && echo "Config valid"
 
 # Build test image locally
 build: check
@@ -44,11 +31,11 @@ test: build
         -v /var/run/docker.sock:/var/run/docker.sock \
         --group-add $(stat -c '%g' /var/run/docker.sock) \
         {{test_tag}} \
-        -c '{{test_cmd}}'
+        -c 'network="devcontainer-test-$(date +%s)-$$"; trap "docker network rm \"$network\" >/dev/null 2>&1 || true" EXIT; docker network create "$network" >/dev/null && mise doctor && docker run --rm --network "$network" ghcr.io/curl/curl-container/curl-multi:master -s ipinfo.io && https ipinfo.io'
 
 # Print test command (for CI to use)
 test-cmd:
-    @printf '%s\n' '{{test_cmd}}'
+    @printf '%s\n' 'network="devcontainer-test-$(date +%s)-$$"; trap "docker network rm \"$network\" >/dev/null 2>&1 || true" EXIT; docker network create "$network" >/dev/null && mise doctor && docker run --rm --network "$network" ghcr.io/curl/curl-container/curl-multi:master -s ipinfo.io && https ipinfo.io'
 
 # Interactive development shell (build + shell)
 dev: build
@@ -70,11 +57,18 @@ shell:
     docker pull {{tag}}
     docker run {{docker_args}} --entrypoint bash {{tag}}
 
-# Lint and format Python code
+# Lint project files
 lint:
-    @echo "Linting and formatting..."
-    uv run ruff format build.py src
-    uv run ruff check --fix build.py src
+    @echo "Linting..."
+    @mise exec -- shfmt -d scripts/*.sh install.sh 2>/dev/null || true
+    @mise exec -- shellcheck -x scripts/*.sh install.sh 2>/dev/null || true
+    @mise exec -- taplo fmt --check mise*.toml 2>/dev/null || true
+
+# Format project files
+fmt:
+    @echo "Formatting..."
+    @mise exec -- shfmt -w scripts/*.sh install.sh
+    @mise exec -- taplo fmt mise*.toml
 
 # Clean up images
 clean:

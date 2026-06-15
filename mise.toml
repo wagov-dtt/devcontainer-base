@@ -1,7 +1,108 @@
-[tools]
-just = "latest"
-uv = "latest"
-ruff = "latest"
+min_version = "2026.6.0"
 
 [settings]
+experimental = true
 lockfile = true
+
+[tools]
+# Languages and package managers
+go = "latest"
+node = "latest"
+python = "latest"
+pnpm = "latest"
+aube = "latest"
+uv = "latest"
+pipx = "latest"
+"cargo-binstall" = "latest"
+# Cloud and platform tooling
+"aws-cli" = "latest"
+"aws-sam" = "latest"
+localstack = "latest"
+helm = "latest"
+kustomize = "latest"
+k9s = "latest"
+k3d = "latest"
+tflint = "latest"
+"terraform-docs" = "latest"
+vault = "latest"
+# Supply chain and security
+cosign = "latest"
+"slsa-verifier" = "latest"
+semgrep = "latest"
+lychee = "latest"
+trivy = "latest"
+syft = "latest"
+sops = "latest"
+age = "latest"
+# Linting, formatting, and repository hygiene
+shellcheck = "latest"
+shfmt = "latest"
+actionlint = "latest"
+taplo = "latest"
+typos = "latest"
+hadolint = "latest"
+yamlfmt = "latest"
+# Shell and developer UX
+starship = "latest"
+zoxide = "latest"
+eza = "latest"
+direnv = "latest"
+just = "latest"
+zellij = "latest"
+lazygit = "latest"
+delta = "latest"
+difftastic = "latest"
+hurl = "latest"
+envsubst = "latest"
+yq = "latest"
+# Additional package sources
+"npm:opencode-ai" = "latest"
+"pipx:tldr" = "latest"
+"pipx:httpie" = "latest"
+"cargo:mdbook" = "latest"
+"cargo:oy-cli" = "latest"
+"npm:@devcontainers/cli" = "latest"
+rumdl = "latest"
+"github:boyter/scc" = "latest"
+
+[dotfiles]
+"~/.bashrc/85-wagov-devcontainer" = { block = '''
+# Shell enhancements
+command -v mise >/dev/null 2>&1 && eval "$(mise activate bash)"
+command -v starship >/dev/null 2>&1 && eval "$(starship init bash)"
+command -v zoxide >/dev/null 2>&1 && eval "$(zoxide init bash)"
+''' }
+
+[tasks.check]
+description = "Validate mise configuration"
+run = "mise trust --yes && mise config >/dev/null && echo 'Mise configuration valid'"
+
+[tasks.lint]
+description = "Lint project files"
+run = '''
+  set -eu
+  mise exec -- shfmt -d scripts/*.sh install.sh 2>/dev/null || true
+  mise exec -- shellcheck -x scripts/*.sh install.sh 2>/dev/null || true
+  mise exec -- taplo fmt --check mise*.toml 2>/dev/null || true
+  mise exec -- actionlint .github/workflows/*.yml 2>/dev/null || true
+'''
+
+[tasks.fmt]
+description = "Format project files"
+run = '''
+  mise exec -- shfmt -w scripts/*.sh install.sh
+  mise exec -- taplo fmt mise*.toml
+'''
+
+[tasks.build]
+description = "Build test image"
+depends = ["check"]
+run = "docker buildx bake test --progress=plain"
+
+[tasks.test-cmd]
+description = "Print test command for CI"
+run = "printf '%s\\n' 'network=\"devcontainer-test-$(date +%%s)-$$\"; trap \"docker network rm \\\"$network\\\" >/dev/null 2>&1 || true\" EXIT; docker network create \"$network\" >/dev/null && mise doctor && docker run --rm --network \"$network\" ghcr.io/curl/curl-container/curl-multi:master -s ipinfo.io && https ipinfo.io'"
+
+[tasks.clean]
+description = "Clean up images"
+run = "docker rmi ghcr.io/wagov-dtt/devcontainer-base:latest devcontainer-base:test 2>/dev/null || true; docker system prune -f"

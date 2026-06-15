@@ -1,7 +1,1 @@
-__pycache__/
-*.pyc
-.ruff_cache/
-.venv/
-.env
-dist/
-*.egg-info/
+.mise.local.toml

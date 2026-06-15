@@ -4,14 +4,14 @@ Production-ready development container with modern tooling for cloud-native and 
 
 ## What's Inside
 
-**Languages**: [Go](https://go.dev), [Node.js](https://nodejs.org), [Python](https://python.org), [Rust](https://rust-lang.org) (via [cargo-binstall](https://github.com/cargo-bins/cargo-binstall)), [uv](https://github.com/astral-sh/uv), [pnpm](https://pnpm.io), [aube](https://aube.en.dev)  
-**Cloud**: [AWS CLI](https://aws.amazon.com/cli/), [Terraform](https://terraform.io), Kubernetes ([kubectl](https://kubernetes.io/docs/reference/kubectl/), [k9s](https://k9scli.io), [k3d](https://k3d.io), [helm](https://helm.sh), [kustomize](https://kustomize.io))  
-**Development**: Docker-outside-of-Docker, [OpenCode](https://opencode.ai), [oy](https://github.com/wagov-dtt/oy-cli), [git](https://git-scm.com), [just](https://just.systems), [mise](https://mise.jdx.dev), [direnv](https://direnv.net), [starship](https://starship.rs), [zellij](https://zellij.dev), [neovim](https://neovim.io), [lazygit](https://github.com/jesseduffield/lazygit), [delta](https://github.com/dandavison/delta), [difftastic](https://difftastic.wilfred.me.uk)  
-**Security**: [Semgrep](https://semgrep.dev), [cosign](https://github.com/sigstore/cosign), [SLSA verifier](https://github.com/slsa-framework/slsa-verifier), [lychee](https://lychee.cli.rs) (link checker), [Trivy](https://trivy.dev), [Syft](https://github.com/anchore/syft), [sops](https://getsops.io), [age](https://age-encryption.org)  
-**Linting/formatting**: [ShellCheck](https://www.shellcheck.net), [shfmt](https://github.com/mvdan/sh), [actionlint](https://github.com/rhysd/actionlint), [taplo](https://taplo.tamasfe.dev), [typos](https://github.com/crate-ci/typos), [hadolint](https://github.com/hadolint/hadolint), [yamlfmt](https://github.com/google/yamlfmt)  
+**Languages**: [Go](https://go.dev), [Node.js](https://nodejs.org), [Python](https://python.org), [Rust](https://rust-lang.org), [uv](https://github.com/astral-sh/uv), [pnpm](https://pnpm.io), [aube](https://aube.en.dev)
+**Cloud**: [AWS CLI](https://aws.amazon.com/cli/), [Terraform](https://terraform.io), Kubernetes ([kubectl](https://kubernetes.io/docs/reference/kubectl/), [k9s](https://k9scli.io), [k3d](https://k3d.io), [helm](https://helm.sh), [kustomize](https://kustomize.io))
+**Development**: Docker-outside-of-Docker, [OpenCode](https://opencode.ai), [oy](https://github.com/wagov-dtt/oy-cli), [git](https://git-scm.com), [just](https://just.systems), [mise](https://mise.jdx.dev), [direnv](https://direnv.net), [starship](https://starship.rs), [zellij](https://zellij.dev), [neovim](https://neovim.io), [lazygit](https://github.com/jesseduffield/lazygit), [delta](https://github.com/dandavison/delta), [difftastic](https://difftastic.wilfred.me.uk)
+**Security**: [Semgrep](https://semgrep.dev), [cosign](https://github.com/sigstore/cosign), [SLSA verifier](https://github.com/slsa-framework/slsa-verifier), [lychee](https://lychee.cli.rs) (link checker), [Trivy](https://trivy.dev), [Syft](https://github.com/anchore/syft), [sops](https://getsops.io), [age](https://age-encryption.org)
+**Linting/formatting**: [ShellCheck](https://www.shellcheck.net), [shfmt](https://github.com/mvdan/sh), [actionlint](https://github.com/rhysd/actionlint), [taplo](https://taplo.tamasfe.dev), [typos](https://github.com/crate-ci/typos), [hadolint](https://github.com/hadolint/hadolint), [yamlfmt](https://github.com/google/yamlfmt)
 **Utilities**: [ripgrep](https://github.com/BurntSushi/ripgrep), [fzf](https://github.com/junegunn/fzf), [jq](https://jqlang.github.io/jq/), [yq](https://mikefarah.gitbook.io/yq), [httpie](https://httpie.io), [hurl](https://hurl.dev), [btop](https://github.com/aristocratos/btop), [restic](https://restic.net), [rclone](https://rclone.org)
 
-> **Complete list**: See [`src/wagov_devcontainer/spec.py`](src/wagov_devcontainer/spec.py) and [`src/wagov_devcontainer/deploy.py`](src/wagov_devcontainer/deploy.py)
+> **Complete list**: See [`mise.toml`](mise.toml) and [`mise.apt.toml`](mise.apt.toml)
 
 ## Quick Start
 
@@ -35,7 +35,7 @@ Create `.devcontainer/devcontainer.json`:
 }
 ```
 
-Open in VS Code: **Cmd/Ctrl+Shift+P** → "Dev Containers: Reopen in Container"
+Open in VS Code: **Cmd/Ctrl+Shift+P** -> "Dev Containers: Reopen in Container"
 
 <details>
 <summary>Why these settings?</summary>
@@ -116,36 +116,85 @@ docker run -it --rm \
 
 ### Install on Existing System
 
-Works on Debian/Ubuntu, including Ubuntu 26.04. On atomic or other brew-based hosts, the pyinfra deploy can use Homebrew for user-space tooling instead of attempting APT/extrepo or Docker daemon changes.
-
-For direct `uvx`/`pipx run` usage, install these first:
-
-- [GitHub CLI](https://cli.github.com/) (`gh`)
-- either [uv](https://docs.astral.sh/uv/) (`uvx`) or [pipx](https://pipx.pypa.io/)
-
-To avoid GitHub API rate limits during tool installs, export a token from `gh` first:
+Works on Debian/Ubuntu (including Ubuntu 26.04) and brew-based hosts (macOS, atomic Linux).
+Installs via [mise bootstrap](https://mise.jdx.dev/bootstrap.html) — no Python, pip, uv, or pyinfra required.
 
 ```bash
-export GITHUB_TOKEN="$(gh auth token)"
-
-# Preferred: run the published package directly
-uvx wagov-devcontainer
-
-# Or with pipx
-pipx run --spec wagov-devcontainer wagov-devcontainer
-
-# Repo helper script for Debian/Ubuntu, including Ubuntu 26.04
+# One-liner: auto-detects APT or brew
 curl -sSL https://raw.githubusercontent.com/wagov-dtt/devcontainer-base/main/install.sh | sh
+
+# Install for a specific user (requires root/sudo)
+SETUP_USER=myuser curl -sSL https://raw.githubusercontent.com/wagov-dtt/devcontainer-base/main/install.sh | sh
+
+# Clone and run locally
+git clone https://github.com/wagov-dtt/devcontainer-base && cd devcontainer-base
+sudo ./install.sh
 ```
 
-The helper script also auto-detects `GITHUB_TOKEN` from `gh auth token` when `gh` is installed.
-On non-APT hosts, use `uvx` or `pipx run` directly; the helper script will not try to bootstrap packages there. If `brew` is on `PATH`, the deploy installs the needed user-space packages itself and then runs `mise install --yes` once `mise` is available.
+**What it does:**
+
+1. Installs [mise](https://mise.jdx.dev) if missing
+2. Detects platform (APT for Debian/Ubuntu, brew for macOS/atomic)
+3. Fetches `mise.toml` + platform-specific config (`mise.apt.toml` or `mise.brew.toml`)
+4. Runs `mise bootstrap --yes -E <platform>`:
+   - Installs system packages (Docker CLI, git, neovim, ripgrep, etc.)
+   - Installs 60+ development tools (Go, Node, Python, k9s, Terraform, etc.)
+   - Applies shell dotfiles (bashrc enhancements)
+
+Set `GITHUB_TOKEN` to avoid API rate limits. The script auto-exports it from `gh auth token` when available.
+
+To skip system packages and only install user-level tools, run manually:
+
+```bash
+mise trust --yes .
+mise install --yes          # tools only, no system packages
+mise dotfiles apply --yes   # shell config only
+```
 
 ### Use as Template
 
 1. **GitHub**: Click "Use this template" to create your own repository
 2. **Codespaces**: Works immediately - click "Code" → "Create codespace"
 3. **Local**: Clone and customize as needed
+
+### Use in Custom Docker Images
+
+Consume this project's mise bootstrap config to layer the same toolchain into your own `Dockerfile`.
+
+For Debian/Ubuntu images, copy the config and run the APT variant:
+
+```dockerfile
+FROM debian:stable-backports
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+COPY mise.toml mise.apt.toml ./
+
+RUN apt-get update -y \
+    && apt-get install -y curl ca-certificates extrepo gnupg locales sudo \
+    && curl --proto '=https' --tlsv1.2 -sSf https://mise.run | MISE_INSTALL_PATH=/usr/local/bin/mise sh \
+    && sed -i 's/^# - contrib/- contrib/' /etc/extrepo/config.yaml \
+    && sed -i 's/^# - non-free/- non-free/' /etc/extrepo/config.yaml \
+    && for repo in docker-ce github-cli kubernetes google_cloud ddev mise hashicorp; do \
+         extrepo enable "$repo" || echo "extrepo: $repo skipped or already enabled"; \
+       done \
+    && mise trust --yes . \
+    && mise bootstrap packages install --yes --update -E apt \
+    && mise bootstrap --yes
+```
+
+For brew-based images or base OSes, copy `mise.toml` + `mise.brew.toml` and run the brew variant:
+
+```dockerfile
+COPY mise.toml mise.brew.toml ./
+RUN curl --proto '=https' --tlsv1.2 -sSf https://mise.run | MISE_INSTALL_PATH=/usr/local/bin/mise sh \
+    && mise trust --yes . \
+    && mise bootstrap --yes -E brew
+```
+
+The `-E apt` flag loads `mise.apt.toml`; `-E brew` loads `mise.brew.toml`. If you want only mise-managed tools and dotfiles (no system packages), omit `-E ...` and run `mise bootstrap --yes`.
+
+See the project [`Dockerfile`](Dockerfile) for the full build pipeline including extrepo setup, user creation, and Docker socket integration.
 
 ### CI/CD Integration
 
@@ -170,19 +219,24 @@ See [`.github/workflows/test-devcontainer.yml`](.github/workflows/test-devcontai
 
 - **Base**: Debian stable-backports (currently Trixie/13)
 - **Package Management**: APT for system tools, mise for development tools
-- **Build**: Python package (`wagov-devcontainer`) runs a pyinfra deploy during Docker build or local install
+- **Provisioning**: [mise bootstrap](https://mise.jdx.dev/bootstrap.html) handles all installation and configuration during Docker build or local install
 - **Docker-outside-of-Docker**: Host socket reuse via the upstream Dev Containers feature; Docker CLI/buildx/compose are also pre-installed for plain `docker run` usage
 
 ### Tool Sources
 
-Tools are installed from two sources, preferring APT when available:
+Tools are installed from two package backends, with separate config files for each platform:
 
-1. **APT via [extrepo](https://wiki.debian.org/ExtRepo)** (preferred) - Signed packages from official repos
+1. **APT via [extrepo](https://wiki.debian.org/ExtRepo)** — Signed packages from official repos (Debian/Ubuntu only)
    - Docker, GitHub CLI, Terraform, kubectl, mise
-2. **[mise](https://mise.jdx.dev)** - Cross-platform tools not in APT, or needing version flexibility
-   - Languages (Go, Node, Python), k9s, starship
-   - npm-backed tools are installed through [aube](https://aube.en.dev) (`npm.package_manager = "aube"`)
-   - Cargo-backed tools use [cargo-binstall](https://github.com/cargo-bins/cargo-binstall) when prebuilt binaries are available
+   - Configured in [`mise.apt.toml`](mise.apt.toml) under `[bootstrap.packages]`
+2. **Homebrew** — User-space packages for macOS and atomic Linux hosts
+   - ripgrep, gh, starship, neovim, kubectl, terraform
+   - Configured in [`mise.brew.toml`](mise.brew.toml) under `[bootstrap.packages]`
+3. **[mise](https://mise.jdx.dev)** — Cross-platform development tools (all platforms)
+   - Languages (Go, Node, Python), cargo tools, npm packages
+   - Configured in [`mise.toml`](mise.toml) under `[tools]`
+
+mise selects the right backend at runtime via environment configs: `-E apt` loads `mise.apt.toml`, `-E brew` loads `mise.brew.toml`. The Dockerfile always uses `-E apt`; `install.sh` auto-detects.
 
 ### Key Features
 
@@ -193,23 +247,27 @@ Tools are installed from two sources, preferring APT when available:
 
 ### Adding Tools
 
-Edit [`src/wagov_devcontainer/spec.py`](src/wagov_devcontainer/spec.py) and add to the appropriate mapping:
+Edit the appropriate config file and add your tool:
 
-```python
-MISE_TOOLS = {
-    # Simple: tool name -> pinned to "latest"
-    "pipx:your-tool": "latest",  # or npm:, cargo:, github:user/repo
+```toml
+# Development tools → mise.toml
+[tools]
+"pipx:your-tool" = "latest"         # pipx backend
+"npm:your-tool" = "latest"          # npm/aube backend
+"cargo:your-tool" = "latest"        # cargo-binstall backend
+"github:user/repo" = "latest"      # GitHub release binary
+your-tool = "latest"                # mise default registry
 
-    # Complex: use structured values for inline TOML tables
-    "pipx:tool": {"version": "latest", "extras": "extra", "uvx_args": "--with dep"},
-}
+# System packages (APT) → mise.apt.toml
+[bootstrap.packages]
+"apt:your-package" = "latest"
+
+# System packages (brew) → mise.brew.toml
+[bootstrap.packages]
+"brew:your-formula" = "latest"
 ```
 
-`MISE_SETTINGS` is also structured Python data, and `MISE_TOML` is rendered from it.
-
-For provisioning behaviour, edit [`src/wagov_devcontainer/deploy.py`](src/wagov_devcontainer/deploy.py). Then rebuild: `just build`
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for contributor guidance.
+For provisioning hooks (extrepo setup, Docker daemon), see the `[bootstrap.hooks]` section in [`mise.apt.toml`](mise.apt.toml).
 
 ### Optional Cloud CLIs
 
@@ -230,7 +288,8 @@ just              # List all commands
 just build        # Build test image
 just test         # Test Docker-outside-of-Docker
 just dev          # Interactive shell
-just lint         # Format and lint Python sources
+just lint         # Lint project files
+just fmt          # Format project files
 just clean        # Clean up images
 ```
 
@@ -245,7 +304,7 @@ just shell        # Run published image interactively
 | Issue | Solution |
 |-------|----------|
 | Docker not working | Ensure Docker is running and the host socket is available. For rootless Docker, override the socket mount as shown above. |
-| Tool missing | Check `src/wagov_devcontainer/spec.py` |
+| Tool missing | Check `mise.toml` |
 | Build fails | Run `just clean` then `just build` |
 | Docker permission errors | Rebuild the devcontainer so the `docker-outside-of-docker` feature can refresh socket access. For direct `docker run`, pass `--group-add $(stat -c '%g' /var/run/docker.sock)`. |
 | mise issues | Run `mise doctor` inside container |
@@ -253,7 +312,7 @@ just shell        # Run published image interactively
 ## Contributing
 
 1. Fork and clone the repo
-2. Make changes to `src/wagov_devcontainer/`, `Dockerfile`, or docs
+2. Make changes to `mise.toml`, `Dockerfile`, or docs
 3. Test: `just build && just test && just dev`
 4. Submit PR with test results
 
