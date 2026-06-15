@@ -101,7 +101,7 @@ run = "docker buildx bake test --progress=plain"
 
 [tasks.test-cmd]
 description = "Print test command for CI"
-run = "printf '%s\\n' 'network=\"devcontainer-test-$(date +%%s)-$$\"; trap \"docker network rm \\\"$network\\\" >/dev/null 2>&1 || true\" EXIT; docker network create \"$network\" >/dev/null && mise doctor && docker run --rm --network \"$network\" ghcr.io/curl/curl-container/curl-multi:master -s ipinfo.io && https ipinfo.io'"
+run = "printf '%s\\n' 'network=\"devcontainer-test-$(date +%%s)-$$\"; trap \"docker network rm \\\"$network\\\" >/dev/null 2>&1 || true\" EXIT; docker network create \"$network\" >/dev/null && mise --version && docker run --rm --network \"$network\" ghcr.io/curl/curl-container/curl-multi:master -s ipinfo.io && https ipinfo.io'"
 
 [tasks.clean]
 description = "Clean up images"

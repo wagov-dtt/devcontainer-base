@@ -34,11 +34,11 @@ test: build
         -v /var/run/docker.sock:/var/run/docker.sock \
         --group-add $(stat -c '%g' /var/run/docker.sock) \
         {{test_tag}} \
-        -c 'network="devcontainer-test-$(date +%s)-$$"; trap "docker network rm \"$network\" >/dev/null 2>&1 || true" EXIT; docker network create "$network" >/dev/null && mise doctor && docker run --rm --network "$network" ghcr.io/curl/curl-container/curl-multi:master -s ipinfo.io && https ipinfo.io'
+        -c 'network="devcontainer-test-$(date +%s)-$$"; trap "docker network rm \"$network\" >/dev/null 2>&1 || true" EXIT; docker network create "$network" >/dev/null && mise --version && docker run --rm --network "$network" ghcr.io/curl/curl-container/curl-multi:master -s ipinfo.io && https ipinfo.io'
 
 # Print test command (for CI to use)
 test-cmd:
-    @printf '%s\n' 'network="devcontainer-test-$(date +%s)-$$"; trap "docker network rm \"$network\" >/dev/null 2>&1 || true" EXIT; docker network create "$network" >/dev/null && mise doctor && docker run --rm --network "$network" ghcr.io/curl/curl-container/curl-multi:master -s ipinfo.io && https ipinfo.io'
+    @printf '%s\n' 'network="devcontainer-test-$(date +%s)-$$"; trap "docker network rm \"$network\" >/dev/null 2>&1 || true" EXIT; docker network create "$network" >/dev/null && mise --version && docker run --rm --network "$network" ghcr.io/curl/curl-container/curl-multi:master -s ipinfo.io && https ipinfo.io'
 
 # Interactive development shell (build + shell)
 dev: build

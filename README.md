@@ -204,7 +204,7 @@ Run tests in the devcontainer image for guaranteed consistency:
 - name: Build and smoke test image
   run: |
     docker buildx bake test
-    docker run --rm devcontainer-base:test -c 'mise doctor && https ipinfo.io'
+    docker run --rm devcontainer-base:test -c 'mise --version && https ipinfo.io'
 ```
 
 See [`.github/workflows/build.yml`](.github/workflows/build.yml) for the complete multi-arch build, push, and smoke-test workflow.

@@ -103,7 +103,7 @@ jobs:
     - name: Test devcontainer functionality
       run: |
         # shellcheck disable=SC2016 # expand date/network inside the container, not on the runner
-        test_cmd='network="devcontainer-test-$(date +%s)-$$"; trap "docker network rm \"$network\" >/dev/null 2>&1 || true" EXIT; docker network create "$network" >/dev/null && mise doctor && docker run --rm --network "$network" ghcr.io/curl/curl-container/curl-multi:master -s ipinfo.io && https ipinfo.io'
+        test_cmd='network="devcontainer-test-$(date +%s)-$$"; trap "docker network rm \"$network\" >/dev/null 2>&1 || true" EXIT; docker network create "$network" >/dev/null && mise --version && docker run --rm --network "$network" ghcr.io/curl/curl-container/curl-multi:master -s ipinfo.io && https ipinfo.io'
         docker run --rm \
           -v /var/run/docker.sock:/var/run/docker.sock \
           --group-add "$(stat -c '%g' /var/run/docker.sock)" \
