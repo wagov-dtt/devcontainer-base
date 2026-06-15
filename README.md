@@ -1,23 +1,35 @@
 # Cloud Native Devcontainer
 
-Production-ready development container with modern tooling for cloud-native and infrastructure development.
+[![Build and Push DevContainer](https://github.com/wagov-dtt/devcontainer-base/actions/workflows/build.yml/badge.svg)](https://github.com/wagov-dtt/devcontainer-base/actions/workflows/build.yml)
+[![CodeQL](https://github.com/wagov-dtt/devcontainer-base/actions/workflows/codeql.yml/badge.svg)](https://github.com/wagov-dtt/devcontainer-base/actions/workflows/codeql.yml)
 
-## What's Inside
+Production-ready cloud-native development container, provisioned entirely with [mise bootstrap](https://mise.jdx.dev/bootstrap.html).
 
-**Languages**: [Go](https://go.dev), [Node.js](https://nodejs.org), [Python](https://python.org), [Rust](https://rust-lang.org), [uv](https://github.com/astral-sh/uv), [pnpm](https://pnpm.io), [aube](https://aube.en.dev)
-**Cloud**: [AWS CLI](https://aws.amazon.com/cli/), [Terraform](https://terraform.io), Kubernetes ([kubectl](https://kubernetes.io/docs/reference/kubectl/), [k9s](https://k9scli.io), [k3d](https://k3d.io), [helm](https://helm.sh), [kustomize](https://kustomize.io))
-**Development**: Docker-outside-of-Docker, [OpenCode](https://opencode.ai), [oy](https://github.com/wagov-dtt/oy-cli), [git](https://git-scm.com), [just](https://just.systems), [mise](https://mise.jdx.dev), [direnv](https://direnv.net), [starship](https://starship.rs), [zellij](https://zellij.dev), [neovim](https://neovim.io), [lazygit](https://github.com/jesseduffield/lazygit), [delta](https://github.com/dandavison/delta), [difftastic](https://difftastic.wilfred.me.uk)
-**Security**: [Semgrep](https://semgrep.dev), [cosign](https://github.com/sigstore/cosign), [SLSA verifier](https://github.com/slsa-framework/slsa-verifier), [lychee](https://lychee.cli.rs) (link checker), [Trivy](https://trivy.dev), [Syft](https://github.com/anchore/syft), [sops](https://getsops.io), [age](https://age-encryption.org)
-**Linting/formatting**: [ShellCheck](https://www.shellcheck.net), [shfmt](https://github.com/mvdan/sh), [actionlint](https://github.com/rhysd/actionlint), [taplo](https://taplo.tamasfe.dev), [typos](https://github.com/crate-ci/typos), [hadolint](https://github.com/hadolint/hadolint), [yamlfmt](https://github.com/google/yamlfmt)
-**Utilities**: [ripgrep](https://github.com/BurntSushi/ripgrep), [fzf](https://github.com/junegunn/fzf), [jq](https://jqlang.github.io/jq/), [yq](https://mikefarah.gitbook.io/yq), [httpie](https://httpie.io), [hurl](https://hurl.dev), [btop](https://github.com/aristocratos/btop), [restic](https://restic.net), [rclone](https://rclone.org)
+Published image: [`ghcr.io/wagov-dtt/devcontainer-base`](https://github.com/wagov-dtt/devcontainer-base/pkgs/container/devcontainer-base)
 
-> **Complete list**: See [`mise.toml`](mise.toml) and [`mise.apt.toml`](mise.apt.toml)
+## What's inside
+
+| Category | Tools |
+|---|---|
+| Languages | [Go](https://go.dev), [Node.js](https://nodejs.org), [Python](https://python.org), [Rust](https://rust-lang.org), [uv](https://github.com/astral-sh/uv), [pnpm](https://pnpm.io), [aube](https://aube.en.dev) |
+| Cloud / platform | [AWS CLI](https://aws.amazon.com/cli/), [Terraform](https://terraform.io), [kubectl](https://kubernetes.io/docs/reference/kubectl/), [k9s](https://k9scli.io), [k3d](https://k3d.io), [helm](https://helm.sh), [kustomize](https://kustomize.io) |
+| Developer UX | Docker-outside-of-Docker, [OpenCode](https://opencode.ai), [oy](https://github.com/wagov-dtt/oy-cli), [git](https://git-scm.com), [just](https://just.systems), [mise](https://mise.jdx.dev), [direnv](https://direnv.net), [starship](https://starship.rs), [zellij](https://zellij.dev), [neovim](https://neovim.io), [lazygit](https://github.com/jesseduffield/lazygit), [delta](https://github.com/dandavison/delta), [difftastic](https://difftastic.wilfred.me.uk) |
+| Security | [Semgrep](https://semgrep.dev), [cosign](https://github.com/sigstore/cosign), [SLSA verifier](https://github.com/slsa-framework/slsa-verifier), [lychee](https://lychee.cli.rs), [Trivy](https://trivy.dev), [Syft](https://github.com/anchore/syft), [sops](https://getsops.io), [age](https://age-encryption.org) |
+| Linting / formatting | [ShellCheck](https://www.shellcheck.net), [shfmt](https://github.com/mvdan/sh), [actionlint](https://github.com/rhysd/actionlint), [taplo](https://taplo.tamasfe.dev), [typos](https://github.com/crate-ci/typos), [hadolint](https://github.com/hadolint/hadolint), [yamlfmt](https://github.com/google/yamlfmt) |
+| Utilities | [ripgrep](https://github.com/BurntSushi/ripgrep), [fzf](https://github.com/junegunn/fzf), [jq](https://jqlang.github.io/jq/), [yq](https://mikefarah.gitbook.io/yq), [httpie](https://httpie.io), [hurl](https://hurl.dev), [btop](https://github.com/aristocratos/btop), [restic](https://restic.net), [rclone](https://rclone.org) |
+
+Complete source of truth:
+
+- [`mise.toml`](mise.toml) — mise-managed tools, dotfiles, tasks
+- [`mise.apt.toml`](mise.apt.toml) — Debian/Ubuntu system packages
+- [`mise.brew.toml`](mise.brew.toml) — Homebrew system packages
 
 ## Quick Start
 
 ### VS Code Devcontainer (Recommended)
 
 Create `.devcontainer/devcontainer.json`:
+
 ```json
 {
   "name": "My Project",
@@ -35,7 +47,7 @@ Create `.devcontainer/devcontainer.json`:
 }
 ```
 
-Open in VS Code: **Cmd/Ctrl+Shift+P** -> "Dev Containers: Reopen in Container"
+Open in VS Code: **Cmd/Ctrl+Shift+P** → **Dev Containers: Reopen in Container**.
 
 <details>
 <summary>Why these settings?</summary>
@@ -124,7 +136,7 @@ Installs via [mise bootstrap](https://mise.jdx.dev/bootstrap.html) — no Python
 curl -sSL https://raw.githubusercontent.com/wagov-dtt/devcontainer-base/main/install.sh | sh
 
 # Install for a specific user (requires root/sudo)
-SETUP_USER=myuser curl -sSL https://raw.githubusercontent.com/wagov-dtt/devcontainer-base/main/install.sh | sh
+curl -sSL https://raw.githubusercontent.com/wagov-dtt/devcontainer-base/main/install.sh | SETUP_USER=myuser sh
 
 # Clone and run locally
 git clone https://github.com/wagov-dtt/devcontainer-base && cd devcontainer-base
@@ -154,7 +166,7 @@ mise dotfiles apply --yes   # shell config only
 ### Use as Template
 
 1. **GitHub**: Click "Use this template" to create your own repository
-2. **Codespaces**: Works immediately - click "Code" → "Create codespace"
+2. **Codespaces**: Works immediately — click **Code** → **Create codespace**
 3. **Local**: Clone and customize as needed
 
 ### Use in Custom Docker Images
@@ -171,7 +183,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 COPY mise.toml mise.apt.toml ./
 
 RUN apt-get update -y \
-    && apt-get install -y curl ca-certificates extrepo gnupg locales sudo \
+    && apt-get install -y --no-install-recommends curl ca-certificates extrepo gnupg locales sudo \
     && curl --proto '=https' --tlsv1.2 -sSf https://mise.run | MISE_INSTALL_PATH=/usr/local/bin/mise sh \
     && sed -i 's/^# - contrib/- contrib/' /etc/extrepo/config.yaml \
     && sed -i 's/^# - non-free/- non-free/' /etc/extrepo/config.yaml \

@@ -6,7 +6,7 @@ set -eu
 # Usage:
 #   ./install.sh
 #   curl -sSL https://raw.githubusercontent.com/wagov-dtt/devcontainer-base/main/install.sh | sh
-#   SETUP_USER=myuser curl -sSL https://raw.githubusercontent.com/wagov-dtt/devcontainer-base/main/install.sh | sh
+#   curl -sSL https://raw.githubusercontent.com/wagov-dtt/devcontainer-base/main/install.sh | SETUP_USER=myuser sh
 #   SETUP_USER=myuser ./install.sh
 
 DEVCONTAINER_BASE_REF="${DEVCONTAINER_BASE_REF:-main}"
