@@ -54,11 +54,11 @@ just fmt          # Format project files
 For maintainers only:
 
 ```bash
-just publish      # Multi-platform build + push
+just release 2026.7 # Create and push release tag; CI publishes images
 just shell        # Run published image interactively
 ```
 
-Do not run `just publish` unless you intend to publish and have the required credentials.
+Do not create release tags unless you intend to publish images and have confirmed CI is green.
 
 ## Making Changes
 
@@ -89,7 +89,8 @@ tool = "latest"              # mise default registry
 ### Tool Source Priority
 
 1. **APT via extrepo** - preferred for official signed packages
-2. **mise** - use when APT is unavailable or too limiting
+2. **Homebrew** - user-space packages on macOS or atomic Linux hosts
+3. **mise** - use when system packages are unavailable or too limiting
 
 ### Testing
 
@@ -113,6 +114,17 @@ Before submitting a PR:
 - Keep GitHub Actions pinned and up to date
 - Prefer small, auditable workflow changes
 - Test the user-facing behaviour inside the container, not just implementation details
+
+## Release Process
+
+Releases are image-only. Do not add Python packaging files, PyPI workflows, or version fields for releases.
+
+1. Ensure `main` is up to date and CI is green: `git pull --ff-only && gh run list --branch main --limit 5`
+2. Create an annotated tag: `git tag -a v2026.7 -m "Release v2026.7"`
+3. Push it: `git push origin v2026.7`
+4. Optionally create GitHub release notes: `gh release create v2026.7 --title v2026.7 --notes "Container image release v2026.7"`
+
+The build workflow publishes per-architecture images plus a multi-arch manifest for the tag.
 
 ## What to Contribute
 

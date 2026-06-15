@@ -45,14 +45,10 @@ dev: build
     @echo "Starting development shell..."
     docker run {{docker_args}} {{test_tag}}
 
-# Publish to registry (build + push, signing handled by bake attestations)
-publish:
-    @echo "Building and publishing release image..."
-    @echo "Authenticating with GHCR..."
-    echo $GITHUB_TOKEN | docker login ghcr.io -u $(gh api user --jq .login) --password-stdin
-    docker buildx bake release \
-        --progress=plain \
-        --set="release.tags={{tag}}"
+# Create and push a release tag (CI publishes images)
+release version:
+    git tag -a "v{{version}}" -m "Release v{{version}}"
+    git push origin "v{{version}}"
 
 # Run published image
 shell:

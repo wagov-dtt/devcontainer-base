@@ -291,9 +291,40 @@ just clean        # Clean up images
 
 **For maintainers:**
 ```bash
-just publish      # Multi-platform build + push
+just release 2026.7 # Create and push release tag (CI publishes images)
 just shell        # Run published image interactively
 ```
+
+## Releases
+
+This repository now publishes **container images only**. There is no Python package, PyPI release, `pyproject.toml`, or package version to bump.
+
+Release versions are Git tags of the form `vYYYY.N` (for example, `v2026.7`). Pushing a tag triggers [`.github/workflows/build.yml`](.github/workflows/build.yml), which builds and publishes:
+
+- `ghcr.io/wagov-dtt/devcontainer-base:v2026.7-amd64`
+- `ghcr.io/wagov-dtt/devcontainer-base:v2026.7-arm64`
+- `ghcr.io/wagov-dtt/devcontainer-base:v2026.7` (multi-arch manifest)
+
+Recommended release flow:
+
+```bash
+git checkout main
+git pull --ff-only
+
+# Confirm CI is green before tagging.
+gh run list --branch main --limit 5
+
+version=2026.7
+git tag -a "v${version}" -m "Release v${version}"
+git push origin "v${version}"
+
+# Optional GitHub release notes.
+gh release create "v${version}" \
+  --title "v${version}" \
+  --notes "Container image release v${version}"
+```
+
+Do not reintroduce Python packaging files for releases; all provisioning and release state is driven by mise config, Docker metadata, and git tags.
 
 ## Troubleshooting
 
