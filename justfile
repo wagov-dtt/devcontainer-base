@@ -1,5 +1,8 @@
 # Cloud Native Devcontainer - Build & Development
 
+# Auto-detect GITHUB_TOKEN from gh CLI to avoid mise/GitHub API rate limits during builds.
+export GITHUB_TOKEN := env("GITHUB_TOKEN", `gh auth token 2>/dev/null || echo ""`)
+
 # Configuration
 tag := "ghcr.io/wagov-dtt/devcontainer-base:latest"
 test_tag := "devcontainer-base:test"

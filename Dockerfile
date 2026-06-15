@@ -13,8 +13,9 @@ RUN --mount=type=cache,target=/var/cache/apt \
     --mount=type=cache,target=/root/.cache \
     --mount=type=secret,id=GITHUB_TOKEN,env=GITHUB_TOKEN \
     set -eu && \
+    printf '%s\n' 'APT::Install-Recommends "false";' 'APT::Install-Suggests "false";' > /etc/apt/apt.conf.d/99no-install-recommends && \
     # Install base packages needed for bootstrapping
-    apt-get update -y && apt-get install -y curl ca-certificates extrepo gnupg locales sudo && \
+    apt-get update -y && apt-get install -y --no-install-recommends curl ca-certificates extrepo gnupg locales sudo && \
     locale-gen en_US.UTF-8 && \
     # Install mise
     curl --proto '=https' --tlsv1.2 -sSf https://mise.run | MISE_INSTALL_PATH=/usr/local/bin/mise sh && \
@@ -35,7 +36,8 @@ RUN --mount=type=cache,target=/var/cache/apt \
     install -m 755 scripts/docker-init.sh /usr/local/bin/docker-init.sh && \
     # Run user-space bootstrap as vscode: tools, dotfiles
     sudo -Hu vscode mise trust --yes / && \
-    sudo -Hu vscode mise bootstrap --yes
+    sudo -Hu vscode env GITHUB_TOKEN="${GITHUB_TOKEN:-}" mise bootstrap --yes && \
+    rm -rf /root/.cache/* /home/vscode/.cache /home/vscode/.npm/_cacache /var/lib/apt/lists/* /tmp/*
 
 FROM scratch
 COPY --from=builder --link / /

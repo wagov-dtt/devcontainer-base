@@ -5,8 +5,6 @@
 "apt:git" = "latest"
 "apt:neovim" = "latest"
 "apt:build-essential" = "latest"
-"apt:python3-dev" = "latest"
-"apt:mise" = "latest"
 "apt:gh" = "latest"
 "apt:terraform" = "latest"
 "apt:ddev" = "latest"
@@ -44,7 +42,7 @@ pre-packages = """
   echo ':: Bootstrapping APT prerequisites...'
   export DEBIAN_FRONTEND=noninteractive
   sudo apt-get update -y
-  sudo apt-get install -y extrepo curl gnupg sudo
+  sudo apt-get install -y --no-install-recommends extrepo curl gnupg sudo
   sudo sed -i 's/^# - contrib/- contrib/' /etc/extrepo/config.yaml
   sudo sed -i 's/^# - non-free/- non-free/' /etc/extrepo/config.yaml
   # Enable extrepo vendor repos for tools not in Debian proper

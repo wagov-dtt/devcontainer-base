@@ -37,7 +37,7 @@ if [ "$PLATFORM" = apt ]; then
   # APT pre-bootstrap: install extrepo/curl and enable repos before mise is needed.
   echo "Preparing APT repositories..."
   as_root apt-get update -y
-  as_root apt-get install -y extrepo curl gnupg locales sudo
+  as_root apt-get install -y --no-install-recommends extrepo curl gnupg locales sudo
   as_root locale-gen en_US.UTF-8
   as_root sed -i 's/^# - contrib/- contrib/' /etc/extrepo/config.yaml
   as_root sed -i 's/^# - non-free/- non-free/' /etc/extrepo/config.yaml
@@ -99,11 +99,11 @@ if [ -n "${SETUP_USER:-}" ]; then
       # APT packages are system-level; install them as root, then configure the target user.
       mise bootstrap packages install --yes --update -E apt
       sudo -Hu "$SETUP_USER" mise trust --yes "$tmpdir"
-      sudo -Hu "$SETUP_USER" mise bootstrap --yes
+      sudo -Hu "$SETUP_USER" env GITHUB_TOKEN="${GITHUB_TOKEN:-}" mise bootstrap --yes
     else
       # Homebrew is user-space on supported hosts; run the full brew bootstrap as the target user.
       sudo -Hu "$SETUP_USER" mise trust --yes "$tmpdir"
-      sudo -Hu "$SETUP_USER" mise bootstrap --yes -E brew
+      sudo -Hu "$SETUP_USER" env GITHUB_TOKEN="${GITHUB_TOKEN:-}" mise bootstrap --yes -E brew
     fi
   else
     if [ "$SETUP_USER" != "$(id -un)" ]; then
